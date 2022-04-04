@@ -13,8 +13,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:4000',
-    credentials: true,
+    // origin: 'http://localhost:4000',
+    // credentials: true,
   });
   await app.listen(process.env.PORT || 3000);
 }

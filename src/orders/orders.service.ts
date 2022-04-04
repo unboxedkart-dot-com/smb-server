@@ -28,7 +28,6 @@ export class OrdersService {
     });
 
     const orderSummary = userDoc.orderSummary;
-
     //generating a unique ordernumber
     const orderNumber = this._generateOrderNumber();
     //generating new order details
@@ -37,8 +36,10 @@ export class OrdersService {
       orderSummary.orderItems,
     );
 
-    let payableAmount = orderItemDetails.orderTotal;
-    let couponDiscount = 0;
+    console.log('orderitemdetails', orderItemDetails.orderTotal);
+
+    var payableAmount = orderItemDetails.orderTotal;
+    var couponDiscount = 0;
 
     //validating coupon and coupon discount
     if (orderSummary.couponCode != null) {
@@ -46,15 +47,11 @@ export class OrdersService {
         orderSummary.couponCode,
         orderItemDetails.orderTotal,
       );
-      payableAmount -= couponDiscount;
+      console.log('paybale amount', payableAmount);
+      console.log('c amount', payableAmount);
+      payableAmount = payableAmount - couponDiscount;
     }
-
-    // const payableAmount = await this._validateCouponCode(
-    //   orderSummary.couponCode,
-    //   orderItemDetails.orderTotal,
-    // );
-
-    //creating order object
+    console.log('paybale amount', payableAmount);
     const newOrder = new this.orderModel({
       userId: userId,
       orderNumber: orderNumber,
@@ -75,6 +72,7 @@ export class OrdersService {
 
     //saving order individually in db
     await this._handleSaveIndividualOrders({
+      paymentType: entireBody.paymentType,
       deliveryType: orderSummary.deliveryType,
       storeLocation: orderSummary.storeLocation,
       itemsCount: orderItemDetails.orderItemsCount,
@@ -115,9 +113,12 @@ export class OrdersService {
 
   async _getCouponDiscount(couponCode: string, orderTotal: number) {
     const coupon = await this.couponModel.findOne({ couponCode: couponCode });
+    console.log('coupon', coupon);
     if (coupon && orderTotal >= coupon.minimumOrderTotal) {
+      console.log('coupon', coupon);
       return coupon.discountAmount;
     }
+    return 0;
   }
 
   async _validateCouponCode(couponCode: string, orderTotal: number) {
@@ -198,6 +199,9 @@ export class OrdersService {
         pickUpDetails: {
           storeLocation: params.storeLocation,
         },
+        paymentDetails: {
+          paymentType: params.paymentType,
+        },
         deliveryType: params.deliveryType,
         pricingDetails: {
           billTotal: order.total,
@@ -220,8 +224,6 @@ export class OrdersService {
         },
       });
       newOrderItem.save();
-      // console.log('individual orders created', newOrderItem);
-      // return newOrderItem;
     }
   }
 
@@ -231,6 +233,7 @@ export class OrdersService {
 }
 
 export interface IndividualOrderItem {
+  paymentType: String;
   deliveryType: String;
   itemsCount: number;
   orderData: any;
@@ -267,3 +270,10 @@ export interface IndividualOrderItem {
 //   itemsCount: orderItemDetails.orderItemsCount,
 //   orderItems: orderItemDetails.orderItems,
 // });
+
+// const payableAmount = await this._validateCouponCode(
+//   orderSummary.couponCode,
+//   orderItemDetails.orderTotal,
+// );
+
+//creating order object
