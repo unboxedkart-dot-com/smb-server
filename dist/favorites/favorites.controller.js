@@ -30,6 +30,7 @@ let FavoritesController = class FavoritesController {
         return result;
     }
     async handleDeleteFavorite(request, productId) {
+        console.log('id dele', productId);
         const userId = request.user.userId;
         const result = await this.favoritesService.deleteFavorite(userId, productId);
         return result;

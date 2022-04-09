@@ -8,13 +8,13 @@ export enum CouponTypes {
 
 export const CouponSchema = new mongoose.Schema({
   couponCode: { type: String, required: true, select: true },
-  discountAmount: { type: String, required: true },
+  discountAmount: { type: Number, required: true },
   minimumOrderTotal: { type: Number, required: true },
   discountType: { type: String, required: true },
   expiryTime: { type: Date, required: true, default: Date.now() },
   isPersonalCoupon: { type: Boolean, required: true, default: false },
   couponDetails: {
-    userId: { type: String, required: true },
+    userId: { type: String, required: true, select: false },
     phoneNumber: { type: Number, required: true },
     userName: { type: String, required: true },
     userEmail: { type: String, required: false },

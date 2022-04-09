@@ -20,6 +20,11 @@ let CouponsController = class CouponsController {
     constructor(couponsService) {
         this.couponsService = couponsService;
     }
+    async handleGetPersonalCoupon(request) {
+        const userId = request.user.userId;
+        const response = await this.couponsService.getPersonalCoupon(userId);
+        return response;
+    }
     async handleCreateCoupon(request) {
         const userId = request.user.userId;
         const response = await this.couponsService.createPersonalCoupon(userId);
@@ -31,6 +36,13 @@ let CouponsController = class CouponsController {
         return response;
     }
 };
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CouponsController.prototype, "handleGetPersonalCoupon", null);
 __decorate([
     (0, common_1.Post)('personal-coupon'),
     __param(0, (0, common_1.Req)()),

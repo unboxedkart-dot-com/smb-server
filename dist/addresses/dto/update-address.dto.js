@@ -39,6 +39,11 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateAddressDto.prototype, "doorNo", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateAddressDto.prototype, "lane", void 0);
+__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -56,6 +61,7 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateAddressDto.prototype, "landmark", void 0);
 __decorate([

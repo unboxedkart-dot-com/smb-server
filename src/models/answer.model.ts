@@ -11,12 +11,10 @@ export const AnswerSchema = new mongoose.Schema({
   userName: { type: String, required: true },
   userRole: { type: String, required: true },
   questionId: { type: String, required: true },
-  answerDetails: {
-    isApproved: { type: Boolean, required: true, default: false },
-    productId: { type: String, required: false },
-    answer: { type: String, required: true },
-    timestamp: { type: Date, required: true, default: Date.now() },
-  },
+  isApproved: { type: Boolean, required: true, default: false },
+  // productId: { type: String, required: false },
+  answer: { type: String, required: true },
+  timestamp: { type: Date, required: true, default: Date.now() },
 });
 
 export interface Answer {
@@ -24,10 +22,8 @@ export interface Answer {
   userName: string;
   userRole: string;
   questionId: string;
-  answerDetails: {
-    isApproved: boolean;
-    productId: string;
-    answer: string;
-    timestamp: Date;
-  };
+  isApproved: boolean;
+  // productId: string;
+  answer: string;
+  timestamp: Date;
 }

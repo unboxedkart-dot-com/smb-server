@@ -21,6 +21,10 @@ let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
     }
+    async handleDeleteAllOrder() {
+        const orders = await this.ordersService.deleteAll();
+        return orders;
+    }
     async handleCreateOrder(request, entireBody) {
         const userId = request.user.userId;
         const orders = await this.ordersService.createOrder(entireBody, userId);
@@ -31,10 +35,21 @@ let OrdersController = class OrdersController {
         const orders = await this.ordersService.getOrderItems(userId);
         return orders;
     }
+    async handleGetOrderItem(request, orderId) {
+        const userId = request.user.userId;
+        const orders = await this.ordersService.getOrderItem(userId, orderId);
+        return orders;
+    }
     async updateOrderItem(request, productId) {
         const userId = request.user.userId;
     }
 };
+__decorate([
+    (0, common_1.Delete)('/deleteall'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleDeleteAllOrder", null);
 __decorate([
     (0, common_1.Post)('create'),
     __param(0, (0, common_1.Req)()),
@@ -50,6 +65,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleGetOrdersItems", null);
+__decorate([
+    (0, common_1.Get)('/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleGetOrderItem", null);
 __decorate([
     (0, common_1.Patch)('update/:id'),
     __param(0, (0, common_1.Req)()),

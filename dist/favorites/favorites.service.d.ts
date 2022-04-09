@@ -9,5 +9,8 @@ export declare class FavoritesService {
     constructor(favoriteModel: Model<Favorite>, userModel: Model<User>, productModel: Model<Product>);
     getFavorites(userId: string): Promise<Product[]>;
     addFavorite(userId: string, productId: string): Promise<string>;
-    deleteFavorite(userId: string, productId: string): Promise<void>;
+    deleteFavorite(userId: string, productId: string): Promise<{
+        status: string;
+        message: string;
+    }>;
 }

@@ -18,6 +18,7 @@ const dto_1 = require("../addresses/dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const add_store_location_dto_1 = require("../store-location/dto/add-store-location.dto");
 const create_order_summary_dto_1 = require("./dto/create-order-summary.dto");
+const update_count_dto_1 = require("./dto/update-count.dto");
 const order_summary_service_1 = require("./order-summary.service");
 let OrderSummaryController = class OrderSummaryController {
     constructor(orderSummaryService) {
@@ -33,6 +34,11 @@ let OrderSummaryController = class OrderSummaryController {
         const result = await this.orderSummaryService.createOrderSummaryItems(userId, entireBody);
         return result;
     }
+    async handleUpdateCount(request, entireBody) {
+        const userId = request.user.userId;
+        const result = await this.orderSummaryService.updateCount(userId, entireBody);
+        return result;
+    }
     async handleAddCoupon(request, entireBody) {
         const userId = request.user.userId;
         const result = await this.orderSummaryService.addCouponDetails(userId, entireBody);
@@ -45,6 +51,7 @@ let OrderSummaryController = class OrderSummaryController {
         return response;
     }
     async handleAddDeliveryAddress(entireBody, request) {
+        console.log('addddd bodt', entireBody);
         const userId = request.user.userId;
         const response = await this.orderSummaryService.addDeliveryAddress(userId, entireBody);
         return response;
@@ -71,6 +78,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleCreateOrderSummaryItems", null);
 __decorate([
+    (0, common_1.Patch)('update'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_count_dto_1.UpdateProductCountDto]),
+    __metadata("design:returntype", Promise)
+], OrderSummaryController.prototype, "handleUpdateCount", null);
+__decorate([
     (0, common_1.Patch)('update/coupon'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -88,6 +103,7 @@ __decorate([
 ], OrderSummaryController.prototype, "handleAddStoreDetails", null);
 __decorate([
     (0, common_1.Patch)('update/address-details'),
+    __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.AddAddressDto, Object]),

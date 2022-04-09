@@ -4,6 +4,7 @@ export declare class UpdateAddressDto {
     phoneNumber: number;
     alternatePhoneNumber: number;
     doorNo: string;
+    lane: string;
     street: string;
     cityName: string;
     stateName: string;

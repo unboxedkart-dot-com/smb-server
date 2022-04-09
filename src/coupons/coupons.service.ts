@@ -12,6 +12,14 @@ export class CouponsService {
     @InjectModel('User') private readonly userModel: Model<User>,
   ) {}
 
+  async getPersonalCoupon(userId: string) {
+    const coupon = await this.couponModel.findOne({
+      'couponDetails.userId': userId,
+    });
+    console.log('personal coupon', coupon);
+    return coupon;
+  }
+
   async createPersonalCoupon(userId: string) {
     const userDetails = await this._getUserDetails(userId);
     const newCoupon = new this.couponModel({

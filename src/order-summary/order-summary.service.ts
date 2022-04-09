@@ -9,6 +9,7 @@ import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { Coupon } from 'src/models/coupon.model';
 import { DeliveryTypes } from 'src/models/order.model';
 import { AddAddressDto } from 'src/addresses/dto';
+import { UpdateProductCountDto } from './dto/update-count.dto';
 
 @Injectable()
 export class OrderSummaryService {
@@ -28,11 +29,14 @@ export class OrderSummaryService {
     const orderTotal = await this._calculateAmount(
       userDoc.orderSummary.orderItems,
     );
-    const getCouponDiscount = await this.couponModel.findOne({
+    const coupon = await this.couponModel.findOne({
       couponCode: userDoc.orderSummary.couponCode,
     });
-    const payableAmount = orderTotal - getCouponDiscount.discountAmount;
-    return payableAmount;
+    if (coupon) {
+      const payableAmount = orderTotal - coupon.discountAmount;
+      return payableAmount;
+    }
+    return orderTotal;
   }
 
   async _calculateAmount(orderItems: any) {
@@ -105,9 +109,11 @@ export class OrderSummaryService {
   }
 
   async addDeliveryAddress(userId: string, entireBody: AddAddressDto) {
+    console.log('adding delivery address');
     await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.deliveryType': DeliveryTypes.STORE_PICKUP,
+      'orderSummary.deliveryType': DeliveryTypes.HOME_DELIVERY,
       'orderSummary.deliveryAddress': {
+        userId: userId,
         name: entireBody.name,
         phoneNumber: entireBody.phoneNumber,
         doorNo: entireBody.doorNo,
@@ -123,7 +129,7 @@ export class OrderSummaryService {
 
   async addSelectedStoreDetails(userId: string, entireBody: any) {
     await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.deliveryType': DeliveryTypes.HOME_DELIVERY,
+      'orderSummary.deliveryType': DeliveryTypes.STORE_PICKUP,
       'orderSummary.storeLocation': {
         storeName: entireBody.storeName,
         streetName: entireBody.streetName,
@@ -142,5 +148,14 @@ export class OrderSummaryService {
     await this.userModel.findByIdAndUpdate(userId, {
       'orderSummary.couponCode': 'SUNIL500',
     });
+  }
+
+  async updateCount(userId: string, entireBody: UpdateProductCountDto) {
+    const index = entireBody.productIndex;
+    const doc = await this.userModel.findByIdAndUpdate(userId, {
+      ['orderSummary.orderItems.' + index + '.productCount']:
+        entireBody.updatedCount,
+    });
+    console.log('updated doc', doc);
   }
 }

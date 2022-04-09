@@ -15,6 +15,7 @@ const answer_model_1 = require("../models/answer.model");
 const q_and_a_model_1 = require("../models/q_and_a.model");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const user_model_1 = require("../models/user.model");
+const question_model_1 = require("../models/question.model");
 let QAndAModule = class QAndAModule {
 };
 QAndAModule = __decorate([
@@ -24,6 +25,7 @@ QAndAModule = __decorate([
                 { name: 'Answer', schema: answer_model_1.AnswerSchema },
                 { name: 'QuestionAndAnswer', schema: q_and_a_model_1.QuestionAndAnswerSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'Question', schema: question_model_1.QuestionSchema },
             ]),
         ],
         controllers: [q_and_a_controller_1.QAndAController],

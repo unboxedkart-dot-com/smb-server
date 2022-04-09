@@ -1,16 +1,19 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { QuestionAndAnswer } from 'src/models/q_and_a.model';
+import { Review } from 'src/models/review.model';
 import { Product } from '../models/product.model';
 
 export class ProductsService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('Review') private readonly reviewModel: Model<Review>,
+    @InjectModel('QuestionAndAnswer')
+    private readonly questionAndAnswersModel: Model<QuestionAndAnswer>, // @InjectModel('ProductDetails') private readonly productModel: Model<Product>,
   ) {}
 
-  async insertProduct(
-    product: Product,
-  ) {
+  async insertProduct(product: Product) {
     const newProduct = new this.productModel(product);
     const result = await newProduct.save();
     return result.id;
@@ -24,11 +27,24 @@ export class ProductsService {
   async getProduct(id: string) {
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       const product = await this.productModel.findById(id);
-      
       if (!product) {
         throw new NotFoundException('could not find product');
       }
-      return product;
+      const productQuestionAndAnswers = await this.questionAndAnswersModel.find(
+        {
+          productId: id,
+        },
+      );
+      const productReviews = await this.reviewModel.find({
+        productId: id,
+      });
+      const reviewsData = await this.reviewModel.find({ productId: id });
+      return {
+        product: product,
+        productReviews: productReviews,
+        reviewsData: reviewsData,
+        productQAndA: productQuestionAndAnswers,
+      };
     } else {
       throw new NotFoundException('could not find product');
     }
@@ -74,7 +90,8 @@ export class ProductsService {
     const products = await this.productModel
       .find({
         isBestSeller: { $eq: true },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -84,7 +101,8 @@ export class ProductsService {
       .find({
         isBestSeller: { $eq: true },
         brandCode: { $eq: brand },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -94,7 +112,8 @@ export class ProductsService {
       .find({
         isBestSeller: { $eq: true },
         categoryCode: { $eq: category },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -104,7 +123,8 @@ export class ProductsService {
       .find({
         isBestSeller: { $eq: true },
         conditionCode: { $eq: condition },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -114,7 +134,8 @@ export class ProductsService {
       .find({
         isFeatured: { $eq: true },
         brandCode: { $eq: brand },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -124,7 +145,8 @@ export class ProductsService {
       .find({
         isFeatured: { $eq: true },
         categoryCode: { $eq: category },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -134,7 +156,8 @@ export class ProductsService {
       .find({
         isFeatured: { $eq: true },
         conditionCode: { $eq: condition },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -143,7 +166,8 @@ export class ProductsService {
     const products = await this.productModel
       .find({
         isFeatured: { $eq: true },
-      }).limit(10)
+      })
+      .limit(10)
       .exec();
     return products as Product[];
   }
@@ -154,22 +178,16 @@ export class ProductsService {
 //   condition: { $eq: condition },
 // }
 
-
-
-
-
-
-
-    // var queryParams: any = { isFeatured: { $eq: true } };
-    // if (brand) {
-    //   queryParams = { isFeatured: { $eq: true }, brand: { $eq: brand } };
-    // } else if (category) {
-    //   queryParams = { isFeatured: { $eq: true }, category: { $eq: category } };
-    // } else if (condition) {
-    //   queryParams = {
-    //     isFeatured: { $eq: true },
-    //     condition: { $eq: condition },
-    //   };
-    // }
-    // const products = await this.productModel.find(queryParams).exec();
-    // return products;
+// var queryParams: any = { isFeatured: { $eq: true } };
+// if (brand) {
+//   queryParams = { isFeatured: { $eq: true }, brand: { $eq: brand } };
+// } else if (category) {
+//   queryParams = { isFeatured: { $eq: true }, category: { $eq: category } };
+// } else if (condition) {
+//   queryParams = {
+//     isFeatured: { $eq: true },
+//     condition: { $eq: condition },
+//   };
+// }
+// const products = await this.productModel.find(queryParams).exec();
+// return products;

@@ -17,14 +17,48 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let QAndAService = class QAndAService {
-    constructor(answerModel, questionAndAnswerModel, userModel) {
+    constructor(answerModel, questionAndAnswerModel, questionModel, userModel) {
         this.answerModel = answerModel;
         this.questionAndAnswerModel = questionAndAnswerModel;
+        this.questionModel = questionModel;
         this.userModel = userModel;
     }
-    async getQuestionAndAnswers(productId) {
-        const questionAndAnswer = await this.questionAndAnswerModel.find({ productId: { $eq: productId }, 'questionDetails.isApproved': true });
-        return questionAndAnswer;
+    async getProductQuestionAndAnswers(productId) {
+        const questionAndAnswers = await this.questionAndAnswerModel.find({ productId: productId });
+        return questionAndAnswers;
+    }
+    async createQuestion(userId, question, productId) {
+        const userDetails = await this._getUserDetails(userId);
+        const newQuestion = new this.questionModel({
+            userId: userId,
+            userName: userDetails.userName,
+            userRole: 'user',
+            productId: productId,
+            question: question,
+        });
+        newQuestion.save();
+    }
+    async approveQuestion(userId, questionId) {
+        const question = await this.questionModel
+            .findByIdAndUpdate(questionId, {
+            isApproved: true,
+        })
+            .select('+userId');
+        console.log('questions', question);
+        const newQAndA = new this.questionAndAnswerModel({
+            userId: question.userId,
+            userName: question.userName,
+            userRole: question.userRole,
+            productId: question.productId,
+            questionDetails: {
+                questionId: question._id,
+                isApproved: question.isApproved,
+                question: question.question,
+                timestamp: question.timestamp,
+            },
+        });
+        newQAndA.save();
+        console.log('updating question', question);
     }
     async createAnswer(userId, answer, questionId) {
         const userDetails = await this._getUserDetails(userId);
@@ -33,34 +67,20 @@ let QAndAService = class QAndAService {
             userName: userDetails.userName,
             userRole: 'user',
             questionId: questionId,
-            answerDetails: {
-                answer: answer,
-            },
+            answer: answer,
         });
         newAnswer.save();
     }
-    async approveQuestion(questionId) {
-        await this.questionAndAnswerModel.findByIdAndUpdate(questionId, {
-            'questionDetails.isApproved': true,
-        });
-    }
     async approveAnswer(answerId) {
-        await this.answerModel.findByIdAndUpdate(answerId, {
-            'answerDetails.isApproved': true,
-        });
-    }
-    async createQuestion(userId, question, productId) {
-        const userDetails = await this._getUserDetails(userId);
-        const newQuestion = new this.questionAndAnswerModel({
-            userId: userId,
-            userName: userDetails.userName,
-            userRole: 'user',
-            productId: productId,
-            questionDetails: {
-                question: question,
-            },
-        });
-        newQuestion.save();
+        const answer = await this.answerModel
+            .findByIdAndUpdate(answerId, {
+            isApproved: true,
+        })
+            .select('+userId');
+        console.log("new answer", answer);
+        await this.questionAndAnswerModel.findOneAndUpdate({
+            'questionDetails.questionId': answer.questionId,
+        }, { $push: { answers: answer } });
     }
     async _getUserDetails(userId) {
         console.log('user details', userId);
@@ -75,8 +95,10 @@ QAndAService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('Answer')),
     __param(1, (0, mongoose_1.InjectModel)('QuestionAndAnswer')),
-    __param(2, (0, mongoose_1.InjectModel)('User')),
+    __param(2, (0, mongoose_1.InjectModel)('Question')),
+    __param(3, (0, mongoose_1.InjectModel)('User')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])
 ], QAndAService);

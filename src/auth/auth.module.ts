@@ -8,16 +8,20 @@ import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { HttpModule } from '@nestjs/axios';
+import { CouponSchema } from 'src/models/coupon.model';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'User', schema: UserSchema },
+      { name: 'Coupon', schema: CouponSchema },
+    ]),
     PassportModule,
     HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async () => ({
-        secret: "raina",
+        secret: 'raina',
       }),
       // inject: [ConfigService],
     }),

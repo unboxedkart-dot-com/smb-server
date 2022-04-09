@@ -9,7 +9,9 @@ export declare class AddressesController {
     constructor(addressesService: AddressesService);
     handleGetAddress(request: any): Promise<Address[]>;
     handleCreateAddress(entireBody: AddAddressDto, request: any): Promise<void>;
-    handleUpdateAddress(entireBody: UpdateAddressDto): Promise<import("mongodb").UpdateResult>;
+    handleUpdateAddress(request: any, entireBody: UpdateAddressDto): Promise<import("mongoose").Document<unknown, any, Address> & Address & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
     handleDeleteAddress(id: string): Promise<import("mongoose").Document<unknown, any, Address> & Address & {
         _id: import("mongoose").Types.ObjectId;
     }>;

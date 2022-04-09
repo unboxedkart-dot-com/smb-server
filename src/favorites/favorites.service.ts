@@ -19,6 +19,7 @@ export class FavoritesService {
   async getFavorites(userId: string) {
     const userDoc = await this.userModel.findOne({ _id: userId }).exec();
     const favorites = userDoc.favoriteItemIds;
+
     if (favorites.length > 0) {
       console.log('fav', favorites);
       const products = await this.productModel.find({
@@ -26,6 +27,8 @@ export class FavoritesService {
       });
       console.log(products);
       return products as Product[];
+    } else {
+      return [];
     }
   }
 
@@ -55,16 +58,19 @@ export class FavoritesService {
 
   async deleteFavorite(userId: string, productId: string) {
     if (mongoose.isValidObjectId(productId)) {
+      console.log('deleting fav');
       await this.favoriteModel.findOneAndDelete({
         userId: userId,
         productId: productId,
       });
-      await this.userModel.updateOne(
-        { _id: userId },
-        {
-          $pull: { favoriteItemIds: productId },
-        },
-      );
+      console.log('deleting fav 2');
+      const user = await this.userModel.findByIdAndUpdate(userId, {
+        $pull: { favoriteItemIds: productId },
+      });
+      return {
+        status: 'success',
+        message: 'item deleted',
+      };
     } else {
       throw new NotFoundException('could not find product');
     }

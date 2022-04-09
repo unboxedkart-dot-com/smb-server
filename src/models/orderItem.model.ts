@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 import { AddressSchema } from './address.model';
 import { OrderStatuses } from './order.model';
-import { StoreLocationSchema } from './store_location.model';
+import { StoreLocation, StoreLocationSchema } from './store_location.model';
 
 export const OrderItemSchema = new mongoose.Schema({
   deliveryType: { type: String, required: false },
   shippingDetails: {
     shipDate: { type: String, required: false },
-    deliveryDate: { type: String, required: false, default: Date.now },
+    deliveryDate: { type: String, required: false },
     deliveryAddress: { type: AddressSchema, required: false },
     isDelivered: { type: String, required: false },
   },
   pickUpDetails: {
-    pickUpDate: { type: String, required: false, default: Date.now() },
+    pickUpDate: { type: String, required: false },
     storeLocation: { type: StoreLocationSchema, required: false },
     isPickedUp: { type: Boolean, required: false, default: false },
   },
@@ -55,6 +55,11 @@ export interface OrderItem {
     deliveryAddress: Map<any, any>;
     isDelivered: boolean;
   };
+  pickUpDetails: {
+    pickUpDate: Date,
+    storeLocation: StoreLocation,
+    isPickedUp: boolean,
+  },
   paymentDetails: {
     paymentId: string;
     paymentDate: Date;

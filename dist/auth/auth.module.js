@@ -17,18 +17,22 @@ const auth_service_1 = require("./auth.service");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const axios_1 = require("@nestjs/axios");
+const coupon_model_1 = require("../models/coupon.model");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: user_model_1.UserSchema }]),
+            mongoose_1.MongooseModule.forFeature([
+                { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'Coupon', schema: coupon_model_1.CouponSchema },
+            ]),
             passport_1.PassportModule,
             axios_1.HttpModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async () => ({
-                    secret: "raina",
+                    secret: 'raina',
                 }),
             }),
         ],

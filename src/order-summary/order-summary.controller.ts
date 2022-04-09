@@ -11,6 +11,7 @@ import { AddAddressDto } from 'src/addresses/dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
+import { UpdateProductCountDto } from './dto/update-count.dto';
 import { OrderSummaryService } from './order-summary.service';
 
 @UseGuards(JwtAuthGuard)
@@ -32,6 +33,19 @@ export class OrderSummaryController {
   ) {
     const userId = request.user.userId;
     const result = await this.orderSummaryService.createOrderSummaryItems(
+      userId,
+      entireBody,
+    );
+    return result;
+  }
+
+  @Patch('update')
+  async handleUpdateCount(
+    @Req() request: any,
+    @Body() entireBody: UpdateProductCountDto,
+  ) {
+    const userId = request.user.userId;
+    const result = await this.orderSummaryService.updateCount(
       userId,
       entireBody,
     );
@@ -74,9 +88,10 @@ export class OrderSummaryController {
 
   @Patch('update/address-details')
   async handleAddDeliveryAddress(
-    entireBody: AddAddressDto,
+    @Body() entireBody: AddAddressDto,
     @Req() request: any,
   ) {
+    console.log('addddd bodt', entireBody);
     const userId = request.user.userId;
     const response = await this.orderSummaryService.addDeliveryAddress(
       userId,

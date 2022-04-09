@@ -17,9 +17,8 @@ export class AddressesService {
   async getAddresses(userId: string) {
     const addresses = await this.addressModel
       .find({ userId: { $eq: userId } })
-      // .select('+userId')
       .exec();
-    return addresses;
+    return addresses as Address[];
   }
 
   async createAddress(address: AddAddressDto, userId: string) {
@@ -27,11 +26,13 @@ export class AddressesService {
     await newAddress.save();
   }
 
-  async updateAddress(address: UpdateAddressDto) {
-    const result = await this.addressModel.updateOne(
-      { _id: address.addressId },
-      { $set: address },
+  async updateAddress(userId: string, address: UpdateAddressDto) {
+    console.log('address data', address);
+    const result = await this.addressModel.findByIdAndUpdate(
+      address.addressId,
+      { userId: userId, ...address },
     );
+    console.log('result new', result);
     return result;
   }
 

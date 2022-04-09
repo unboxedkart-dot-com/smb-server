@@ -9,6 +9,7 @@ exports.QuestionAndAnswerSchema = new mongoose_1.default.Schema({
     userRole: { type: String, required: true },
     productId: { type: String, required: true },
     questionDetails: {
+        questionId: { type: String, required: true },
         isApproved: { type: Boolean, required: true, default: false },
         question: { type: String, required: true },
         timestamp: { type: Date, required: true, default: Date.now() },

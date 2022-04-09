@@ -10,12 +10,25 @@ exports.ReviewsModule = void 0;
 const common_1 = require("@nestjs/common");
 const reviews_service_1 = require("./reviews.service");
 const reviews_controller_1 = require("./reviews.controller");
+const mongoose_1 = require("@nestjs/mongoose");
+const review_model_1 = require("../models/review.model");
+const reviews_data_model_1 = require("../models/reviews_data.model");
+const user_model_1 = require("../models/user.model");
+const product_model_1 = require("../models/product.model");
 let ReviewsModule = class ReviewsModule {
 };
 ReviewsModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            mongoose_1.MongooseModule.forFeature([
+                { name: 'Review', schema: review_model_1.ReviewSchema },
+                { name: 'ReviewsData', schema: reviews_data_model_1.ReviewsDataSchema },
+                { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'Product', schema: product_model_1.ProductSchema },
+            ]),
+        ],
         controllers: [reviews_controller_1.ReviewsController],
-        providers: [reviews_service_1.ReviewsService]
+        providers: [reviews_service_1.ReviewsService],
     })
 ], ReviewsModule);
 exports.ReviewsModule = ReviewsModule;

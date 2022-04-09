@@ -37,8 +37,12 @@ export class FavoritesController {
     @Req() request: any,
     @Param('id') productId: string,
   ) {
+    console.log('id dele', productId);
     const userId = request.user.userId;
-    const result = await this.favoritesService.deleteFavorite(userId, productId);
+    const result = await this.favoritesService.deleteFavorite(
+      userId,
+      productId,
+    );
     return result;
   }
 }

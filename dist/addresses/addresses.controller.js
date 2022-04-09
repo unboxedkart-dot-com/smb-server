@@ -31,8 +31,10 @@ let AddressesController = class AddressesController {
         const result = await this.addressesService.createAddress(entireBody, userId);
         return result;
     }
-    async handleUpdateAddress(entireBody) {
-        const result = await this.addressesService.updateAddress(entireBody);
+    async handleUpdateAddress(request, entireBody) {
+        console.log('updating functions');
+        const userId = request.user.userId;
+        const result = await this.addressesService.updateAddress(userId, entireBody);
         return result;
     }
     async handleDeleteAddress(id) {
@@ -56,10 +58,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AddressesController.prototype, "handleCreateAddress", null);
 __decorate([
-    (0, common_1.Patch)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Post)('/update'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.UpdateAddressDto]),
+    __metadata("design:paramtypes", [Object, dto_1.UpdateAddressDto]),
     __metadata("design:returntype", Promise)
 ], AddressesController.prototype, "handleUpdateAddress", null);
 __decorate([

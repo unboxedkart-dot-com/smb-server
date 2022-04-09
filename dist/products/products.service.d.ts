@@ -1,14 +1,29 @@
 /// <reference types="mongoose/types/pipelinestage" />
 /// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
+import { QuestionAndAnswer } from 'src/models/q_and_a.model';
+import { Review } from 'src/models/review.model';
 import { Product } from '../models/product.model';
 export declare class ProductsService {
     private readonly productModel;
-    constructor(productModel: Model<Product>);
+    private readonly reviewModel;
+    private readonly questionAndAnswersModel;
+    constructor(productModel: Model<Product>, reviewModel: Model<Review>, questionAndAnswersModel: Model<QuestionAndAnswer>);
     insertProduct(product: Product): Promise<any>;
     getProducts(): Promise<Product[]>;
-    getProduct(id: string): Promise<import("mongoose").Document<unknown, any, Product> & Product & {
-        _id: import("mongoose").Types.ObjectId;
+    getProduct(id: string): Promise<{
+        product: import("mongoose").Document<unknown, any, Product> & Product & {
+            _id: import("mongoose").Types.ObjectId;
+        };
+        productReviews: (import("mongoose").Document<unknown, any, Review> & Review & {
+            _id: import("mongoose").Types.ObjectId;
+        })[];
+        reviewsData: (import("mongoose").Document<unknown, any, Review> & Review & {
+            _id: import("mongoose").Types.ObjectId;
+        })[];
+        productQAndA: (import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
+            _id: import("mongoose").Types.ObjectId;
+        })[];
     }>;
     deleteProducts(): Promise<void>;
     deleteSingleProduct(id: string): Promise<void>;

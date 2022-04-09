@@ -17,8 +17,10 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let ProductsService = class ProductsService {
-    constructor(productModel) {
+    constructor(productModel, reviewModel, questionAndAnswersModel) {
         this.productModel = productModel;
+        this.reviewModel = reviewModel;
+        this.questionAndAnswersModel = questionAndAnswersModel;
     }
     async insertProduct(product) {
         const newProduct = new this.productModel(product);
@@ -35,7 +37,19 @@ let ProductsService = class ProductsService {
             if (!product) {
                 throw new common_1.NotFoundException('could not find product');
             }
-            return product;
+            const productQuestionAndAnswers = await this.questionAndAnswersModel.find({
+                productId: id,
+            });
+            const productReviews = await this.reviewModel.find({
+                productId: id,
+            });
+            const reviewsData = await this.reviewModel.find({ productId: id });
+            return {
+                product: product,
+                productReviews: productReviews,
+                reviewsData: reviewsData,
+                productQAndA: productQuestionAndAnswers,
+            };
         }
         else {
             throw new common_1.NotFoundException('could not find product');
@@ -79,7 +93,8 @@ let ProductsService = class ProductsService {
         const products = await this.productModel
             .find({
             isBestSeller: { $eq: true },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -88,7 +103,8 @@ let ProductsService = class ProductsService {
             .find({
             isBestSeller: { $eq: true },
             brandCode: { $eq: brand },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -97,7 +113,8 @@ let ProductsService = class ProductsService {
             .find({
             isBestSeller: { $eq: true },
             categoryCode: { $eq: category },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -106,7 +123,8 @@ let ProductsService = class ProductsService {
             .find({
             isBestSeller: { $eq: true },
             conditionCode: { $eq: condition },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -115,7 +133,8 @@ let ProductsService = class ProductsService {
             .find({
             isFeatured: { $eq: true },
             brandCode: { $eq: brand },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -124,7 +143,8 @@ let ProductsService = class ProductsService {
             .find({
             isFeatured: { $eq: true },
             categoryCode: { $eq: category },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -133,7 +153,8 @@ let ProductsService = class ProductsService {
             .find({
             isFeatured: { $eq: true },
             conditionCode: { $eq: condition },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
@@ -141,14 +162,19 @@ let ProductsService = class ProductsService {
         const products = await this.productModel
             .find({
             isFeatured: { $eq: true },
-        }).limit(10)
+        })
+            .limit(10)
             .exec();
         return products;
     }
 };
 ProductsService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Product')),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)('Review')),
+    __param(2, (0, mongoose_1.InjectModel)('QuestionAndAnswer')),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model])
 ], ProductsService);
 exports.ProductsService = ProductsService;
 //# sourceMappingURL=products.service.js.map

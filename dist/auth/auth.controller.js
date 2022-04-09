@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
+const login_dto_1 = require("./dto/login.dto");
+const sign_up_dto_1 = require("./dto/sign-up.dto");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthController = class AuthController {
     constructor(authService) {
@@ -25,19 +27,23 @@ let AuthController = class AuthController {
         return request.user.userId;
     }
     async handleSendOtp(phoneNumber) {
-        const result = this.authService.sendOtp(phoneNumber);
+        const result = this.authService.sendOtp(parseInt(phoneNumber));
+        return result;
+    }
+    async handleResendOtp(phoneNumber, type) {
+        const result = this.authService.resendOtp(parseInt(phoneNumber), parseInt(type));
         return result;
     }
     async handleValidate(phoneNumber, otp) {
-        const result = this.authService.validateOtp(phoneNumber, otp);
+        const result = this.authService.validateOtp(parseInt(phoneNumber), parseInt(otp));
         return result;
     }
-    handleLoginUser(phoneNumber, otp) {
-        const result = this.authService.loginUser(phoneNumber, otp);
+    handleLoginUser(entireBody) {
+        const result = this.authService.loginUser(entireBody);
         return result;
     }
-    handleSignupUser(user) {
-        const result = this.authService.createUser(user);
+    handleSignupUser(entireBody) {
+        const result = this.authService.createUser(entireBody);
         return result;
     }
 };
@@ -50,33 +56,40 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "handlePrintHello", null);
 __decorate([
-    (0, common_1.Post)('send-otp'),
-    __param(0, (0, common_1.Body)('phoneNumber')),
+    (0, common_1.Get)('send-otp'),
+    __param(0, (0, common_1.Query)('phoneNumber')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "handleSendOtp", null);
 __decorate([
-    (0, common_1.Post)('validate-otp'),
-    __param(0, (0, common_1.Body)('phoneNumber')),
-    __param(1, (0, common_1.Body)('otp')),
+    (0, common_1.Get)('resend-otp'),
+    __param(0, (0, common_1.Query)('phoneNumber')),
+    __param(1, (0, common_1.Query)('type')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "handleResendOtp", null);
+__decorate([
+    (0, common_1.Get)('validate-otp'),
+    __param(0, (0, common_1.Query)('phoneNumber')),
+    __param(1, (0, common_1.Query)('otp')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "handleValidate", null);
 __decorate([
     (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)('phoneNumber')),
-    __param(1, (0, common_1.Body)('otp')),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "handleLoginUser", null);
 __decorate([
     (0, common_1.Post)('signup'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [sign_up_dto_1.SignUpDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "handleSignupUser", null);
 AuthController = __decorate([

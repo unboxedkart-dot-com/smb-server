@@ -5,9 +5,10 @@ export interface QuestionAndAnswer {
     userId: string;
     userName: string;
     userRole: string;
+    productId: string;
     questionDetails: {
+        questionId: string;
         isApproved: boolean;
-        productId: string;
         question: string;
         timestamp: Date;
     };

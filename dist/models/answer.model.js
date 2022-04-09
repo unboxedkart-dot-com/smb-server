@@ -13,11 +13,8 @@ exports.AnswerSchema = new mongoose_1.default.Schema({
     userName: { type: String, required: true },
     userRole: { type: String, required: true },
     questionId: { type: String, required: true },
-    answerDetails: {
-        isApproved: { type: Boolean, required: true, default: false },
-        productId: { type: String, required: false },
-        answer: { type: String, required: true },
-        timestamp: { type: Date, required: true, default: Date.now() },
-    },
+    isApproved: { type: Boolean, required: true, default: false },
+    answer: { type: String, required: true },
+    timestamp: { type: Date, required: true, default: Date.now() },
 });
 //# sourceMappingURL=answer.model.js.map

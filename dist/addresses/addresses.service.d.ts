@@ -4,11 +4,11 @@ import { AddAddressDto, UpdateAddressDto } from './dto';
 export declare class AddressesService {
     private readonly addressModel;
     constructor(addressModel: Model<Address>);
-    getAddresses(userId: string): Promise<(mongoose.Document<unknown, any, Address> & Address & {
-        _id: mongoose.Types.ObjectId;
-    })[]>;
+    getAddresses(userId: string): Promise<Address[]>;
     createAddress(address: AddAddressDto, userId: string): Promise<void>;
-    updateAddress(address: UpdateAddressDto): Promise<import("mongodb").UpdateResult>;
+    updateAddress(userId: string, address: UpdateAddressDto): Promise<mongoose.Document<unknown, any, Address> & Address & {
+        _id: mongoose.Types.ObjectId;
+    }>;
     deleteAddress(id: string): Promise<mongoose.Document<unknown, any, Address> & Address & {
         _id: mongoose.Types.ObjectId;
     }>;

@@ -6,6 +6,7 @@ import { AnswerSchema } from 'src/models/answer.model';
 import { QuestionAndAnswerSchema } from 'src/models/q_and_a.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserSchema } from 'src/models/user.model';
+import { QuestionSchema } from 'src/models/question.model';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserSchema } from 'src/models/user.model';
       { name: 'Answer', schema: AnswerSchema },
       { name: 'QuestionAndAnswer', schema: QuestionAndAnswerSchema },
       { name: 'User', schema: UserSchema },
+      { name: 'Question', schema: QuestionSchema },
     ]),
   ],
   controllers: [QAndAController],

@@ -16,6 +16,13 @@ import { CouponsService } from './coupons.service';
 export class CouponsController {
   constructor(private readonly couponsService: CouponsService) {}
 
+  @Get()
+  async handleGetPersonalCoupon(@Req() request : any){
+    const userId = request.user.userId;
+    const response = await this.couponsService.getPersonalCoupon(userId);
+    return response;
+  }
+
   @Post('personal-coupon')
   async handleCreateCoupon(@Req() request: any) {
     const userId = request.user.userId;

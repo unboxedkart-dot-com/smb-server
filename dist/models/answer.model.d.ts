@@ -10,10 +10,7 @@ export interface Answer {
     userName: string;
     userRole: string;
     questionId: string;
-    answerDetails: {
-        isApproved: boolean;
-        productId: string;
-        answer: string;
-        timestamp: Date;
-    };
+    isApproved: boolean;
+    answer: string;
+    timestamp: Date;
 }

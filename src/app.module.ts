@@ -13,6 +13,8 @@ import { CouponsModule } from './coupons/coupons.module';
 import { QAndAModule } from './q-and-a/q-and-a.module';
 import { OrderSummaryModule } from './order-summary/order-summary.module';
 import { StoreLocationModule } from './store-location/store-location.module';
+import { MailModule } from './mail/mail.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { StoreLocationModule } from './store-location/store-location.module';
     CouponsModule,
     OrderSummaryModule,
     StoreLocationModule,
+    MailModule,
+    UserModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

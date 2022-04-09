@@ -6,6 +6,7 @@ import { CartItem } from 'src/models/cart-item.model';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { Coupon } from 'src/models/coupon.model';
 import { AddAddressDto } from 'src/addresses/dto';
+import { UpdateProductCountDto } from './dto/update-count.dto';
 export declare class OrderSummaryService {
     private readonly orderSummaryModel;
     private readonly userModel;
@@ -20,4 +21,5 @@ export declare class OrderSummaryService {
     addDeliveryAddress(userId: string, entireBody: AddAddressDto): Promise<void>;
     addSelectedStoreDetails(userId: string, entireBody: any): Promise<void>;
     addCouponDetails(userId: string, entireBody: any): Promise<void>;
+    updateCount(userId: string, entireBody: UpdateProductCountDto): Promise<void>;
 }

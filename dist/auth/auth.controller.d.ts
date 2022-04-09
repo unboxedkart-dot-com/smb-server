@@ -1,15 +1,45 @@
-import { User } from 'src/models/user.model';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
     handlePrintHello(request: any): Promise<any>;
-    handleSendOtp(phoneNumber: number): Promise<string>;
-    handleValidate(phoneNumber: number, otp: number): Promise<boolean>;
-    handleLoginUser(phoneNumber: number, otp: number): Promise<"false" | {
-        accessToken: string;
+    handleSendOtp(phoneNumber: string): Promise<{
+        status: string;
+        message: string;
     }>;
-    handleSignupUser(user: User): Promise<"user already exists" | {
-        accessToken: string;
+    handleResendOtp(phoneNumber: string, type: string): Promise<{
+        status: string;
+        message: string;
+    }>;
+    handleValidate(phoneNumber: string, otp: string): Promise<{
+        status: string;
+        message: string;
+        content: string;
+    } | {
+        status: string;
+        message: string;
+        content?: undefined;
+    }>;
+    handleLoginUser(entireBody: LoginDto): Promise<{
+        status: string;
+        message: string;
+        data: {
+            accessToken: string;
+            wishlist: string[];
+            cart: string[];
+        };
+    }>;
+    handleSignupUser(entireBody: SignUpDto): Promise<{
+        status: string;
+        message: string;
+        data?: undefined;
+    } | {
+        status: string;
+        message: string;
+        data: {
+            accessToken: string;
+        };
     }>;
 }

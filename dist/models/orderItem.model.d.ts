@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { StoreLocation } from './store_location.model';
 export declare const OrderItemSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any>, any, any>;
 export interface OrderItem {
     shippingDetails: {
@@ -6,6 +7,11 @@ export interface OrderItem {
         deliveryDate: string;
         deliveryAddress: Map<any, any>;
         isDelivered: boolean;
+    };
+    pickUpDetails: {
+        pickUpDate: Date;
+        storeLocation: StoreLocation;
+        isPickedUp: boolean;
     };
     paymentDetails: {
         paymentId: string;

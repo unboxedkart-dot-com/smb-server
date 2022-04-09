@@ -3,6 +3,7 @@ export declare class AddAddressDto {
     phoneNumber: number;
     alternatePhoneNumber: number;
     doorNo: string;
+    lane: string;
     street: string;
     cityName: string;
     stateName: string;

@@ -18,6 +18,10 @@ export class AddAddressDto {
   @IsString()
   doorNo: string;
 
+  @IsOptional()
+  @IsString()
+  lane: string;
+
   @IsNotEmpty()
   @IsString()
   street: string;

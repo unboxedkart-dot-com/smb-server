@@ -18,12 +18,17 @@ const mongoose_1 = require("@nestjs/mongoose");
 const order_model_1 = require("../models/order.model");
 const mongoose_2 = require("mongoose");
 let OrdersService = class OrdersService {
-    constructor(orderModel, productModel, couponModel, orderItemModel, userModel) {
+    constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel) {
         this.orderModel = orderModel;
         this.productModel = productModel;
         this.couponModel = couponModel;
         this.orderItemModel = orderItemModel;
         this.userModel = userModel;
+        this.reviewModel = reviewModel;
+    }
+    async deleteAll() {
+        await this.orderItemModel.deleteMany();
+        await this.orderModel.deleteMany();
     }
     async createOrder(entireBody, userId) {
         console.log('userid', userId);
@@ -76,15 +81,47 @@ let OrdersService = class OrdersService {
             orderDate: Date.now(),
             selectedPickUpDate: Date.now(),
             paymentType: order_model_1.paymentTypes.PAY_AT_STORE,
-            deliveryType: 'STORE PICKUP',
+            deliveryType: orderSummary.deliveryType,
+            selectedAddress: orderSummary.deliveryAddress,
             selectedStore: orderSummary.storeLocation,
+            orderItems: orderItemDetails,
         };
     }
     async getOrderItems(userId) {
         const orderItems = await this.orderItemModel.find({
             userId: { $eq: userId },
         });
+        console.log('orderrrrr', orderItems);
         return orderItems;
+    }
+    async getOrderItem(userId, orderItemId) {
+        var orderItem = await this.orderItemModel.findById(orderItemId);
+        if (orderItem) {
+            const review = await this.reviewModel.findOne({
+                userId: userId,
+                productId: orderItem.orderDetails.productId,
+            });
+            if (review) {
+                return {
+                    status: 'success',
+                    message: 'order data received',
+                    data: {
+                        orderItem: orderItem,
+                        reviewData: review,
+                    },
+                };
+            }
+            else {
+                return {
+                    status: 'success',
+                    message: 'order data received',
+                    data: {
+                        orderItem: orderItem,
+                        review: null,
+                    },
+                };
+            }
+        }
     }
     _generateOrderNumber() {
         const orderCode = 'OD';
@@ -203,7 +240,9 @@ OrdersService = __decorate([
     __param(2, (0, mongoose_1.InjectModel)('Coupon')),
     __param(3, (0, mongoose_1.InjectModel)('OrderItem')),
     __param(4, (0, mongoose_1.InjectModel)('User')),
+    __param(5, (0, mongoose_1.InjectModel)('Review')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

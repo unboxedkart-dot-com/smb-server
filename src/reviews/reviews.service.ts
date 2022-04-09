@@ -1,4 +1,123 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Product } from 'src/models/product.model';
+import { Review } from 'src/models/review.model';
+import { ReviewsData } from 'src/models/reviews_data.model';
+import { User } from 'src/models/user.model';
+import { ApproveReviewDto } from './dto/approve-review.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
-export class ReviewsService {}
+export class ReviewsService {
+  constructor(
+    @InjectModel('Review') private readonly reviewModel: Model<Review>,
+    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('ReviewsData') private reviewsDataModel: Model<ReviewsData>,
+    @InjectModel('Product') private productModel: Model<Product>,
+  ) {}
+
+  async getUserReviews(userId: string) {
+    const reviews = await this.reviewModel.find({ userId: userId });
+    return reviews;
+  }
+
+  async getProductReviews(productId: string) {
+    const reviews = await this.reviewModel.find({
+      productId: productId,
+      isApproved: true,
+    });
+    return reviews;
+  }
+
+  async createReview(userId: string, entireBody: CreateReviewDto) {
+    const user = await this.userModel.findById(userId);
+    const product = await this.productModel.findById(entireBody.productId);
+    if (user && product) {
+      const newReview = new this.reviewModel({
+        userId: userId,
+        userName: user.name,
+        rating: entireBody.rating,
+        reviewTitle: entireBody.reviewTitle,
+        reviewContent: entireBody.reviewContent,
+        productId: product._id,
+        productTitle: product.title,
+        imageUrl: product.imageUrls.coverImage,
+      });
+      console.log('new review', newReview);
+      newReview.save();
+    }
+  }
+
+  async updateReview(userId: string, entireBody: UpdateReviewDto) {
+    await this.reviewModel.findOneAndUpdate(
+      { userId: userId, _id: entireBody.reviewId },
+      {
+        userName: entireBody.userName,
+        rating: entireBody.rating,
+        reviewTitle: entireBody.reviewTitle,
+        reviewSubTitle: entireBody.reviewSubTitle,
+        productId: entireBody.productId,
+        productTitle: entireBody.productTitle,
+        imageUrl: entireBody.imageUrl,
+      },
+    );
+  }
+
+  async deleteReview(userId: string, reviewId: string) {
+    await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });
+  }
+
+  async approveReview(userId: string, entireBody: ApproveReviewDto) {
+    const review = await this.reviewModel.findByIdAndUpdate(
+      entireBody.reviewId,
+      {
+        isApproved: true,
+      },
+    );
+    const reviewsData = await this.reviewsDataModel.findOne({
+      productId: review.productId,
+    });
+    console.log('rdata', reviewsData);
+    if (reviewsData) {
+      const newAverage =
+        (reviewsData.averageRating * reviewsData.totalReviewsCount +
+          review.rating) /
+        (reviewsData.totalReviewsCount + 1);
+      await this.reviewsDataModel.updateOne(
+        { productId: review.productId },
+        {
+          $inc: {
+            totalReviewsCount: 1,
+            fiveStarCount: review.rating == 5 ? 1 : 0,
+            fourStarCount: review.rating == 4 ? 1 : 0,
+            threeStarCount: review.rating == 3 ? 1 : 0,
+            twoSarCount: review.rating == 2 ? 1 : 0,
+            oneStarCount: review.rating == 1 ? 1 : 0,
+          },
+          averageRating: newAverage,
+        },
+      );
+    } else {
+      const newReviewsData = new this.reviewsDataModel({
+        productId: review.productId,
+        totalReviewsCount: 1,
+        averageRating: review.rating,
+        fiveStarCount: review.rating == 5 ? 1 : 0,
+        fourStarCount: review.rating == 4 ? 1 : 0,
+        threeStarCount: review.rating == 3 ? 1 : 0,
+        twoStarCount: review.rating == 2 ? 1 : 0,
+        oneStarCount: review.rating == 1 ? 1 : 0,
+      });
+      newReviewsData.save();
+    }
+  }
+}
+
+// const review = await this.reviewModel.findOne({
+//   // userId: userId,
+//   _id: entireBody.reviewId,
+// });
+// console.log('updating review', review);
+// return review;

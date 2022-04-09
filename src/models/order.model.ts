@@ -15,8 +15,8 @@ export enum paymentTypes {
 }
 
 export enum DeliveryTypes {
-  STORE_PICKUP = "STORE PICKUP",
-  HOME_DELIVERY = "HOME DELIVERY"
+  STORE_PICKUP = 'STORE PICKUP',
+  HOME_DELIVERY = 'HOME DELIVERY',
 }
 
 export const OrderSchema = new mongoose.Schema({
@@ -39,7 +39,7 @@ export const OrderSchema = new mongoose.Schema({
     required: true,
     default: OrderStatuses.ORDERED,
   },
-  itemsCount : {type : Number, required : true},
+  itemsCount: { type: Number, required: true },
   orderItems: [
     {
       productId: { type: String, required: true },
@@ -56,6 +56,12 @@ export const OrderSchema = new mongoose.Schema({
       },
     },
   ],
+  // reviewDetails: {
+  //   isReviewed: { type: Boolean, required: true, default: false },
+  //   rating: { type: Number, required: false },
+  //   reviewTitle: { type: String, required: false },
+  //   reviewContent: { type: String, required: false },
+  // },
 });
 
 export interface Order {
@@ -89,6 +95,12 @@ export interface Order {
     },
   ];
 }
+
+
+
+
+
+
 
 // orderId: { type: String, required: true, default },
 // timestamp: { type: String, required: true, default : Date.now() },

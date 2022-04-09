@@ -30,11 +30,14 @@ let OrderSummaryService = class OrderSummaryService {
             _id: 0,
         });
         const orderTotal = await this._calculateAmount(userDoc.orderSummary.orderItems);
-        const getCouponDiscount = await this.couponModel.findOne({
+        const coupon = await this.couponModel.findOne({
             couponCode: userDoc.orderSummary.couponCode,
         });
-        const payableAmount = orderTotal - getCouponDiscount.discountAmount;
-        return payableAmount;
+        if (coupon) {
+            const payableAmount = orderTotal - coupon.discountAmount;
+            return payableAmount;
+        }
+        return orderTotal;
     }
     async _calculateAmount(orderItems) {
         let orderTotal = 0;
@@ -93,9 +96,11 @@ let OrderSummaryService = class OrderSummaryService {
         newOrderSummary.save();
     }
     async addDeliveryAddress(userId, entireBody) {
+        console.log('adding delivery address');
         await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.deliveryType': order_model_1.DeliveryTypes.STORE_PICKUP,
+            'orderSummary.deliveryType': order_model_1.DeliveryTypes.HOME_DELIVERY,
             'orderSummary.deliveryAddress': {
+                userId: userId,
                 name: entireBody.name,
                 phoneNumber: entireBody.phoneNumber,
                 doorNo: entireBody.doorNo,
@@ -110,7 +115,7 @@ let OrderSummaryService = class OrderSummaryService {
     }
     async addSelectedStoreDetails(userId, entireBody) {
         await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.deliveryType': order_model_1.DeliveryTypes.HOME_DELIVERY,
+            'orderSummary.deliveryType': order_model_1.DeliveryTypes.STORE_PICKUP,
             'orderSummary.storeLocation': {
                 storeName: entireBody.storeName,
                 streetName: entireBody.streetName,
@@ -128,6 +133,13 @@ let OrderSummaryService = class OrderSummaryService {
         await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.couponCode': 'SUNIL500',
         });
+    }
+    async updateCount(userId, entireBody) {
+        const index = entireBody.productIndex;
+        const doc = await this.userModel.findByIdAndUpdate(userId, {
+            ['orderSummary.orderItems.' + index + '.productCount']: entireBody.updatedCount,
+        });
+        console.log('updated doc', doc);
     }
 };
 OrderSummaryService = __decorate([

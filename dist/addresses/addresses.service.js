@@ -30,8 +30,10 @@ let AddressesService = class AddressesService {
         const newAddress = new this.addressModel(Object.assign({ userId: userId }, address));
         await newAddress.save();
     }
-    async updateAddress(address) {
-        const result = await this.addressModel.updateOne({ _id: address.addressId }, { $set: address });
+    async updateAddress(userId, address) {
+        console.log('address data', address);
+        const result = await this.addressModel.findByIdAndUpdate(address.addressId, Object.assign({ userId: userId }, address));
+        console.log('result new', result);
         return result;
     }
     async deleteAddress(id) {

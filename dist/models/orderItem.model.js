@@ -9,12 +9,12 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
     deliveryType: { type: String, required: false },
     shippingDetails: {
         shipDate: { type: String, required: false },
-        deliveryDate: { type: String, required: false, default: Date.now },
+        deliveryDate: { type: String, required: false },
         deliveryAddress: { type: address_model_1.AddressSchema, required: false },
         isDelivered: { type: String, required: false },
     },
     pickUpDetails: {
-        pickUpDate: { type: String, required: false, default: Date.now() },
+        pickUpDate: { type: String, required: false },
         storeLocation: { type: store_location_model_1.StoreLocationSchema, required: false },
         isPickedUp: { type: Boolean, required: false, default: false },
     },

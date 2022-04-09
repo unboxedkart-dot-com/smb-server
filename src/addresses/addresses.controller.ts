@@ -8,7 +8,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { userInfo } from 'os';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Address } from 'src/models/address.model';
 import { AddressesService } from './addresses.service';
@@ -23,7 +22,7 @@ export class AddressesController {
   async handleGetAddress(@Req() request: any) {
     const userId = request.user.userId;
     const addresses = await this.addressesService.getAddresses(userId);
-    return addresses as Address[];
+    return addresses;
   }
 
   @Post()
@@ -39,9 +38,17 @@ export class AddressesController {
     return result;
   }
 
-  @Patch()
-  async handleUpdateAddress(@Body() entireBody: UpdateAddressDto) {
-    const result = await this.addressesService.updateAddress(entireBody);
+  @Post('/update')
+  async handleUpdateAddress(
+    @Req() request: any,
+    @Body() entireBody: UpdateAddressDto,
+  ) {
+    console.log('updating functions');
+    const userId = request.user.userId;
+    const result = await this.addressesService.updateAddress(
+      userId,
+      entireBody,
+    );
     return result;
   }
 

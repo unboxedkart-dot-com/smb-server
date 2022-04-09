@@ -7,8 +7,19 @@ export declare class ProductsController {
     addProduct(entireBody: Product): Promise<{
         id: any;
     }>;
-    getProduct(q: string): Promise<mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
+    getProduct(q: string): Promise<{
+        product: mongoose.Document<unknown, any, Product> & Product & {
+            _id: mongoose.Types.ObjectId;
+        };
+        productReviews: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
+            _id: mongoose.Types.ObjectId;
+        })[];
+        reviewsData: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
+            _id: mongoose.Types.ObjectId;
+        })[];
+        productQAndA: (mongoose.Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
+            _id: mongoose.Types.ObjectId;
+        })[];
     }>;
     handleDeleteProducts(): Promise<string>;
     handleDeleteProduct(id: string): Promise<string>;

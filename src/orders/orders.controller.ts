@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -18,6 +19,12 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @Delete('/deleteall')
+  async handleDeleteAllOrder() {
+    const orders = await this.ordersService.deleteAll();
+    return orders;
+  }
+
   @Post('create')
   async handleCreateOrder(
     @Req() request: any,
@@ -32,6 +39,13 @@ export class OrdersController {
   async handleGetOrdersItems(@Req() request: any) {
     const userId = request.user.userId;
     const orders = await this.ordersService.getOrderItems(userId);
+    return orders;
+  }
+
+  @Get('/:id')
+  async handleGetOrderItem(@Req() request: any, @Param('id') orderId: string) {
+    const userId = request.user.userId;
+    const orders = await this.ordersService.getOrderItem(userId, orderId);
     return orders;
   }
 

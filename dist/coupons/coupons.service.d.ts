@@ -1,3 +1,5 @@
+/// <reference types="mongoose/types/pipelinestage" />
+/// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
 import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
@@ -6,6 +8,9 @@ export declare class CouponsService {
     private readonly couponModel;
     private readonly userModel;
     constructor(couponModel: Model<Coupon>, userModel: Model<User>);
+    getPersonalCoupon(userId: string): Promise<import("mongoose").Document<unknown, any, Coupon> & Coupon & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
     createPersonalCoupon(userId: string): Promise<void>;
     validateCoupon(userId: string, couponCode: string, cartTotal: number): Promise<{
         isValid: boolean;

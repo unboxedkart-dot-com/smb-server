@@ -8,6 +8,7 @@ import { Coupon } from 'src/models/coupon.model';
 import { identity } from 'rxjs';
 import { OrderItem } from 'src/models/orderItem.model';
 import { User } from 'src/models/user.model';
+import { Review } from 'src/models/review.model';
 
 @Injectable()
 export class OrdersService {
@@ -17,7 +18,13 @@ export class OrdersService {
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     @InjectModel('OrderItem') private readonly orderItemModel: Model<OrderItem>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Review') private readonly reviewModel: Model<Review>,
   ) {}
+
+  async deleteAll() {
+    await this.orderItemModel.deleteMany();
+    await this.orderModel.deleteMany();
+  }
 
   async createOrder(entireBody: CreateOrderDto, userId: string) {
     //get order summary
@@ -89,9 +96,10 @@ export class OrdersService {
       // expectedDeliveryDate: Date.now(),
       selectedPickUpDate: Date.now(),
       paymentType: paymentTypes.PAY_AT_STORE,
-      deliveryType: 'STORE PICKUP',
-      // selectedAddress: orderSummary.deliveryAddress,
+      deliveryType: orderSummary.deliveryType,
+      selectedAddress: orderSummary.deliveryAddress,
       selectedStore: orderSummary.storeLocation,
+      orderItems: orderItemDetails,
     };
   }
 
@@ -99,7 +107,61 @@ export class OrdersService {
     const orderItems = await this.orderItemModel.find({
       userId: { $eq: userId },
     });
-    return orderItems;
+    console.log('orderrrrr', orderItems);
+    return orderItems as OrderItem[];
+  }
+
+  async getOrderItem(userId: string, orderItemId: string) {
+    var orderItem = await this.orderItemModel.findById(orderItemId);
+    if (orderItem) {
+      const review = await this.reviewModel.findOne({
+        userId: userId,
+        productId: orderItem.orderDetails.productId,
+      });
+
+      if (review) {
+        // reviewDetails = {
+        //   isReviewed: true,
+        //   rating: review.rating,
+        //   reviewTitle: review.reviewTitle,
+        //   reviewContent: review.reviewContent,
+        // };
+        return {
+          status: 'success',
+          message: 'order data received',
+          data: {
+            orderItem: orderItem,
+            reviewData: review,
+          },
+        };
+      } else {
+        // reviewDetails = {
+        //   isReviewed: false,
+        // };
+        return {
+          status: 'success',
+          message: 'order data received',
+          data: {
+            orderItem: orderItem,
+            review: null,
+          },
+        };
+      }
+      // const orderItemDetails = {
+      //   reviewDetails: reviewDetails,
+      //   shippingDetails: orderItem.shippingDetails,
+      //   deliveryDetails: orderItem.shippingDetails,
+      //   pickUpDetails: orderItem.pickUpDetails,
+      //   paymentDetails: orderItem.pickUpDetails,
+      //   pricingDetails: orderItem.pricingDetails,
+      //   orderDetails: orderItem.orderDetails,
+      //   orderNumber: orderItem.orderNumber,
+      //   orderDate: orderItem.orderDate,
+      //   orderStatus: orderItem.orderStatus,
+      //   id: orderItem._id,
+      // };
+      // return orderItemDetails;
+    }
   }
 
   _generateOrderNumber() {

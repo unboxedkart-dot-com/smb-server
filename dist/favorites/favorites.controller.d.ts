@@ -4,5 +4,8 @@ export declare class FavoritesController {
     constructor(favoritesService: FavoritesService);
     handleGetFavorites(request: any): Promise<import("../models/product.model").Product[]>;
     handleAddFavorite(request: any, productId: string): Promise<string>;
-    handleDeleteFavorite(request: any, productId: string): Promise<void>;
+    handleDeleteFavorite(request: any, productId: string): Promise<{
+        status: string;
+        message: string;
+    }>;
 }

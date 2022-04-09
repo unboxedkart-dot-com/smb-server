@@ -22,6 +22,8 @@ const coupons_module_1 = require("./coupons/coupons.module");
 const q_and_a_module_1 = require("./q-and-a/q-and-a.module");
 const order_summary_module_1 = require("./order-summary/order-summary.module");
 const store_location_module_1 = require("./store-location/store-location.module");
+const mail_module_1 = require("./mail/mail.module");
+const user_module_1 = require("./user/user.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -41,6 +43,8 @@ AppModule = __decorate([
             coupons_module_1.CouponsModule,
             order_summary_module_1.OrderSummaryModule,
             store_location_module_1.StoreLocationModule,
+            mail_module_1.MailModule,
+            user_module_1.UserModule,
         ],
     })
 ], AppModule);

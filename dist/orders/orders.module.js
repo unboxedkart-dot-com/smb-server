@@ -17,6 +17,7 @@ const product_model_1 = require("../models/product.model");
 const coupon_model_1 = require("../models/coupon.model");
 const orderItem_model_1 = require("../models/orderItem.model");
 const user_model_1 = require("../models/user.model");
+const review_model_1 = require("../models/review.model");
 let OrdersModule = class OrdersModule {
 };
 OrdersModule = __decorate([
@@ -28,6 +29,7 @@ OrdersModule = __decorate([
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'OrderItem', schema: orderItem_model_1.OrderItemSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'Review', schema: review_model_1.ReviewSchema }
             ]),
         ],
         controllers: [orders_controller_1.OrdersController],

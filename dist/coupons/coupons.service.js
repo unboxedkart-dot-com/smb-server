@@ -22,6 +22,13 @@ let CouponsService = class CouponsService {
         this.couponModel = couponModel;
         this.userModel = userModel;
     }
+    async getPersonalCoupon(userId) {
+        const coupon = await this.couponModel.findOne({
+            'couponDetails.userId': userId,
+        });
+        console.log('personal coupon', coupon);
+        return coupon;
+    }
     async createPersonalCoupon(userId) {
         const userDetails = await this._getUserDetails(userId);
         const newCoupon = new this.couponModel({

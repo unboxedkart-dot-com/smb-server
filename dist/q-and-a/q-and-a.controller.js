@@ -22,28 +22,37 @@ let QAndAController = class QAndAController {
     constructor(qAndAService) {
         this.qAndAService = qAndAService;
     }
+    async handleGetQuestionAndAnswers(productId) {
+        const result = await this.qAndAService.getProductQuestionAndAnswers(productId);
+        return result;
+    }
     async handleCreateQuestion(request, entireBody) {
         const userId = request.user.userId;
         const question = await this.qAndAService.createQuestion(userId, entireBody.question, entireBody.productId);
         return 'question added';
+    }
+    async handleApproveQuestion(questionId, request) {
+        const userId = request.user.userId;
+        await this.qAndAService.approveQuestion(userId, questionId);
     }
     async handleCreateAnswer(request, entireBody) {
         const userId = request.user.userId;
         await this.qAndAService.createAnswer(userId, entireBody.answer, entireBody.questionId);
         return 'answer added';
     }
-    async handleApproveQuestion(questionId) {
-        await this.qAndAService.approveQuestion(questionId);
-    }
     async handleApproveAnswer(answerId) {
         await this.qAndAService.approveAnswer(answerId);
     }
-    async handleGetQuestionAndAnswers(productId) {
-        const result = await this.qAndAService.getQuestionAndAnswers(productId);
-        return result;
-    }
 };
 __decorate([
+    (0, common_1.Get)('/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetQuestionAndAnswers", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('create/question'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -52,6 +61,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleCreateQuestion", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('approve/question/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleApproveQuestion", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('/create/answer'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -60,28 +79,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleCreateAnswer", null);
 __decorate([
-    (0, common_1.Post)('approve/question/:id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], QAndAController.prototype, "handleApproveQuestion", null);
-__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('approve/answer/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleApproveAnswer", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], QAndAController.prototype, "handleGetQuestionAndAnswers", null);
 QAndAController = __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('q-and-a'),
     __metadata("design:paramtypes", [q_and_a_service_1.QAndAService])
 ], QAndAController);
