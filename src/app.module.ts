@@ -15,6 +15,7 @@ import { OrderSummaryModule } from './order-summary/order-summary.module';
 import { StoreLocationModule } from './store-location/store-location.module';
 import { MailModule } from './mail/mail.module';
 import { UserModule } from './user/user.module';
+// require("dotenv").config({ path: "./config/.env" });
 
 @Module({
   imports: [
@@ -22,7 +23,10 @@ import { UserModule } from './user/user.module';
     ProductsModule,
     SearchModule,
     AuthModule,
-    MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
+    MongooseModule.forRoot(
+      "mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+      // process.env.DB_CONNECTION_URL
+      ),
     OrdersModule,
     FavoritesModule,
     CartModule,

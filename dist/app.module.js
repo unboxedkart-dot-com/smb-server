@@ -33,7 +33,7 @@ AppModule = __decorate([
             product_module_1.ProductsModule,
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
-            mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
+            mongoose_1.MongooseModule.forRoot("mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"),
             orders_module_1.OrdersModule,
             favorites_module_1.FavoritesModule,
             cart_module_1.CartModule,
