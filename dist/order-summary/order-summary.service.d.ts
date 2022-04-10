@@ -7,13 +7,25 @@ import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { Coupon } from 'src/models/coupon.model';
 import { AddAddressDto } from 'src/addresses/dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 export declare class OrderSummaryService {
     private readonly orderSummaryModel;
     private readonly userModel;
     private readonly productModel;
     private readonly couponModel;
     constructor(orderSummaryModel: Model<OrderSummary>, userModel: Model<User>, productModel: Model<Product>, couponModel: Model<Coupon>);
-    getPayableAmount(userId: string): Promise<number>;
+    getPayableAmount(userId: string): Promise<{
+        payableAmount: number;
+        orderId: any;
+        name: string;
+        email: string;
+        phoneNumber: string;
+    }>;
+    createPaymentOrder(payableAmount: number): Promise<any>;
+    verifyPaymentSignature(userId: string, entireBody: VerifyPaymentDto): Promise<{
+        status: string;
+        message: string;
+    }>;
     _calculateAmount(orderItems: any): Promise<number>;
     _getSingleItemPrice(productId: string, productCount: number): Promise<number>;
     getOrderSummaryItems(userId: string): Promise<CartItem[]>;

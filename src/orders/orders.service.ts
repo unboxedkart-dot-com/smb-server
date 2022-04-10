@@ -9,6 +9,12 @@ import { identity } from 'rxjs';
 import { OrderItem } from 'src/models/orderItem.model';
 import { User } from 'src/models/user.model';
 import { Review } from 'src/models/review.model';
+import * as Razorpay from 'razorpay';
+
+// var instance = new Razorpay({
+//   key_id: process.env.PAYMENT_KEY_ID,
+//   key_secret: process.env.PAYMENT_KEY_SECRET,
+// });
 
 @Injectable()
 export class OrdersService {
@@ -64,7 +70,8 @@ export class OrdersService {
       orderNumber: orderNumber,
       deliveryType: 0,
       paymentDetails: {
-        paymentType: paymentTypes.PAY_AT_STORE,
+        paymentType: entireBody.paymentType,
+        paymentId: userDoc.orderSummary.paymentId,
         billTotal: orderItemDetails.orderTotal,
         payableTotal: payableAmount,
         couponCode: orderSummary.couponCode,
@@ -287,6 +294,23 @@ export class OrdersService {
       });
       newOrderItem.save();
     }
+  }
+
+  async createPaymentOrder() {
+    // const order = instance.orders.create({
+    //   amount: 50000,
+    //   currency: 'INR',
+    //   receipt: 'receipt#1',
+    //   notes: {
+    //     key1: 'value3',
+    //     key2: 'value2',
+    //   },
+    // });
+    // return order;
+  }
+
+  async validatePaymentSignature() {
+    // const generated_signature = hmac_sha256("order_JHMGkySLiXlFMY" + "|" + razorpay_payment_id, secret);
   }
 
   // async _getCouponDiscount(couponCode : string){

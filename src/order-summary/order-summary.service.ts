@@ -10,6 +10,18 @@ import { Coupon } from 'src/models/coupon.model';
 import { DeliveryTypes } from 'src/models/order.model';
 import { AddAddressDto } from 'src/addresses/dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
+import * as Razorpay from 'razorpay';
+import * as CryptoJS from 'crypto-js';
+import { createHmac } from 'crypto';
+
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
+
+var instance = new Razorpay({
+  key_id: 'rzp_live_Yf6SskMc0yCBdS',
+  // process.env.PAYMENT_KEY_ID, // your `KEY_ID`
+  key_secret: 'GUt36OWEcQtKk1gZhmK0o5nM',
+  // process.env.PAYMENT_KEY_SECRET, // your `KEY_SECRET`
+});
 
 @Injectable()
 export class OrderSummaryService {
@@ -22,21 +34,83 @@ export class OrderSummaryService {
   ) {}
 
   async getPayableAmount(userId: string) {
-    const userDoc = await this.userModel.findById(userId, {
-      orderSummary: 1,
-      _id: 0,
-    });
+    const userDoc = await this.userModel.findById(
+      userId,
+      // {
+      // orderSummary: 1,
+      // _id: 0,
+      // }
+    );
     const orderTotal = await this._calculateAmount(
       userDoc.orderSummary.orderItems,
     );
     const coupon = await this.couponModel.findOne({
       couponCode: userDoc.orderSummary.couponCode,
     });
+    let payableAmount = orderTotal;
     if (coupon) {
-      const payableAmount = orderTotal - coupon.discountAmount;
-      return payableAmount;
+      payableAmount = orderTotal - coupon.discountAmount;
     }
-    return orderTotal;
+    const paymentOrderId = await this.createPaymentOrder(payableAmount);
+    await this.userModel.findByIdAndUpdate(userId, {
+      'orderSummary.paymentOrderId': paymentOrderId["id"],
+    });
+    return {
+      payableAmount: payableAmount,
+      orderId: paymentOrderId['id'],
+      name: userDoc.name,
+      email: userDoc.emailId,
+      phoneNumber: userDoc.phoneNumber,
+    };
+  }
+
+  async createPaymentOrder(payableAmount: number) {
+    const order = await instance.orders.create({
+      amount: 100,
+      // amount: payableAmount * 100,
+      currency: 'INR',
+      receipt: 'receipt#1',
+    });
+    return order;
+  }
+
+  async verifyPaymentSignature(
+    userId: string,
+    entireBody: VerifyPaymentDto,
+    // paymentSignature: string,
+    // paymentId: string,
+  ) {
+    console.log('entrie body', entireBody);
+    const userDoc = await this.userModel.findById(userId);
+    const paymentOrderId = userDoc.orderSummary.paymentOrderId;
+    console.log('payment order id', paymentOrderId);
+    // var hmac = crypto.createHmac('sha256', razorpaykeys.key_secret);
+    const generatedSignature = createHmac('sha256', 'GUt36OWEcQtKk1gZhmK0o5nM');
+    const encodedSignature = generatedSignature
+      .update(paymentOrderId + '|' + entireBody.paymentId + '')
+      .digest('hex');
+    // const generatedSignature = CryptoJS.HmacSHA256(
+    //   paymentOrderId + '|' + entireBody.paymentId,
+    //   'GUt36OWEcQtKk1gZhmK0o5nM',
+    // );
+    // var encodedSignature = CryptoJS.enc.Base64.stringify(generatedSignature);
+    console.log('generated sig', generatedSignature);
+    console.log('encoded', encodedSignature);
+    console.log('given sig', entireBody.paymentSignature);
+    if (encodedSignature == entireBody.paymentSignature) {
+      this.userModel.findByIdAndUpdate(userId, {
+        'orderSummary.paymentId': entireBody.paymentId,
+      });
+      return {
+        status: 'success',
+        message: 'payment is verified',
+      };
+    } else {
+      return {
+        status: 'failed',
+        message: 'payment is not verified',
+      };
+    }
   }
 
   async _calculateAmount(orderItems: any) {

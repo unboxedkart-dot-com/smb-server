@@ -20,6 +20,8 @@ exports.UserSchema = new mongoose_1.default.Schema({
     cartItemIds: { type: Array, default: [] },
     cartItems: { type: Array, default: [] },
     orderSummary: {
+        paymentId: { type: String, required: false },
+        paymentOrderId: { type: String, required: false },
         orderItems: { type: Array, default: [] },
         couponCode: { type: String, required: false },
         deliveryAddress: { type: {}, required: false },

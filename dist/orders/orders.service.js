@@ -55,7 +55,8 @@ let OrdersService = class OrdersService {
             orderNumber: orderNumber,
             deliveryType: 0,
             paymentDetails: {
-                paymentType: order_model_1.paymentTypes.PAY_AT_STORE,
+                paymentType: entireBody.paymentType,
+                paymentId: userDoc.orderSummary.paymentId,
                 billTotal: orderItemDetails.orderTotal,
                 payableTotal: payableAmount,
                 couponCode: orderSummary.couponCode,
@@ -231,6 +232,10 @@ let OrdersService = class OrdersService {
             });
             newOrderItem.save();
         }
+    }
+    async createPaymentOrder() {
+    }
+    async validatePaymentSignature() {
     }
 };
 OrdersService = __decorate([

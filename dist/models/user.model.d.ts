@@ -24,6 +24,8 @@ export interface User {
         }
     ];
     orderSummary: {
+        paymentId: string;
+        paymentOrderId: string;
         orderItems: [
             {
                 productId: string;

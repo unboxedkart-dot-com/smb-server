@@ -17,6 +17,12 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const order_model_1 = require("../models/order.model");
+const Razorpay = require("razorpay");
+const crypto_1 = require("crypto");
+var instance = new Razorpay({
+    key_id: 'rzp_live_Yf6SskMc0yCBdS',
+    key_secret: 'GUt36OWEcQtKk1gZhmK0o5nM',
+});
 let OrderSummaryService = class OrderSummaryService {
     constructor(orderSummaryModel, userModel, productModel, couponModel) {
         this.orderSummaryModel = orderSummaryModel;
@@ -25,19 +31,62 @@ let OrderSummaryService = class OrderSummaryService {
         this.couponModel = couponModel;
     }
     async getPayableAmount(userId) {
-        const userDoc = await this.userModel.findById(userId, {
-            orderSummary: 1,
-            _id: 0,
-        });
+        const userDoc = await this.userModel.findById(userId);
         const orderTotal = await this._calculateAmount(userDoc.orderSummary.orderItems);
         const coupon = await this.couponModel.findOne({
             couponCode: userDoc.orderSummary.couponCode,
         });
+        let payableAmount = orderTotal;
         if (coupon) {
-            const payableAmount = orderTotal - coupon.discountAmount;
-            return payableAmount;
+            payableAmount = orderTotal - coupon.discountAmount;
         }
-        return orderTotal;
+        const paymentOrderId = await this.createPaymentOrder(payableAmount);
+        await this.userModel.findByIdAndUpdate(userId, {
+            'orderSummary.paymentOrderId': paymentOrderId["id"],
+        });
+        return {
+            payableAmount: payableAmount,
+            orderId: paymentOrderId['id'],
+            name: userDoc.name,
+            email: userDoc.emailId,
+            phoneNumber: userDoc.phoneNumber,
+        };
+    }
+    async createPaymentOrder(payableAmount) {
+        const order = await instance.orders.create({
+            amount: 100,
+            currency: 'INR',
+            receipt: 'receipt#1',
+        });
+        return order;
+    }
+    async verifyPaymentSignature(userId, entireBody) {
+        console.log('entrie body', entireBody);
+        const userDoc = await this.userModel.findById(userId);
+        const paymentOrderId = userDoc.orderSummary.paymentOrderId;
+        console.log('payment order id', paymentOrderId);
+        const generatedSignature = (0, crypto_1.createHmac)('sha256', 'GUt36OWEcQtKk1gZhmK0o5nM');
+        const encodedSignature = generatedSignature
+            .update(paymentOrderId + '|' + entireBody.paymentId + '')
+            .digest('hex');
+        console.log('generated sig', generatedSignature);
+        console.log('encoded', encodedSignature);
+        console.log('given sig', entireBody.paymentSignature);
+        if (encodedSignature == entireBody.paymentSignature) {
+            this.userModel.findByIdAndUpdate(userId, {
+                'orderSummary.paymentId': entireBody.paymentId,
+            });
+            return {
+                status: 'success',
+                message: 'payment is verified',
+            };
+        }
+        else {
+            return {
+                status: 'failed',
+                message: 'payment is not verified',
+            };
+        }
     }
     async _calculateAmount(orderItems) {
         let orderTotal = 0;

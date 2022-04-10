@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_order_dto_1 = require("./dto/create-order.dto");
 const orders_service_1 = require("./orders.service");
 let OrdersController = class OrdersController {
@@ -24,6 +23,10 @@ let OrdersController = class OrdersController {
     async handleDeleteAllOrder() {
         const orders = await this.ordersService.deleteAll();
         return orders;
+    }
+    async createDummyOrder() {
+        const payment = await this.ordersService.createPaymentOrder();
+        return payment;
     }
     async handleCreateOrder(request, entireBody) {
         const userId = request.user.userId;
@@ -50,6 +53,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleDeleteAllOrder", null);
+__decorate([
+    (0, common_1.Post)('/create-payment'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "createDummyOrder", null);
 __decorate([
     (0, common_1.Post)('create'),
     __param(0, (0, common_1.Req)()),
@@ -82,7 +91,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateOrderItem", null);
 OrdersController = __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])
 ], OrdersController);

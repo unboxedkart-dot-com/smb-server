@@ -12,6 +12,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { OrderSummaryService } from './order-summary.service';
 
 @UseGuards(JwtAuthGuard)
@@ -104,6 +105,13 @@ export class OrderSummaryController {
   async handleGetPayableAmount(@Req() request: any) {
     const userId = request.user.userId;
     const response = await this.orderSummaryService.getPayableAmount(userId);
+    return response;
+  }
+
+  @Post('verify-payment')
+  async handleVerifyPayment(@Req() request : any, @Body() entireBody : VerifyPaymentDto){
+    const userId = request.user.userId;
+    const response = await this.orderSummaryService.verifyPaymentSignature(userId , entireBody);
     return response;
   }
 }

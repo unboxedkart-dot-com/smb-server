@@ -14,7 +14,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -23,6 +23,12 @@ export class OrdersController {
   async handleDeleteAllOrder() {
     const orders = await this.ordersService.deleteAll();
     return orders;
+  }
+
+  @Post('/create-payment')
+  async createDummyOrder(){
+    const payment = await this.ordersService.createPaymentOrder();
+    return payment;
   }
 
   @Post('create')

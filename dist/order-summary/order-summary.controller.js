@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const add_store_location_dto_1 = require("../store-location/dto/add-store-location.dto");
 const create_order_summary_dto_1 = require("./dto/create-order-summary.dto");
 const update_count_dto_1 = require("./dto/update-count.dto");
+const verify_payment_dto_1 = require("./dto/verify-payment.dto");
 const order_summary_service_1 = require("./order-summary.service");
 let OrderSummaryController = class OrderSummaryController {
     constructor(orderSummaryService) {
@@ -59,6 +60,11 @@ let OrderSummaryController = class OrderSummaryController {
     async handleGetPayableAmount(request) {
         const userId = request.user.userId;
         const response = await this.orderSummaryService.getPayableAmount(userId);
+        return response;
+    }
+    async handleVerifyPayment(request, entireBody) {
+        const userId = request.user.userId;
+        const response = await this.orderSummaryService.verifyPaymentSignature(userId, entireBody);
         return response;
     }
 };
@@ -116,6 +122,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleGetPayableAmount", null);
+__decorate([
+    (0, common_1.Post)('verify-payment'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, verify_payment_dto_1.VerifyPaymentDto]),
+    __metadata("design:returntype", Promise)
+], OrderSummaryController.prototype, "handleVerifyPayment", null);
 OrderSummaryController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('order-summary'),

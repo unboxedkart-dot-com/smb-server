@@ -2,6 +2,7 @@ import { AddAddressDto } from 'src/addresses/dto';
 import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { OrderSummaryService } from './order-summary.service';
 export declare class OrderSummaryController {
     private readonly orderSummaryService;
@@ -12,5 +13,15 @@ export declare class OrderSummaryController {
     handleAddCoupon(request: any, entireBody: any): Promise<void>;
     handleAddStoreDetails(request: any, entireBody: AddStoreLocationDto): Promise<void>;
     handleAddDeliveryAddress(entireBody: AddAddressDto, request: any): Promise<void>;
-    handleGetPayableAmount(request: any): Promise<number>;
+    handleGetPayableAmount(request: any): Promise<{
+        payableAmount: number;
+        orderId: any;
+        name: string;
+        email: string;
+        phoneNumber: string;
+    }>;
+    handleVerifyPayment(request: any, entireBody: VerifyPaymentDto): Promise<{
+        status: string;
+        message: string;
+    }>;
 }

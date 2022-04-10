@@ -18,6 +18,8 @@ export const UserSchema = new mongoose.Schema({
   cartItemIds: { type: Array, default: [] },
   cartItems: { type: Array, default: [] },
   orderSummary: {
+    paymentId: { type: String, required: false },
+    paymentOrderId: { type: String, required: false },
     orderItems: { type: Array, default: [] },
     couponCode: { type: String, required: false },
     deliveryAddress: { type: {}, required: false },
@@ -52,6 +54,8 @@ export interface User {
     },
   ];
   orderSummary: {
+    paymentId : string;
+    paymentOrderId: string;
     orderItems: [
       {
         productId: string;

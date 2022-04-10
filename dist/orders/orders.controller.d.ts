@@ -7,6 +7,7 @@ export declare class OrdersController {
     private readonly ordersService;
     constructor(ordersService: OrdersService);
     handleDeleteAllOrder(): Promise<void>;
+    createDummyOrder(): Promise<void>;
     handleCreateOrder(request: any, entireBody: CreateOrderDto): Promise<{
         orderNumber: string;
         orderDate: number;

@@ -1,5 +1,3 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/error" />
 import { Order, paymentTypes } from 'src/models/order.model';
 import { Model } from 'mongoose';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -81,6 +79,8 @@ export declare class OrdersService {
         };
     }>;
     _handleSaveIndividualOrders(params: IndividualOrderItem): Promise<void>;
+    createPaymentOrder(): Promise<void>;
+    validatePaymentSignature(): Promise<void>;
 }
 export interface IndividualOrderItem {
     paymentType: String;

@@ -1,5 +1,3 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
 import { QuestionAndAnswer } from 'src/models/q_and_a.model';
 import { Review } from 'src/models/review.model';

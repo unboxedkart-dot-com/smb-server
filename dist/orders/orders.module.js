@@ -29,7 +29,7 @@ OrdersModule = __decorate([
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'OrderItem', schema: orderItem_model_1.OrderItemSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
-                { name: 'Review', schema: review_model_1.ReviewSchema }
+                { name: 'Review', schema: review_model_1.ReviewSchema },
             ]),
         ],
         controllers: [orders_controller_1.OrdersController],
