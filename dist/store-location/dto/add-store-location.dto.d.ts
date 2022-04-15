@@ -8,4 +8,6 @@ export declare class AddStoreLocationDto {
     storeOpenDays: string;
     contactNumber: number;
     alternateContactNumber: number;
+    pickUpTimeStart: string;
+    pickUpTimeEnd: string;
 }

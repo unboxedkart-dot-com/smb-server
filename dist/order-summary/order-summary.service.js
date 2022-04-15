@@ -42,7 +42,7 @@ let OrderSummaryService = class OrderSummaryService {
         }
         const paymentOrderId = await this.createPaymentOrder(payableAmount);
         await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.paymentOrderId': paymentOrderId["id"],
+            'orderSummary.paymentOrderId': paymentOrderId['id'],
         });
         return {
             payableAmount: payableAmount,
@@ -160,6 +160,7 @@ let OrderSummaryService = class OrderSummaryService {
                 pinCode: entireBody.pinCode,
                 addressType: entireBody.addressType,
             },
+            'orderSummary.deliveryDate': entireBody.deliveryDate,
         });
     }
     async addSelectedStoreDetails(userId, entireBody) {
@@ -176,6 +177,8 @@ let OrderSummaryService = class OrderSummaryService {
                 contactNumber: entireBody.contactNumber,
                 alternateContactNumber: entireBody.alternateContactNumber,
             },
+            'orderSummary.pickUpTimeStart': entireBody.pickUpTimeStart,
+            'orderSummary.pickUpTimeEnd': entireBody.pickUpTimeEnd,
         });
     }
     async addCouponDetails(userId, entireBody) {

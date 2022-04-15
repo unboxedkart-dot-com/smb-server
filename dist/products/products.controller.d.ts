@@ -11,9 +11,6 @@ export declare class ProductsController {
         product: mongoose.Document<unknown, any, Product> & Product & {
             _id: mongoose.Types.ObjectId;
         };
-        productReviews: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
-            _id: mongoose.Types.ObjectId;
-        })[];
         reviewsData: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
             _id: mongoose.Types.ObjectId;
         })[];

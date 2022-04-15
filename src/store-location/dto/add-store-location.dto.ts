@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, isString, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  isString,
+  IsString,
+} from 'class-validator';
 
 export class AddStoreLocationDto {
   @IsString()
@@ -36,4 +43,12 @@ export class AddStoreLocationDto {
   @IsNumber()
   @IsOptional()
   alternateContactNumber: number;
+
+  @IsNotEmpty()
+  @IsString()
+  pickUpTimeStart: string;
+
+  @IsNotEmpty()
+  @IsString()
+  pickUpTimeEnd: string;
 }

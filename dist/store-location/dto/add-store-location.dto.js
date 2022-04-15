@@ -58,5 +58,15 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], AddStoreLocationDto.prototype, "alternateContactNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], AddStoreLocationDto.prototype, "pickUpTimeStart", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], AddStoreLocationDto.prototype, "pickUpTimeEnd", void 0);
 exports.AddStoreLocationDto = AddStoreLocationDto;
 //# sourceMappingURL=add-store-location.dto.js.map

@@ -15,6 +15,10 @@ exports.AnswerSchema = new mongoose_1.default.Schema({
     questionId: { type: String, required: true },
     isApproved: { type: Boolean, required: true, default: false },
     answer: { type: String, required: true },
+    questionDetails: {
+        question: { type: String, required: true },
+        timestamp: { type: Date, required: true, default: Date.now() },
+    },
     timestamp: { type: Date, required: true, default: Date.now() },
 });
 //# sourceMappingURL=answer.model.js.map

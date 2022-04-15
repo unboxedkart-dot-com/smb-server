@@ -16,13 +16,41 @@ import { SignUpDto } from './dto/sign-up.dto';
 import axios from 'axios';
 import { LoginDto } from './dto/login.dto';
 import { Coupon, CouponTypes } from 'src/models/coupon.model';
+import * as SendGrid from '@sendgrid/mail';
 
 export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    SendGrid.setApiKey(
+      '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',
+    );
+  }
+
+  async sendMail() {
+    const msg = {
+      to: 'bsunil135@gmail.com',
+      from: 'info@unboxedkart.com',
+      templateId: 'd-a138d401839444518e9515218e7af1e7',
+      dynamic_template_data: {
+        name : "Sunil"
+      },
+    };
+    // const mail = {
+    //   to: 'bsunil135@gmail.com',
+    //   cc: 'info@unboxedkart.com',
+    //   subject: 'Sunil, Nice to meet you',
+    //   from: 'info@unboxedkart.com', // Fill it with your validated email on SendGrid account
+    //   text: ,
+    //   // html: '<h1>Hello</h1>',
+    // };
+    const transport = await SendGrid.send(msg)
+      .then(() => console.log('email send'))
+      .catch((e) => console.log('email error', e));
+    return transport;
+  }
 
   async sendOtp(phoneNumber: number) {
     const url = `${process.env.SEND_OTP_URL_PREFIX}template_id=${process.env.OTP_TEMPLATE_ID}&mobile=91${phoneNumber}&authkey=${process.env.SMS_AUTH_KEY}&otp_length=6&otp_expiry=${process.env.OTP_EXPIRY_TIME}`;
@@ -103,7 +131,7 @@ export class AuthService {
             accessToken: accessToken,
             wishlist: user.favoriteItemIds,
             cart: user.cartItemIds,
-            // recentSearches : 
+            // recentSearches :
           },
         };
       } else {

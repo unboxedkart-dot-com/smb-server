@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const order_model_1 = require("../models/order.model");
 const mongoose_2 = require("mongoose");
+const axios_1 = require("axios");
 let OrdersService = class OrdersService {
     constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel) {
         this.orderModel = orderModel;
@@ -32,10 +33,8 @@ let OrdersService = class OrdersService {
     }
     async createOrder(entireBody, userId) {
         console.log('userid', userId);
-        const userDoc = await this.userModel.findById(userId, {
-            orderSummary: 1,
-            _id: 0,
-        });
+        const userDoc = await this.userModel.findById(userId);
+        console.log('id is', userDoc.phoneNumber);
         const orderSummary = userDoc.orderSummary;
         const orderNumber = this._generateOrderNumber();
         console.log('user doc', userDoc);
@@ -66,6 +65,26 @@ let OrdersService = class OrdersService {
             orderItems: orderItemDetails.orderItems,
         });
         newOrder.save();
+        const url = 'https://api.msg91.com/api/v5/flow';
+        let order = orderItemDetails.orderItems[0].productDetails.title.substring(0, 27) +
+            '...';
+        if (orderItemDetails.orderItemsCount > 1) {
+            order =
+                orderItemDetails.orderItems[0].productDetails.title.substring(0, 18) +
+                    '...' +
+                    '+' +
+                    `${orderItemDetails.orderItemsCount - 1} ${orderItemDetails.orderItemsCount > 2 ? 'items' : 'item'}`;
+        }
+        console.log('order message', order);
+        console.log('count', order.length);
+        const postBody = {
+            flow_id: process.env.ORDER_PLACED_FLOW_ID,
+            sender: process.env.ORDER_SMS_SENDER_ID,
+            mobiles: '91' + userDoc.phoneNumber,
+            order: order,
+            authkey: process.env.SMS_AUTH_KEY,
+        };
+        await axios_1.default.post(url, postBody);
         await this._handleSaveIndividualOrders({
             paymentType: entireBody.paymentType,
             deliveryType: orderSummary.deliveryType,

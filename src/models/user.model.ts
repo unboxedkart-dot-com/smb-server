@@ -25,6 +25,9 @@ export const UserSchema = new mongoose.Schema({
     deliveryAddress: { type: {}, required: false },
     storeLocation: { type: {}, required: false },
     deliveryType: { type: String, required: false },
+    pickUpTimeStart: { type: String, required: false },
+    pickUpTimeEnd: { type: String, required: false },
+    deliveryDate: { type: String, required: false },
   },
   personalCouponCode: { type: String, required: false },
 });
@@ -54,7 +57,7 @@ export interface User {
     },
   ];
   orderSummary: {
-    paymentId : string;
+    paymentId: string;
     paymentOrderId: string;
     orderItems: [
       {
@@ -63,6 +66,9 @@ export interface User {
         productCount: number;
       },
     ];
+    deliveryDate: string,
+    pickUpTimeStart: string,
+    pickUpTimeEnd: string,
     deliveryAddress: any;
     couponCode: string;
     deliveryType: String;

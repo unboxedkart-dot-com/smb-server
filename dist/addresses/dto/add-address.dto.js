@@ -69,5 +69,10 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], AddAddressDto.prototype, "addressType", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], AddAddressDto.prototype, "deliveryDate", void 0);
 exports.AddAddressDto = AddAddressDto;
 //# sourceMappingURL=add-address.dto.js.map

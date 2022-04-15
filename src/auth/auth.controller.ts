@@ -18,6 +18,12 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('send-mail')
+  async sendMail(){
+    const result = this.authService.sendMail();
+    return result;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get()
   async handlePrintHello(@Req() request: any) {

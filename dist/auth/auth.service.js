@@ -19,11 +19,27 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const axios_1 = require("axios");
 const coupon_model_1 = require("../models/coupon.model");
+const SendGrid = require("@sendgrid/mail");
 let AuthService = class AuthService {
     constructor(userModel, couponModel, jwtService) {
         this.userModel = userModel;
         this.couponModel = couponModel;
         this.jwtService = jwtService;
+        SendGrid.setApiKey('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');
+    }
+    async sendMail() {
+        const msg = {
+            to: 'bsunil135@gmail.com',
+            from: 'info@unboxedkart.com',
+            templateId: 'd-a138d401839444518e9515218e7af1e7',
+            dynamic_template_data: {
+                name: "Sunil"
+            },
+        };
+        const transport = await SendGrid.send(msg)
+            .then(() => console.log('email send'))
+            .catch((e) => console.log('email error', e));
+        return transport;
     }
     async sendOtp(phoneNumber) {
         const url = `${process.env.SEND_OTP_URL_PREFIX}template_id=${process.env.OTP_TEMPLATE_ID}&mobile=91${phoneNumber}&authkey=${process.env.SMS_AUTH_KEY}&otp_length=6&otp_expiry=${process.env.OTP_EXPIRY_TIME}`;

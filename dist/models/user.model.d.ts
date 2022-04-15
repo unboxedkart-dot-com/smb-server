@@ -33,6 +33,9 @@ export interface User {
                 productCount: number;
             }
         ];
+        deliveryDate: string;
+        pickUpTimeStart: string;
+        pickUpTimeEnd: string;
         deliveryAddress: any;
         couponCode: string;
         deliveryType: String;

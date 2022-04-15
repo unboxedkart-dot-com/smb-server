@@ -9,7 +9,7 @@ import { identity } from 'rxjs';
 import { OrderItem } from 'src/models/orderItem.model';
 import { User } from 'src/models/user.model';
 import { Review } from 'src/models/review.model';
-import * as Razorpay from 'razorpay';
+import axios from 'axios';
 
 // var instance = new Razorpay({
 //   key_id: process.env.PAYMENT_KEY_ID,
@@ -35,10 +35,14 @@ export class OrdersService {
   async createOrder(entireBody: CreateOrderDto, userId: string) {
     //get order summary
     console.log('userid', userId);
-    const userDoc = await this.userModel.findById(userId, {
-      orderSummary: 1,
-      _id: 0,
-    });
+    const userDoc = await this.userModel.findById(
+      userId,
+      //  {
+      // orderSummary: 1,
+      // _id: 0,
+      // }
+    );
+    console.log('id is', userDoc.phoneNumber);
 
     const orderSummary = userDoc.orderSummary;
     //generating a unique ordernumber
@@ -83,6 +87,29 @@ export class OrdersService {
     });
 
     newOrder.save();
+    const url = 'https://api.msg91.com/api/v5/flow';
+    let order =
+      orderItemDetails.orderItems[0].productDetails.title.substring(0, 27) +
+      '...';
+    if (orderItemDetails.orderItemsCount > 1) {
+      order =
+        orderItemDetails.orderItems[0].productDetails.title.substring(0, 18) +
+        '...' +
+        '+' +
+        `${orderItemDetails.orderItemsCount - 1} ${
+          orderItemDetails.orderItemsCount > 2 ? 'items' : 'item'
+        }`;
+    }
+    console.log('order message', order);
+    console.log('count', order.length);
+    const postBody = {
+      flow_id: process.env.ORDER_PLACED_FLOW_ID,
+      sender: process.env.ORDER_SMS_SENDER_ID,
+      mobiles: '91' + userDoc.phoneNumber,
+      order: order,
+      authkey: process.env.SMS_AUTH_KEY,
+    };
+    await axios.post(url, postBody);
 
     //saving order individually in db
     await this._handleSaveIndividualOrders({

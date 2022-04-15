@@ -9,6 +9,7 @@ export declare class AuthService {
     private readonly couponModel;
     private jwtService;
     constructor(userModel: Model<User>, couponModel: Model<Coupon>, jwtService: JwtService);
+    sendMail(): Promise<void>;
     sendOtp(phoneNumber: number): Promise<{
         status: string;
         message: string;

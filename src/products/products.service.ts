@@ -37,14 +37,15 @@ export class ProductsService {
       );
       const productReviews = await this.reviewModel.find({
         productId: id,
-      });
+      }).limit(10);
       const reviewsData = await this.reviewModel.find({ productId: id });
       return {
         product: product,
-        productReviews: productReviews,
+        // productReviews: productReviews,
         reviewsData: reviewsData,
         productQAndA: productQuestionAndAnswers,
       };
+      // return product;
     } else {
       throw new NotFoundException('could not find product');
     }

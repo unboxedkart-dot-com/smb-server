@@ -14,6 +14,10 @@ export const AnswerSchema = new mongoose.Schema({
   isApproved: { type: Boolean, required: true, default: false },
   // productId: { type: String, required: false },
   answer: { type: String, required: true },
+  questionDetails: {
+    question: { type: String, required: true },
+    timestamp: { type: Date, required: true, default: Date.now() },
+  },
   timestamp: { type: Date, required: true, default: Date.now() },
 });
 

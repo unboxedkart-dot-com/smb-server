@@ -27,6 +27,9 @@ exports.UserSchema = new mongoose_1.default.Schema({
         deliveryAddress: { type: {}, required: false },
         storeLocation: { type: {}, required: false },
         deliveryType: { type: String, required: false },
+        pickUpTimeStart: { type: String, required: false },
+        pickUpTimeEnd: { type: String, required: false },
+        deliveryDate: { type: String, required: false },
     },
     personalCouponCode: { type: String, required: false },
 });
