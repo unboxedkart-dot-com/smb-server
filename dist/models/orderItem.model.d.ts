@@ -2,9 +2,17 @@ import mongoose from 'mongoose';
 import { StoreLocation } from './store_location.model';
 export declare const OrderItemSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any>, any, any>;
 export interface OrderItem {
+    deliveryType: string;
+    userId: string;
+    userDetails: {
+        emailId: string;
+        userName: string;
+        phoneNumber: string;
+    };
     shippingDetails: {
         shipDate: string;
         deliveryDate: string;
+        deliveryDateInString: string;
         deliveryAddress: Map<any, any>;
         isDelivered: boolean;
     };
@@ -12,6 +20,10 @@ export interface OrderItem {
         pickUpDate: Date;
         storeLocation: StoreLocation;
         isPickedUp: boolean;
+        pickUpTimeStart: Date;
+        pickUpTimeEnd: Date;
+        pickUpTimeInString: string;
+        pickUpDateInString: string;
     };
     paymentDetails: {
         paymentId: string;

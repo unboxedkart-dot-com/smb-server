@@ -7,6 +7,7 @@ var OrderStatuses;
     OrderStatuses["ORDERED"] = "ORDERED";
     OrderStatuses["ACCEPTED"] = "ACCEPTED";
     OrderStatuses["SHIPPED"] = "SHIPPED";
+    OrderStatuses["READY_FOR_PICKUP"] = "READY FOR PICKUP";
     OrderStatuses["OUT_FOR_DELIVERY"] = "OUT FOR DELIVERY";
     OrderStatuses["DELIVERED"] = "DELIVERED";
 })(OrderStatuses = exports.OrderStatuses || (exports.OrderStatuses = {}));

@@ -35,7 +35,7 @@ export class AuthService {
       from: 'info@unboxedkart.com',
       templateId: 'd-a138d401839444518e9515218e7af1e7',
       dynamic_template_data: {
-        name : "Sunil"
+        name: 'Sunil',
       },
     };
     // const mail = {
@@ -233,6 +233,15 @@ export class AuthService {
         });
         // save referral coupon
         newCoupon.save();
+        const url = process.env.SMS_FLOW_URL;
+        const postBody = {
+          flow_id: process.env.WELCOME_FLOW_ID,
+          sender: process.env.ORDER_SMS_SENDER_ID,
+          mobiles: '91' + userDoc.phoneNumber,
+          name: userDoc.name,
+          authkey: process.env.SMS_AUTH_KEY,
+        };
+        await axios.post(url, postBody);
 
         // add user
 

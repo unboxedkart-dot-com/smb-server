@@ -60,7 +60,7 @@ export interface User {
     paymentId: string;
     paymentOrderId: string;
     orderItems: [
-      {
+      { 
         productId: string;
         createdTime: Date;
         productCount: number;

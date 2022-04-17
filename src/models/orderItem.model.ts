@@ -5,9 +5,16 @@ import { StoreLocation, StoreLocationSchema } from './store_location.model';
 
 export const OrderItemSchema = new mongoose.Schema({
   deliveryType: { type: String, required: false },
+  userId: { type: String, required: true },
+  userDetails: {
+    phoneNumber: { type: String, required: true },
+    userName: { type: String, required: true },
+    emailId: { type: String, required: true },
+  },
   shippingDetails: {
     shipDate: { type: String, required: false },
     deliveryDate: { type: String, required: false },
+    deliveryDateInString: { type: String, required: false },
     deliveryAddress: { type: AddressSchema, required: false },
     isDelivered: { type: String, required: false },
   },
@@ -15,6 +22,10 @@ export const OrderItemSchema = new mongoose.Schema({
     pickUpDate: { type: String, required: false },
     storeLocation: { type: StoreLocationSchema, required: false },
     isPickedUp: { type: Boolean, required: false, default: false },
+    pickUpTimeStart: { type: String, required: false },
+    pickUpTimeEnd: { type: String, required: false },
+    pickUpTimeInString: { type: String, required: false },
+    pickUpDateInString: { type: String, required: false },
   },
   paymentDetails: {
     paymentDate: { type: String, required: false },
@@ -49,17 +60,29 @@ export const OrderItemSchema = new mongoose.Schema({
 });
 
 export interface OrderItem {
+  deliveryType: string;
+  userId: string;
+  userDetails: {
+    emailId: string;
+    userName: string;
+    phoneNumber: string;
+  };
   shippingDetails: {
     shipDate: string;
     deliveryDate: string;
+    deliveryDateInString: string;
     deliveryAddress: Map<any, any>;
     isDelivered: boolean;
   };
   pickUpDetails: {
-    pickUpDate: Date,
-    storeLocation: StoreLocation,
-    isPickedUp: boolean,
-  },
+    pickUpDate: Date;
+    storeLocation: StoreLocation;
+    isPickedUp: boolean;
+    pickUpTimeStart: Date;
+    pickUpTimeEnd: Date;
+    pickUpTimeInString: string;
+    pickUpDateInString: string;
+  };
   paymentDetails: {
     paymentId: string;
     paymentDate: Date;

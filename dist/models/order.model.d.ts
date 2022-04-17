@@ -3,6 +3,7 @@ export declare enum OrderStatuses {
     ORDERED = "ORDERED",
     ACCEPTED = "ACCEPTED",
     SHIPPED = "SHIPPED",
+    READY_FOR_PICKUP = "READY FOR PICKUP",
     OUT_FOR_DELIVERY = "OUT FOR DELIVERY",
     DELIVERED = "DELIVERED"
 }

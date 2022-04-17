@@ -7,9 +7,16 @@ const order_model_1 = require("./order.model");
 const store_location_model_1 = require("./store_location.model");
 exports.OrderItemSchema = new mongoose_1.default.Schema({
     deliveryType: { type: String, required: false },
+    userId: { type: String, required: true },
+    userDetails: {
+        phoneNumber: { type: String, required: true },
+        userName: { type: String, required: true },
+        emailId: { type: String, required: true },
+    },
     shippingDetails: {
         shipDate: { type: String, required: false },
         deliveryDate: { type: String, required: false },
+        deliveryDateInString: { type: String, required: false },
         deliveryAddress: { type: address_model_1.AddressSchema, required: false },
         isDelivered: { type: String, required: false },
     },
@@ -17,6 +24,10 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         pickUpDate: { type: String, required: false },
         storeLocation: { type: store_location_model_1.StoreLocationSchema, required: false },
         isPickedUp: { type: Boolean, required: false, default: false },
+        pickUpTimeStart: { type: String, required: false },
+        pickUpTimeEnd: { type: String, required: false },
+        pickUpTimeInString: { type: String, required: false },
+        pickUpDateInString: { type: String, required: false },
     },
     paymentDetails: {
         paymentDate: { type: String, required: false },

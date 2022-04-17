@@ -47,6 +47,31 @@ let OrdersController = class OrdersController {
     async updateOrderItem(request, productId) {
         const userId = request.user.userId;
     }
+    async handleAcceptOrder(request, orderItemId) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.acceptOrder(userId, orderItemId);
+        return response;
+    }
+    async handleSetOrderReadyForPickup(request, orderItemId) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.orderReadyForPickUp(userId, orderItemId);
+        return response;
+    }
+    async handleSerOrderDelivered(request, orderItemId) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.orderDelivered(userId, orderItemId);
+        return response;
+    }
+    async handleSetOrderShipped(request, orderItemId) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.orderShipped(userId, orderItemId);
+        return response;
+    }
+    async handleSetOrderOutForDelivery(request, orderItemId) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.orderOutForDelivery(userId, orderItemId);
+        return response;
+    }
 };
 __decorate([
     (0, common_1.Delete)('/deleteall'),
@@ -91,6 +116,46 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateOrderItem", null);
+__decorate([
+    (0, common_1.Patch)('accept/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleAcceptOrder", null);
+__decorate([
+    (0, common_1.Patch)('ready-for-pickup/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleSetOrderReadyForPickup", null);
+__decorate([
+    (0, common_1.Patch)('delivered/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleSerOrderDelivered", null);
+__decorate([
+    (0, common_1.Patch)('shipped/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleSetOrderShipped", null);
+__decorate([
+    (0, common_1.Patch)('out-for-delivery/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleSetOrderOutForDelivery", null);
 OrdersController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),

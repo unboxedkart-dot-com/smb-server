@@ -4,6 +4,7 @@ export enum OrderStatuses {
   ORDERED = 'ORDERED',
   ACCEPTED = 'ACCEPTED',
   SHIPPED = 'SHIPPED',
+  READY_FOR_PICKUP = 'READY FOR PICKUP',
   OUT_FOR_DELIVERY = 'OUT FOR DELIVERY',
   DELIVERED = 'DELIVERED',
 }
@@ -95,12 +96,6 @@ export interface Order {
     },
   ];
 }
-
-
-
-
-
-
 
 // orderId: { type: String, required: true, default },
 // timestamp: { type: String, required: true, default : Date.now() },

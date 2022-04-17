@@ -44,4 +44,9 @@ export declare class OrdersController {
         };
     }>;
     updateOrderItem(request: any, productId: string): Promise<void>;
+    handleAcceptOrder(request: any, orderItemId: string): Promise<void>;
+    handleSetOrderReadyForPickup(request: any, orderItemId: string): Promise<void>;
+    handleSerOrderDelivered(request: any, orderItemId: string): Promise<void>;
+    handleSetOrderShipped(request: any, orderItemId: string): Promise<void>;
+    handleSetOrderOutForDelivery(request: any, orderItemId: string): Promise<void>;
 }

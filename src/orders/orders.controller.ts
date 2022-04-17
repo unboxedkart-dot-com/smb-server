@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { response } from 'express';
 import { request } from 'http';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -26,7 +27,7 @@ export class OrdersController {
   }
 
   @Post('/create-payment')
-  async createDummyOrder(){
+  async createDummyOrder() {
     const payment = await this.ordersService.createPaymentOrder();
     return payment;
   }
@@ -59,5 +60,66 @@ export class OrdersController {
   async updateOrderItem(@Req() request: any, @Param('id') productId: string) {
     const userId = request.user.userId;
     // const orders = await this.ordersService.updateOrderItem(userId, productId);
+  }
+
+  //admin only
+
+  @Patch('accept/:id')
+  async handleAcceptOrder(
+    @Req() request: any,
+    @Param('id') orderItemId: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.ordersService.acceptOrder(userId, orderItemId);
+    return response;
+  }
+
+  @Patch('ready-for-pickup/:id')
+  async handleSetOrderReadyForPickup(
+    @Req() request: any,
+    @Param('id') orderItemId: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.ordersService.orderReadyForPickUp(
+      userId,
+      orderItemId,
+    );
+    return response;
+  }
+
+  @Patch('delivered/:id')
+  async handleSerOrderDelivered(
+    @Req() request: any,
+    @Param('id') orderItemId: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.ordersService.orderDelivered(
+      userId,
+      orderItemId,
+    );
+    return response;
+  }
+
+  @Patch('shipped/:id')
+  async handleSetOrderShipped(
+    @Req() request: any,
+    @Param('id') orderItemId: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.ordersService.orderShipped(userId, orderItemId);
+    return response;
+  }
+
+  @Patch('out-for-delivery/:id')
+  async handleSetOrderOutForDelivery(
+    @Req() request: any,
+    @Param('id') orderItemId: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.ordersService.orderOutForDelivery(
+      userId,
+      orderItemId,
+    );
+    return response;
   }
 }

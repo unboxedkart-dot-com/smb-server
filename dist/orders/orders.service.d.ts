@@ -1,11 +1,11 @@
-import { Order, paymentTypes } from 'src/models/order.model';
 import { Model } from 'mongoose';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { Product } from 'src/models/product.model';
 import { Coupon } from 'src/models/coupon.model';
+import { Order, paymentTypes } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
-import { User } from 'src/models/user.model';
+import { Product } from 'src/models/product.model';
 import { Review } from 'src/models/review.model';
+import { User } from 'src/models/user.model';
+import { CreateOrderDto } from './dto/create-order.dto';
 export declare class OrdersService {
     private readonly orderModel;
     private readonly productModel;
@@ -29,6 +29,11 @@ export declare class OrdersService {
             orderTotal: number;
         };
     }>;
+    acceptOrder(userId: string, orderItemId: string): Promise<void>;
+    orderReadyForPickUp(userId: string, orderItemId: string): Promise<void>;
+    orderShipped(userId: string, orderItemId: string): Promise<void>;
+    orderOutForDelivery(userId: string, orderItemId: string): Promise<void>;
+    orderDelivered(userId: string, orderItemId: string): Promise<void>;
     getOrderItems(userId: string): Promise<OrderItem[]>;
     getOrderItem(userId: string, orderItemId: string): Promise<{
         status: string;
@@ -78,9 +83,21 @@ export declare class OrdersService {
             category: string;
         };
     }>;
-    _handleSaveIndividualOrders(params: IndividualOrderItem): Promise<void>;
+    _handleSaveIndividualOrders(userDoc: any, params: IndividualOrderItem): Promise<void>;
     createPaymentOrder(): Promise<void>;
     validatePaymentSignature(): Promise<void>;
+    _handleSendOrderPlacedMessage(userDoc: any, orderItems: any): Promise<void>;
+    _handleSendOrderPlacedMail(order: any): Promise<void>;
+    _handleSendOrderConfirmedMessage(order: any): Promise<void>;
+    _handleSendOrderConfirmedMail(order: any): Promise<void>;
+    _handleSendOutForPickUpMail(order: any): Promise<void>;
+    _handleSendOutForPickUpMessage(order: any): Promise<void>;
+    _handleSendOrderShippedMessage(order: any): Promise<void>;
+    _handleSendOrderShippedMail(order: any): Promise<void>;
+    _handleSendOutForDeliveryMessage(order: any): Promise<void>;
+    _handleSendOutForDeliveryMail(order: any): Promise<void>;
+    _handleSendOrderDeliveredMessage(order: any): Promise<void>;
+    _handleSendOrderDeliveredMail(order: any): Promise<void>;
 }
 export interface IndividualOrderItem {
     paymentType: String;
