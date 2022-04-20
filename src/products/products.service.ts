@@ -33,15 +33,18 @@ export class ProductsService {
       const productQuestionAndAnswers = await this.questionAndAnswersModel.find(
         {
           productId: id,
+          // 'questionDetails.isApproved': true,
         },
       );
-      const productReviews = await this.reviewModel.find({
-        productId: id,
-      }).limit(10);
+      const productReviews = await this.reviewModel
+        .find({
+          productId: id,
+        })
+        .limit(10);
       const reviewsData = await this.reviewModel.find({ productId: id });
       return {
         product: product,
-        // productReviews: productReviews,
+        productReviews: productReviews,
         reviewsData: reviewsData,
         productQAndA: productQuestionAndAnswers,
       };

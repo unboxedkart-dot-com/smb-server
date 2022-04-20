@@ -1,4 +1,4 @@
-export declare class AddStoreLocationDto {
+export declare class AddSelectedStoreDto {
     storeName: string;
     streetName: string;
     cityName: string;
@@ -8,4 +8,9 @@ export declare class AddStoreLocationDto {
     storeOpenDays: string;
     contactNumber: number;
     alternateContactNumber: number;
+    pickUpTimeStart: string;
+    pickUpTimeEnd: string;
+    pickUpDate: string;
+    pickUpTimeInString: string;
+    pickUpDateInString: string;
 }

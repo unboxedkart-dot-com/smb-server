@@ -9,65 +9,76 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AddDeliveryAddressDto = void 0;
+exports.AddSelectedStoreDto = void 0;
 const class_validator_1 = require("class-validator");
-class AddDeliveryAddressDto {
+class AddSelectedStoreDto {
 }
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "name", void 0);
-__decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], AddDeliveryAddressDto.prototype, "phoneNumber", void 0);
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "storeName", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "streetName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "cityName", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], AddSelectedStoreDto.prototype, "pinCode", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "directionsUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "storeTimings", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "storeOpenDays", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], AddSelectedStoreDto.prototype, "contactNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], AddDeliveryAddressDto.prototype, "alternatePhoneNumber", void 0);
+], AddSelectedStoreDto.prototype, "alternateContactNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "pickUpTimeStart", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "pickUpTimeEnd", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddSelectedStoreDto.prototype, "pickUpDate", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "doorNo", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "lane", void 0);
+], AddSelectedStoreDto.prototype, "pickUpTimeInString", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "street", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "cityName", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "stateName", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "landmark", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], AddDeliveryAddressDto.prototype, "pinCode", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddDeliveryAddressDto.prototype, "addressType", void 0);
-exports.AddDeliveryAddressDto = AddDeliveryAddressDto;
-//# sourceMappingURL=add-address.dto.js.map
+], AddSelectedStoreDto.prototype, "pickUpDateInString", void 0);
+exports.AddSelectedStoreDto = AddSelectedStoreDto;
+//# sourceMappingURL=add-selected-store.dto.js.map

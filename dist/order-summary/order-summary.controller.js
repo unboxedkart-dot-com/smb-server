@@ -14,9 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderSummaryController = void 0;
 const common_1 = require("@nestjs/common");
-const dto_1 = require("../addresses/dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const add_store_location_dto_1 = require("../store-location/dto/add-store-location.dto");
+const add_address_dto_1 = require("./dto/add-address.dto");
+const add_selected_store_dto_1 = require("./dto/add-selected-store.dto");
 const create_order_summary_dto_1 = require("./dto/create-order-summary.dto");
 const update_count_dto_1 = require("./dto/update-count.dto");
 const verify_payment_dto_1 = require("./dto/verify-payment.dto");
@@ -40,9 +40,9 @@ let OrderSummaryController = class OrderSummaryController {
         const result = await this.orderSummaryService.updateCount(userId, entireBody);
         return result;
     }
-    async handleAddCoupon(request, entireBody) {
+    async handleAddCoupon(request, couponCode) {
         const userId = request.user.userId;
-        const result = await this.orderSummaryService.addCouponDetails(userId, entireBody);
+        const result = await this.orderSummaryService.addCouponDetails(userId, couponCode);
         return result;
     }
     async handleAddStoreDetails(request, entireBody) {
@@ -94,9 +94,9 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('update/coupon'),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Body)('couponCode')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleAddCoupon", null);
 __decorate([
@@ -104,7 +104,7 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, add_store_location_dto_1.AddStoreLocationDto]),
+    __metadata("design:paramtypes", [Object, add_selected_store_dto_1.AddSelectedStoreDto]),
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleAddStoreDetails", null);
 __decorate([
@@ -112,7 +112,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AddAddressDto, Object]),
+    __metadata("design:paramtypes", [add_address_dto_1.AddDeliveryAddressDto, Object]),
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleAddDeliveryAddress", null);
 __decorate([

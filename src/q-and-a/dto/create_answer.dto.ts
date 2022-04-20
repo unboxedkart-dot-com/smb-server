@@ -7,9 +7,16 @@ export class CreateAnswerDto {
 
   @IsString()
   @IsNotEmpty()
-//   productId: string;
-
+  //   productId: string;
   @IsString()
   @IsNotEmpty()
   answer: string;
+
+  @IsString()
+  @IsNotEmpty()
+  questionTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  productTitle: string;
 }

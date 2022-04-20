@@ -12,5 +12,10 @@ export interface Answer {
     questionId: string;
     isApproved: boolean;
     answer: string;
+    questionDetails: {
+        questionTitle: string;
+        productTitle: string;
+        timestamp: Date;
+    };
     timestamp: Date;
 }

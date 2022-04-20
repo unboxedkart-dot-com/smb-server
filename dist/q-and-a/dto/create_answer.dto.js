@@ -25,5 +25,15 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateAnswerDto.prototype, "answer", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAnswerDto.prototype, "questionTitle", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAnswerDto.prototype, "productTitle", void 0);
 exports.CreateAnswerDto = CreateAnswerDto;
 //# sourceMappingURL=create_answer.dto.js.map

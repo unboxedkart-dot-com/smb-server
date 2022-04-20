@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -13,18 +14,36 @@ import { CreateAnswerDto } from './dto/create_answer.dto';
 import { CreateQuestionDto } from './dto/create_question.dto';
 import { QAndAService } from './q-and-a.service';
 
-
+@UseGuards(JwtAuthGuard)
 @Controller('q-and-a')
 export class QAndAController {
   constructor(private readonly qAndAService: QAndAService) {}
 
-  @Get('/:id')
-  async handleGetQuestionAndAnswers(@Param('id') productId: string) {
-    const result = await this.qAndAService.getProductQuestionAndAnswers(productId);
+  @Get()
+  async handleGetQuestionAndAnswers(@Query('id') productId: string) {
+    const result = await this.qAndAService.getProductQuestionAndAnswers(
+      productId,
+    );
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Get('/answers')
+  async handleGetAnswers(@Req() request: any) {
+    console.log('getting answers');
+    const userId = request.user.userId;
+    const result = await this.qAndAService.getUserAnswers(userId);
+    return result;
+  }
+
+  @Get('/questions')
+  async handleGetQuestions(@Req() request: any) {
+    console.log('getting answers');
+    const userId = request.user.userId;
+    const result = await this.qAndAService.getUserQuestions(userId);
+    return result;
+  }
+
+  // @UseGuards(JwtAuthGuard)
   @Post('create/question')
   async handleCreateQuestion(
     @Req() request: any,
@@ -33,13 +52,12 @@ export class QAndAController {
     const userId = request.user.userId;
     const question = await this.qAndAService.createQuestion(
       userId,
-      entireBody.question,
-      entireBody.productId,
+      entireBody
     );
-    return 'question added';
+    return question;
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Patch('approve/question/:id')
   async handleApproveQuestion(
     @Param('id') questionId: string,
@@ -49,24 +67,18 @@ export class QAndAController {
     await this.qAndAService.approveQuestion(userId, questionId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('/create/answer')
   async handleCreateAnswer(
     @Req() request: any,
     @Body() entireBody: CreateAnswerDto,
   ) {
     const userId = request.user.userId;
-    await this.qAndAService.createAnswer(
-      userId,
-      entireBody.answer,
-      entireBody.questionId,
-    );
+    await this.qAndAService.createAnswer(userId, entireBody);
     return 'answer added';
   }
 
- 
-
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('approve/answer/:id')
   async handleApproveAnswer(@Param('id') answerId: string) {
     await this.qAndAService.approveAnswer(answerId);

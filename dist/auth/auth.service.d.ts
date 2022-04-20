@@ -49,6 +49,8 @@ export declare class AuthService {
             accessToken: string;
         };
     }>;
+    _sendAccountCreatedMail(userDoc: any): Promise<void>;
+    _sendAccountCreatedMessage(userDoc: any): Promise<void>;
     createJwt(id: string): Promise<string>;
     sendSampleMail(): Promise<void>;
 }

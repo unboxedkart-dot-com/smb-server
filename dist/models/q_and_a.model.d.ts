@@ -12,5 +12,14 @@ export interface QuestionAndAnswer {
         question: string;
         timestamp: Date;
     };
+    productDetails: {
+        id: string;
+        imageUrl: string;
+        title: string;
+        color: string;
+        condition: string;
+        brand: string;
+        category: string;
+    };
     answers: Answer[];
 }

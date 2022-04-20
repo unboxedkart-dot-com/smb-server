@@ -19,15 +19,25 @@ export const UserSchema = new mongoose.Schema({
   cartItems: { type: Array, default: [] },
   orderSummary: {
     paymentId: { type: String, required: false },
+    paymentType: { type: String, required: false },
     paymentOrderId: { type: String, required: false },
     orderItems: { type: Array, default: [] },
     couponCode: { type: String, required: false },
-    deliveryAddress: { type: {}, required: false },
-    storeLocation: { type: {}, required: false },
     deliveryType: { type: String, required: false },
-    pickUpTimeStart: { type: String, required: false },
-    pickUpTimeEnd: { type: String, required: false },
-    deliveryDate: { type: String, required: false },
+    pickUpDetails: {
+      storeLocation: { type: {}, required: false },
+      pickUpTimeStart: { type: String, required: false },
+      pickUpTimeEnd: { type: String, required: false },
+      pickUpDate: { type: String, required: false },
+      pickUpDateInString: { type: String, required: false },
+      pickUpTimeInString: { type: String, required: false },
+    },
+    shippingDetails: {
+      shipDate: { type: Date, required: false },
+      deliveryDate: { type: String, required: false },
+      deliveryDateInString: { type: String, required: false },
+      deliveryAddress: { type: {}, required: false },
+    },
   },
   personalCouponCode: { type: String, required: false },
 });
@@ -60,19 +70,28 @@ export interface User {
     paymentId: string;
     paymentOrderId: string;
     orderItems: [
-      { 
+      {
         productId: string;
         createdTime: Date;
         productCount: number;
       },
     ];
-    deliveryDate: string,
-    pickUpTimeStart: string,
-    pickUpTimeEnd: string,
-    deliveryAddress: any;
     couponCode: string;
     deliveryType: String;
-    storeLocation: any;
+    pickUpDetails: {
+      storeLocation: any;
+      pickUpTimeStart: string;
+      pickUpTimeEnd: string;
+      pickUpDate: string;
+      pickUpDateInString: string;
+      pickUpTimeInString: string;
+    };
+    shippingDetails: {
+      shipDate: Date;
+      deliveryDate: string;
+      deliveryDateInString: string;
+      deliveryAddress: any;
+    };
   };
   personalCouponCode: string;
 }

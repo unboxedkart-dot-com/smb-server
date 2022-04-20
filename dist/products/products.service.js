@@ -40,12 +40,15 @@ let ProductsService = class ProductsService {
             const productQuestionAndAnswers = await this.questionAndAnswersModel.find({
                 productId: id,
             });
-            const productReviews = await this.reviewModel.find({
+            const productReviews = await this.reviewModel
+                .find({
                 productId: id,
-            }).limit(10);
+            })
+                .limit(10);
             const reviewsData = await this.reviewModel.find({ productId: id });
             return {
                 product: product,
+                productReviews: productReviews,
                 reviewsData: reviewsData,
                 productQAndA: productQuestionAndAnswers,
             };

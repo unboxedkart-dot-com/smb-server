@@ -8,4 +8,8 @@ export class CreateQuestionDto {
   @IsString()
   @IsNotEmpty()
   question: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // productTitle: string;
 }

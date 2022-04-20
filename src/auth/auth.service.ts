@@ -219,7 +219,7 @@ export class AuthService {
         const userDoc = await newUser.save();
         console.log('new user doc', userDoc);
         const newCoupon = new this.couponModel({
-          couponCode: coupon,
+          couponCode: coupon.toUpperCase,
           discountAmount: 500,
           minimumOrderTotal: 30000,
           discountType: CouponTypes.FLAT,
@@ -233,15 +233,8 @@ export class AuthService {
         });
         // save referral coupon
         newCoupon.save();
-        const url = process.env.SMS_FLOW_URL;
-        const postBody = {
-          flow_id: process.env.WELCOME_FLOW_ID,
-          sender: process.env.ORDER_SMS_SENDER_ID,
-          mobiles: '91' + userDoc.phoneNumber,
-          name: userDoc.name,
-          authkey: process.env.SMS_AUTH_KEY,
-        };
-        await axios.post(url, postBody);
+        this._sendAccountCreatedMessage(userDoc);
+        this._sendAccountCreatedMail(userDoc);
 
         // add user
 
@@ -263,6 +256,33 @@ export class AuthService {
         message: 'invalid otp',
       };
     }
+  }
+
+  async _sendAccountCreatedMail(userDoc) {
+    const msg = {
+      to: userDoc.emailId,
+      from: 'info@unboxedkart.com',
+      templateId: process.env.WELCOME_TEMPLATE_ID,
+      dynamic_template_data: {
+        name: userDoc.name,
+      },
+    };
+    const transport = await SendGrid.send(msg)
+      .then(() => console.log('email send'))
+      .catch((e) => console.log('email error', e));
+    return transport;
+  }
+
+  async _sendAccountCreatedMessage(userDoc: any) {
+    const url = process.env.SMS_FLOW_URL;
+    const postBody = {
+      flow_id: process.env.WELCOME_FLOW_ID,
+      sender: process.env.ORDER_SMS_SENDER_ID,
+      mobiles: '91' + userDoc.phoneNumber,
+      name: userDoc.name,
+      authkey: process.env.SMS_AUTH_KEY,
+    };
+    await axios.post(url, postBody);
   }
 
   async createJwt(id: string) {

@@ -1,13 +1,18 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateReviewDto {
+  @IsString()
+  @IsNotEmpty()
+  reviewId: string;
 
   @IsString()
-  @IsNotEmpty()
-  reviewId : string;
-    
-  @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   userName: string;
 
   @IsNumber()
@@ -20,16 +25,17 @@ export class UpdateReviewDto {
 
   @IsString()
   @IsOptional()
-  reviewSubTitle: string;
-  
+  reviewContent: string;
+
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   productId: string;
 
   @IsString()
+  @IsOptional()
   productTitle: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   imageUrl: string;
 }

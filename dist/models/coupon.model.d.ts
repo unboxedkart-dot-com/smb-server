@@ -12,12 +12,10 @@ export interface Coupon {
     discountType: CouponTypes;
     expiryTime: Date;
     isPersonalCoupon: boolean;
-    couponDetails: [
-        {
-            userId: string;
-            phoneNumber: number;
-            userName: string;
-            userEmail: string;
-        }
-    ];
+    couponDetails: {
+        userId: string;
+        phoneNumber: number;
+        userName: string;
+        userEmail: string;
+    };
 }

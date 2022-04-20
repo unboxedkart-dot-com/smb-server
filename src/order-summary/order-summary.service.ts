@@ -15,6 +15,8 @@ import * as CryptoJS from 'crypto-js';
 import { createHmac } from 'crypto';
 
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
+import { AddDeliveryAddressDto } from './dto/add-address.dto';
+import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
 
 var instance = new Razorpay({
   key_id: 'rzp_live_Yf6SskMc0yCBdS',
@@ -182,48 +184,84 @@ export class OrderSummaryService {
     newOrderSummary.save();
   }
 
-  async addDeliveryAddress(userId: string, entireBody: AddAddressDto) {
+  async addDeliveryAddress(userId: string, entireBody: AddDeliveryAddressDto) {
     console.log('adding delivery address');
-    await this.userModel.findByIdAndUpdate(userId, {
+    const user = await this.userModel.findByIdAndUpdate(userId, {
       'orderSummary.deliveryType': DeliveryTypes.HOME_DELIVERY,
-      'orderSummary.deliveryAddress': {
-        userId: userId,
-        name: entireBody.name,
-        phoneNumber: entireBody.phoneNumber,
-        doorNo: entireBody.doorNo,
-        street: entireBody.street,
-        cityName: entireBody.cityName,
-        landmark: entireBody.landmark,
-        stateName: entireBody.stateName,
-        pinCode: entireBody.pinCode,
-        addressType: entireBody.addressType,
+      'orderSummary.shippingDetails': {
+        deliveryAddress: {
+          userId: userId,
+          name: entireBody.name,
+          phoneNumber: entireBody.phoneNumber,
+          doorNo: entireBody.doorNo,
+          street: entireBody.street,
+          cityName: entireBody.cityName,
+          landmark: entireBody.landmark,
+          stateName: entireBody.stateName,
+          pinCode: entireBody.pinCode,
+          addressType: entireBody.addressType,
+        },
+        deliveryDate: '1234',
+        deliveryDateInString: '1234',
       },
-      'orderSummary.deliveryDate': entireBody.deliveryDate,
     });
+    console.log('address added', user);
   }
 
-  async addSelectedStoreDetails(userId: string, entireBody: any) {
-    await this.userModel.findByIdAndUpdate(userId, {
+  async addSelectedStoreDetails(
+    userId: string,
+    entireBody: AddSelectedStoreDto,
+  ) {
+    console.log('adding store details', entireBody);
+    console.log('userId', userId);
+    const user = await this.userModel.findByIdAndUpdate(userId, {
       'orderSummary.deliveryType': DeliveryTypes.STORE_PICKUP,
-      'orderSummary.storeLocation': {
-        storeName: entireBody.storeName,
-        streetName: entireBody.streetName,
-        cityName: entireBody.cityName,
-        pinCode: entireBody.pinCode,
-        directionsUrl: entireBody.directionsUrl,
-        storeOpenDays: entireBody.storeOpenDays,
-        storeTimings: entireBody.storeTimings,
-        contactNumber: entireBody.contactNumber,
-        alternateContactNumber: entireBody.alternateContactNumber,
+      'orderSummary.pickUpDetails': {
+        storeLocation: {
+          storeName: entireBody.storeName,
+          streetName: entireBody.streetName,
+          cityName: entireBody.cityName,
+          pinCode: entireBody.pinCode,
+          directionsUrl: entireBody.directionsUrl,
+          storeOpenDays: entireBody.storeOpenDays,
+          storeTimings: entireBody.storeTimings,
+          contactNumber: entireBody.contactNumber,
+          alternateContactNumber: entireBody.alternateContactNumber,
+        },
+        pickUpTimeStart: entireBody.pickUpTimeStart,
+        pickUpTimeEnd: entireBody.pickUpTimeEnd,
+        pickUpDate: entireBody.pickUpDate,
+        pickUpTimeInString: entireBody.pickUpTimeInString,
+        pickUpDateInString: entireBody.pickUpDateInString,
       },
-      'orderSummary.pickUpTimeStart': entireBody.pickUpTimeStart,
-      'orderSummary.pickUpTimeEnd': entireBody.pickUpTimeEnd,
+      // 'orderSummary.storeLocation': {
+      //   storeName: entireBody.storeName,
+      //   streetName: entireBody.streetName,
+      //   cityName: entireBody.cityName,
+      //   pinCode: entireBody.pinCode,
+      //   directionsUrl: entireBody.directionsUrl,
+      //   storeOpenDays: entireBody.storeOpenDays,
+      //   storeTimings: entireBody.storeTimings,
+      //   contactNumber: entireBody.contactNumber,
+      //   alternateContactNumber: entireBody.alternateContactNumber,
+      // },
+      // 'orderSummary.pickUpDetails.pickUpTimeStart': entireBody.pickUpTimeStart,
+      // 'orderSummary.pickUpDetails.pickUpTimeEnd': entireBody.pickUpTimeEnd,
+      // 'orderSummary.pickUpDetails.pickUpDate': entireBody.pickUpDate,
+      // 'orderSummary.pickUpDetails.pickUpTimeInString':
+      //   entireBody.pickUpTimeInString,
+      // 'orderSummary.pickUpDetails.pickUpDateInString':
+      //   entireBody.pickUpDateInString,
     });
+    console.log('store location added', user);
   }
 
-  async addCouponDetails(userId: string, entireBody: any) {
+  async addCouponDetails(userId: string, couponCode: String) {
+    const couponDetails = await this.couponModel.find({
+      couponCode: couponCode,
+    });
     await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.couponCode': 'SUNIL500',
+      'orderSummary.couponCode': couponCode,
     });
   }
 

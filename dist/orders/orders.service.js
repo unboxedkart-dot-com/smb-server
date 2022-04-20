@@ -20,13 +20,14 @@ const axios_1 = require("axios");
 const mongoose_2 = require("mongoose");
 const order_model_1 = require("../models/order.model");
 let OrdersService = class OrdersService {
-    constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel) {
+    constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel, referralModel) {
         this.orderModel = orderModel;
         this.productModel = productModel;
         this.couponModel = couponModel;
         this.orderItemModel = orderItemModel;
         this.userModel = userModel;
         this.reviewModel = reviewModel;
+        this.referralModel = referralModel;
         SendGrid.setApiKey(process.env.MAIL_API_KEY);
     }
     async deleteAll() {
@@ -47,7 +48,7 @@ let OrdersService = class OrdersService {
         var payableAmount = orderItemDetails.orderTotal;
         var couponDiscount = 0;
         if (orderSummary.couponCode != null) {
-            couponDiscount = await this._getCouponDiscount(orderSummary.couponCode, orderItemDetails.orderTotal);
+            couponDiscount = await this._getCouponDiscount(userDoc._id.toString(), userDoc.name, orderNumber, orderSummary.couponCode, orderItemDetails.orderTotal);
             console.log('paybale amount', payableAmount);
             console.log('c amount', payableAmount);
             payableAmount = payableAmount - couponDiscount;
@@ -55,6 +56,11 @@ let OrdersService = class OrdersService {
         console.log('paybale amount', payableAmount);
         const newOrder = new this.orderModel({
             userId: userId,
+            userDetails: {
+                name: userDoc.name,
+                emailId: userDoc.emailId,
+                phoneNumber: userDoc.phoneNumber,
+            },
             orderNumber: orderNumber,
             deliveryType: 0,
             paymentDetails: {
@@ -70,15 +76,27 @@ let OrdersService = class OrdersService {
         });
         newOrder.save();
         this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
-        this._handleSendOrderPlacedMail(userDoc);
+        this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
         await this._handleSaveIndividualOrders(userDoc, {
             paymentType: entireBody.paymentType,
             deliveryType: orderSummary.deliveryType,
-            storeLocation: orderSummary.storeLocation,
             itemsCount: orderItemDetails.orderItemsCount,
             orderData: orderItemDetails.orderItems,
             orderNumber: orderNumber,
-            deliveryAddress: orderSummary.deliveryAddress,
+            shippingDetails: {
+                shipDate: orderSummary.shippingDetails.shipDate,
+                deliveryAddress: orderSummary.shippingDetails.deliveryAddress,
+                deliveryDate: orderSummary.shippingDetails.deliveryDate,
+                deliveryDateInString: orderSummary.shippingDetails.deliveryDateInString,
+            },
+            pickUpDetails: {
+                pickUpDate: orderSummary.pickUpDetails.pickUpDate,
+                storeLocation: orderSummary.pickUpDetails.storeLocation,
+                pickUpTimeStart: orderSummary.pickUpDetails.pickUpTimeStart,
+                pickUpTimeEnd: orderSummary.pickUpDetails.pickUpTimeEnd,
+                pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
+                pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
+            },
             couponCode: orderSummary.couponCode,
             couponDiscount: couponDiscount,
         });
@@ -86,10 +104,13 @@ let OrdersService = class OrdersService {
             orderNumber: orderNumber,
             orderDate: Date.now(),
             selectedPickUpDate: Date.now(),
+            deliveryDate: orderSummary.shippingDetails.deliveryDateInString,
+            pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
+            pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
             paymentType: order_model_1.paymentTypes.PAY_AT_STORE,
             deliveryType: orderSummary.deliveryType,
-            selectedAddress: orderSummary.deliveryAddress,
-            selectedStore: orderSummary.storeLocation,
+            selectedAddress: orderSummary.shippingDetails.deliveryAddress,
+            selectedStore: orderSummary.pickUpDetails.storeLocation,
             orderItems: orderItemDetails,
         };
     }
@@ -129,8 +150,9 @@ let OrdersService = class OrdersService {
         this._handleSendOrderDeliveredMail(order);
     }
     async getOrderItems(userId) {
+        console.log('order user id', userId);
         const orderItems = await this.orderItemModel.find({
-            userId: { $eq: userId },
+            userId: userId,
         });
         console.log('orderrrrr', orderItems);
         return orderItems;
@@ -142,6 +164,7 @@ let OrdersService = class OrdersService {
                 userId: userId,
                 productId: orderItem.orderDetails.productId,
             });
+            console.log('currentorderreview', review);
             if (review) {
                 return {
                     status: 'success',
@@ -170,10 +193,34 @@ let OrdersService = class OrdersService {
         const orderNumber = orderCode + randomNumber.toString();
         return orderNumber;
     }
-    async _getCouponDiscount(couponCode, orderTotal) {
-        const coupon = await this.couponModel.findOne({ couponCode: couponCode });
+    async _getCouponDiscount(userId, userName, orderNumber, couponCode, orderTotal) {
+        const coupon = await this.couponModel
+            .findOne({ couponCode: couponCode })
+            .select('+couponDetails.userId');
         console.log('coupon', coupon);
         if (coupon && orderTotal >= coupon.minimumOrderTotal) {
+            const newReferral = new this.referralModel({
+                orderNumber: orderNumber,
+                couponCode: coupon.couponCode,
+                referrerDetails: {
+                    userId: coupon.couponDetails.userId,
+                    phoneNumber: coupon.couponDetails.phoneNumber,
+                    userName: coupon.couponDetails.userName,
+                    userEmail: coupon.couponDetails.userEmail,
+                },
+                refereeId: userId,
+                cashBackDetails: {
+                    cashBackAmount: '500',
+                },
+                discountDetails: {
+                    discountAmount: coupon.discountAmount,
+                },
+            });
+            newReferral.save();
+            console.log('starting referral message');
+            await this._handleSendReferralOrderPlaceMessage(userName, coupon.couponDetails.phoneNumber);
+            console.log('starting referral mail');
+            await this._handleSendReferralOrderPlaceMail(userName, coupon.couponDetails.userEmail);
             console.log('coupon', coupon);
             return coupon.discountAmount;
         }
@@ -242,7 +289,9 @@ let OrdersService = class OrdersService {
                 userId: userDoc._id,
                 orderNumber: params.orderNumber,
                 shippingDetails: {
-                    deliveryAddress: params.deliveryAddress,
+                    deliveryAddress: params.shippingDetails.deliveryAddress,
+                    deliveryDate: params.shippingDetails.deliveryDate,
+                    deliveryDateInString: params.shippingDetails.deliveryDateInString,
                 },
                 userDetails: {
                     emailId: userDoc.emailId,
@@ -250,13 +299,12 @@ let OrdersService = class OrdersService {
                     userName: userDoc.name,
                 },
                 pickUpDetails: {
-                    pickUpDate: Date.now(),
-                    isPickedUp: false,
-                    pickUpTimeStart: Date.now(),
-                    pickUpTimeEnd: Date.now(),
-                    pickUpTimeInString: '2:00 PM - 3:00 PM',
-                    pickUpDateInString: '17 April',
-                    storeLocation: params.storeLocation,
+                    pickUpDate: params.pickUpDetails.pickUpDate,
+                    pickUpTimeStart: params.pickUpDetails.pickUpTimeStart,
+                    pickUpTimeEnd: params.pickUpDetails.pickUpTimeEnd,
+                    pickUpTimeInString: params.pickUpDetails.pickUpTimeInString,
+                    pickUpDateInString: params.pickUpDetails.pickUpDateInString,
+                    storeLocation: params.pickUpDetails.storeLocation,
                 },
                 paymentDetails: {
                     paymentType: params.paymentType,
@@ -313,40 +361,55 @@ let OrdersService = class OrdersService {
         console.log('91' + userDoc.phoneNumber);
         await axios_1.default.post(url, postBody);
     }
-    async _handleSendOrderPlacedMail(order) {
-        console.log('sending order mail');
-        if (order.deliveryType == 'STORE PICKUP') {
-            const msg = {
-                to: order.userDetails.emailId,
-                from: 'info@unboxedkart.com',
-                templateId: 'd-a138d401839444518e9515218e7af1e7',
-                dynamic_template_data: {
-                    order: order.orderDetails.productTitle,
-                    orderId: order.orderNumber,
-                    userName: order.userDetails.userName,
-                },
-            };
-            const transport = await SendGrid.send(msg)
-                .then(() => console.log('email send'))
-                .catch((e) => console.log('email error', e));
-            return transport;
+    async _handleSendOrderPlacedMail(userDoc, orderItems) {
+        console.log('sending order mail', orderItems);
+        let order = orderItems[0].productDetails.title;
+        if (orderItems.count > 1) {
+            order =
+                orderItems[0].productDetails.title +
+                    '+' +
+                    `${orderItems.count - 1} ${orderItems.count > 2 ? 'items' : 'item'}`;
         }
-        else if (order.deliveryType == 'HOME DELIVERY') {
-            const msg = {
-                to: 'bsunil135@gmail.com',
-                from: 'info@unboxedkart.com',
-                templateId: 'd-a138d401839444518e9515218e7af1e7',
-                dynamic_template_data: {
-                    order: order.orderDetails.productTitle,
-                    orderId: order.orderNumber,
-                    userName: order.userDetails.userName,
-                },
-            };
-            const transport = await SendGrid.send(msg)
-                .then(() => console.log('email send'))
-                .catch((e) => console.log('email error', e));
-            return transport;
-        }
+        const msg = {
+            to: userDoc.emailId,
+            from: 'info@unboxedkart.com',
+            templateId: process.env.ORDER_PLACED_TEMPLATE_ID,
+            dynamic_template_data: {
+                order: order,
+                name: userDoc.name,
+            },
+        };
+        const transport = await SendGrid.send(msg)
+            .then(() => console.log('email send'))
+            .catch((e) => console.log('email error', e));
+        return transport;
+    }
+    async _handleSendReferralOrderPlaceMessage(name, phoneNumber) {
+        console.log('sending referral message');
+        const url = 'https://api.msg91.com/api/v5/flow';
+        const postBody = {
+            flow_id: process.env.REFERRAL_ORDER_FLOW_ID,
+            sender: process.env.ORDER_SMS_SENDER_ID,
+            mobiles: '91' + phoneNumber,
+            name: name,
+            authkey: process.env.SMS_AUTH_KEY,
+        };
+        console.log('91' + phoneNumber);
+        await axios_1.default.post(url, postBody);
+    }
+    async _handleSendReferralOrderPlaceMail(userName, emailId) {
+        const msg = {
+            to: emailId,
+            from: 'info@unboxedkart.com',
+            templateId: process.env.REFERRAL_ORDER_TEMPLATE_ID,
+            dynamic_template_data: {
+                name: userName,
+            },
+        };
+        const transport = await SendGrid.send(msg)
+            .then(() => console.log('email send'))
+            .catch((e) => console.log('email error', e));
+        return transport;
     }
     async _handleSendOrderConfirmedMessage(order) {
         if (order.deliveryType == 'STORE PICKUP') {
@@ -383,14 +446,14 @@ let OrdersService = class OrdersService {
                 from: 'info@unboxedkart.com',
                 templateId: process.env.PICKUP_ORDER_CONFIRMED_TEMPLATE_ID,
                 dynamic_template_data: {
-                    name: order.userDetails.userName,
-                    order: order.orderDetails.productTitle,
+                    name: order.userDetails.name,
+                    order: order.orderDetails.title,
                     orderId: order.orderNumber,
                     pickupdate: order.pickUpDetails.pickUpDateInString,
                 },
             };
             const transport = await SendGrid.send(msg)
-                .then(() => console.log('email send'))
+                .then(() => console.log('email send', 'confirmed'))
                 .catch((e) => console.log('email error', e));
             return transport;
         }
@@ -400,8 +463,8 @@ let OrdersService = class OrdersService {
                 from: 'info@unboxedkart.com',
                 templateId: process.env.DELIVERY_ORDER_CONFIRMED_TEMPLATE_ID,
                 dynamic_template_data: {
-                    name: order.userDetails.userName,
-                    order: order.orderDetails.productTitle,
+                    name: order.userDetails.name,
+                    order: order.orderDetails.title,
                     orderId: order.orderNumber,
                     deliverydate: order.shippingDetails.deliveryDateInString,
                 },
@@ -547,7 +610,9 @@ OrdersService = __decorate([
     __param(3, (0, mongoose_1.InjectModel)('OrderItem')),
     __param(4, (0, mongoose_1.InjectModel)('User')),
     __param(5, (0, mongoose_1.InjectModel)('Review')),
+    __param(6, (0, mongoose_1.InjectModel)('ReferralOrder')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

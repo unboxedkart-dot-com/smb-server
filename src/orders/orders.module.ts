@@ -9,7 +9,7 @@ import { CouponSchema } from 'src/models/coupon.model';
 import { OrderItemSchema } from 'src/models/orderItem.model';
 import { UserSchema } from 'src/models/user.model';
 import { ReviewSchema } from 'src/models/review.model';
-import Razorpay from 'razorpay';
+import { ReferralOrderSchema } from 'src/models/referral_order';
 
 @Module({
   imports: [
@@ -20,6 +20,7 @@ import Razorpay from 'razorpay';
       { name: 'OrderItem', schema: OrderItemSchema },
       { name: 'User', schema: UserSchema },
       { name: 'Review', schema: ReviewSchema },
+      { name: 'ReferralOrder', schema: ReferralOrderSchema },
     ]),
   ],
   controllers: [OrdersController],

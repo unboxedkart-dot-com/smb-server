@@ -180,7 +180,7 @@ let AuthService = class AuthService {
                 const userDoc = await newUser.save();
                 console.log('new user doc', userDoc);
                 const newCoupon = new this.couponModel({
-                    couponCode: coupon,
+                    couponCode: coupon.toUpperCase,
                     discountAmount: 500,
                     minimumOrderTotal: 30000,
                     discountType: coupon_model_1.CouponTypes.FLAT,
@@ -193,15 +193,8 @@ let AuthService = class AuthService {
                     },
                 });
                 newCoupon.save();
-                const url = process.env.SMS_FLOW_URL;
-                const postBody = {
-                    flow_id: process.env.WELCOME_FLOW_ID,
-                    sender: process.env.ORDER_SMS_SENDER_ID,
-                    mobiles: '91' + userDoc.phoneNumber,
-                    name: userDoc.name,
-                    authkey: process.env.SMS_AUTH_KEY,
-                };
-                await axios_1.default.post(url, postBody);
+                this._sendAccountCreatedMessage(userDoc);
+                this._sendAccountCreatedMail(userDoc);
                 const accessToken = await this.createJwt(userDoc.id);
                 return {
                     status: 'success',
@@ -218,6 +211,31 @@ let AuthService = class AuthService {
                 message: 'invalid otp',
             };
         }
+    }
+    async _sendAccountCreatedMail(userDoc) {
+        const msg = {
+            to: userDoc.emailId,
+            from: 'info@unboxedkart.com',
+            templateId: process.env.WELCOME_TEMPLATE_ID,
+            dynamic_template_data: {
+                name: userDoc.name,
+            },
+        };
+        const transport = await SendGrid.send(msg)
+            .then(() => console.log('email send'))
+            .catch((e) => console.log('email error', e));
+        return transport;
+    }
+    async _sendAccountCreatedMessage(userDoc) {
+        const url = process.env.SMS_FLOW_URL;
+        const postBody = {
+            flow_id: process.env.WELCOME_FLOW_ID,
+            sender: process.env.ORDER_SMS_SENDER_ID,
+            mobiles: '91' + userDoc.phoneNumber,
+            name: userDoc.name,
+            authkey: process.env.SMS_AUTH_KEY,
+        };
+        await axios_1.default.post(url, postBody);
     }
     async createJwt(id) {
         console.log('payload id', id);

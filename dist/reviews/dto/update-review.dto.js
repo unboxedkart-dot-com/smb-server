@@ -20,7 +20,7 @@ __decorate([
 ], UpdateReviewDto.prototype, "reviewId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateReviewDto.prototype, "userName", void 0);
 __decorate([
@@ -37,19 +37,20 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpdateReviewDto.prototype, "reviewSubTitle", void 0);
+], UpdateReviewDto.prototype, "reviewContent", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateReviewDto.prototype, "productId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateReviewDto.prototype, "productTitle", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateReviewDto.prototype, "imageUrl", void 0);
 exports.UpdateReviewDto = UpdateReviewDto;

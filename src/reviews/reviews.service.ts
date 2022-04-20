@@ -51,18 +51,21 @@ export class ReviewsService {
   }
 
   async updateReview(userId: string, entireBody: UpdateReviewDto) {
-    await this.reviewModel.findOneAndUpdate(
-      { userId: userId, _id: entireBody.reviewId },
+    console.log('updating review', entireBody);
+    const review = await this.reviewModel.findByIdAndUpdate(
+      entireBody.reviewId,
       {
-        userName: entireBody.userName,
+        // userName: entireBody.userName,
         rating: entireBody.rating,
         reviewTitle: entireBody.reviewTitle,
-        reviewSubTitle: entireBody.reviewSubTitle,
-        productId: entireBody.productId,
-        productTitle: entireBody.productTitle,
-        imageUrl: entireBody.imageUrl,
+        reviewContent: entireBody.reviewContent,
+        isApproved: false,
+        // productId: entireBody.productId,
+        // productTitle: entireBody.productTitle,
+        // imageUrl: entireBody.imageUrl,
       },
     );
+    console.log('updated review', review);
   }
 
   async deleteReview(userId: string, reviewId: string) {

@@ -33,13 +33,22 @@ export interface User {
                 productCount: number;
             }
         ];
-        deliveryDate: string;
-        pickUpTimeStart: string;
-        pickUpTimeEnd: string;
-        deliveryAddress: any;
         couponCode: string;
         deliveryType: String;
-        storeLocation: any;
+        pickUpDetails: {
+            storeLocation: any;
+            pickUpTimeStart: string;
+            pickUpTimeEnd: string;
+            pickUpDate: string;
+            pickUpDateInString: string;
+            pickUpTimeInString: string;
+        };
+        shippingDetails: {
+            shipDate: Date;
+            deliveryDate: string;
+            deliveryDateInString: string;
+            deliveryAddress: any;
+        };
     };
     personalCouponCode: string;
 }

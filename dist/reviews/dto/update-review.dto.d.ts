@@ -3,7 +3,7 @@ export declare class UpdateReviewDto {
     userName: string;
     rating: number;
     reviewTitle: string;
-    reviewSubTitle: string;
+    reviewContent: string;
     productId: string;
     productTitle: string;
     imageUrl: string;

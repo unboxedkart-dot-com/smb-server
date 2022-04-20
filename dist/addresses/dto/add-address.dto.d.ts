@@ -10,5 +10,4 @@ export declare class AddAddressDto {
     landmark: string;
     pinCode: number;
     addressType: string;
-    deliveryDate: string;
 }

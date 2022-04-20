@@ -13,6 +13,9 @@ export declare class ProductsService {
         product: import("mongoose").Document<unknown, any, Product> & Product & {
             _id: import("mongoose").Types.ObjectId;
         };
+        productReviews: (import("mongoose").Document<unknown, any, Review> & Review & {
+            _id: import("mongoose").Types.ObjectId;
+        })[];
         reviewsData: (import("mongoose").Document<unknown, any, Review> & Review & {
             _id: import("mongoose").Types.ObjectId;
         })[];

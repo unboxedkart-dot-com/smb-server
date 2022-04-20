@@ -4,13 +4,10 @@ import * as SendGrid from '@sendgrid/mail';
 import axios from 'axios';
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
-import {
-  Order,
-  OrderStatuses,
-  paymentTypes
-} from 'src/models/order.model';
+import { Order, OrderStatuses, paymentTypes } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
 import { Product } from 'src/models/product.model';
+import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -29,6 +26,8 @@ export class OrdersService {
     @InjectModel('OrderItem') private readonly orderItemModel: Model<OrderItem>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Review') private readonly reviewModel: Model<Review>,
+    @InjectModel('ReferralOrder')
+    private readonly referralModel: Model<ReferralOrder>,
   ) {
     SendGrid.setApiKey(process.env.MAIL_API_KEY);
   }
@@ -69,6 +68,9 @@ export class OrdersService {
     //validating coupon and coupon discount
     if (orderSummary.couponCode != null) {
       couponDiscount = await this._getCouponDiscount(
+        userDoc._id.toString(),
+        userDoc.name,
+        orderNumber,
         orderSummary.couponCode,
         orderItemDetails.orderTotal,
       );
@@ -79,6 +81,11 @@ export class OrdersService {
     console.log('paybale amount', payableAmount);
     const newOrder = new this.orderModel({
       userId: userId,
+      userDetails: {
+        name: userDoc.name,
+        emailId: userDoc.emailId,
+        phoneNumber: userDoc.phoneNumber,
+      },
       orderNumber: orderNumber,
       deliveryType: 0,
       paymentDetails: {
@@ -95,17 +102,33 @@ export class OrdersService {
     });
 
     newOrder.save();
+    // if(orderSummary.couponCode!=null){
+
+    // }
     this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
-    this._handleSendOrderPlacedMail(userDoc);
+    this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
     //saving order individually in db
     await this._handleSaveIndividualOrders(userDoc, {
       paymentType: entireBody.paymentType,
       deliveryType: orderSummary.deliveryType,
-      storeLocation: orderSummary.storeLocation,
+      // storeLocation: orderSummary.pickUpDetails.storeLocation,
       itemsCount: orderItemDetails.orderItemsCount,
       orderData: orderItemDetails.orderItems,
       orderNumber: orderNumber,
-      deliveryAddress: orderSummary.deliveryAddress,
+      shippingDetails: {
+        shipDate: orderSummary.shippingDetails.shipDate,
+        deliveryAddress: orderSummary.shippingDetails.deliveryAddress,
+        deliveryDate: orderSummary.shippingDetails.deliveryDate,
+        deliveryDateInString: orderSummary.shippingDetails.deliveryDateInString,
+      },
+      pickUpDetails: {
+        pickUpDate: orderSummary.pickUpDetails.pickUpDate,
+        storeLocation: orderSummary.pickUpDetails.storeLocation,
+        pickUpTimeStart: orderSummary.pickUpDetails.pickUpTimeStart,
+        pickUpTimeEnd: orderSummary.pickUpDetails.pickUpTimeEnd,
+        pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
+        pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
+      },
       couponCode: orderSummary.couponCode,
       couponDiscount: couponDiscount,
     });
@@ -113,12 +136,14 @@ export class OrdersService {
     return {
       orderNumber: orderNumber,
       orderDate: Date.now(),
-      // expectedDeliveryDate: Date.now(),
       selectedPickUpDate: Date.now(),
+      deliveryDate: orderSummary.shippingDetails.deliveryDateInString,
+      pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
+      pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
       paymentType: paymentTypes.PAY_AT_STORE,
       deliveryType: orderSummary.deliveryType,
-      selectedAddress: orderSummary.deliveryAddress,
-      selectedStore: orderSummary.storeLocation,
+      selectedAddress: orderSummary.shippingDetails.deliveryAddress,
+      selectedStore: orderSummary.pickUpDetails.storeLocation,
       orderItems: orderItemDetails,
     };
   }
@@ -164,8 +189,9 @@ export class OrdersService {
   }
 
   async getOrderItems(userId: string) {
+    console.log('order user id', userId);
     const orderItems = await this.orderItemModel.find({
-      userId: { $eq: userId },
+      userId: userId,
     });
     console.log('orderrrrr', orderItems);
     return orderItems as OrderItem[];
@@ -178,6 +204,7 @@ export class OrdersService {
         userId: userId,
         productId: orderItem.orderDetails.productId,
       });
+      console.log('currentorderreview', review);
 
       if (review) {
         // reviewDetails = {
@@ -233,10 +260,46 @@ export class OrdersService {
     return orderNumber;
   }
 
-  async _getCouponDiscount(couponCode: string, orderTotal: number) {
-    const coupon = await this.couponModel.findOne({ couponCode: couponCode });
+  async _getCouponDiscount(
+    userId: string,
+    userName: string,
+    orderNumber: string,
+    couponCode: string,
+    orderTotal: number,
+  ) {
+    const coupon = await this.couponModel
+      .findOne({ couponCode: couponCode })
+      .select('+couponDetails.userId');
     console.log('coupon', coupon);
     if (coupon && orderTotal >= coupon.minimumOrderTotal) {
+      const newReferral = new this.referralModel({
+        orderNumber: orderNumber,
+        couponCode: coupon.couponCode,
+        referrerDetails: {
+          userId: coupon.couponDetails.userId,
+          phoneNumber: coupon.couponDetails.phoneNumber,
+          userName: coupon.couponDetails.userName,
+          userEmail: coupon.couponDetails.userEmail,
+        },
+        refereeId: userId,
+        cashBackDetails: {
+          cashBackAmount: '500',
+        },
+        discountDetails: {
+          discountAmount: coupon.discountAmount,
+        },
+      });
+      newReferral.save();
+      console.log('starting referral message');
+      await this._handleSendReferralOrderPlaceMessage(
+        userName,
+        coupon.couponDetails.phoneNumber,
+      );
+      console.log('starting referral mail');
+      await this._handleSendReferralOrderPlaceMail(
+        userName,
+        coupon.couponDetails.userEmail,
+      );
       console.log('coupon', coupon);
       return coupon.discountAmount;
     }
@@ -317,7 +380,9 @@ export class OrdersService {
         userId: userDoc._id,
         orderNumber: params.orderNumber,
         shippingDetails: {
-          deliveryAddress: params.deliveryAddress,
+          deliveryAddress: params.shippingDetails.deliveryAddress,
+          deliveryDate: params.shippingDetails.deliveryDate,
+          deliveryDateInString: params.shippingDetails.deliveryDateInString,
         },
         userDetails: {
           emailId: userDoc.emailId,
@@ -325,13 +390,12 @@ export class OrdersService {
           userName: userDoc.name,
         },
         pickUpDetails: {
-          pickUpDate: Date.now(),
-          isPickedUp: false,
-          pickUpTimeStart: Date.now(),
-          pickUpTimeEnd: Date.now(),
-          pickUpTimeInString: '2:00 PM - 3:00 PM',
-          pickUpDateInString: '17 April',
-          storeLocation: params.storeLocation,
+          pickUpDate: params.pickUpDetails.pickUpDate,
+          pickUpTimeStart: params.pickUpDetails.pickUpTimeStart,
+          pickUpTimeEnd: params.pickUpDetails.pickUpTimeEnd,
+          pickUpTimeInString: params.pickUpDetails.pickUpTimeInString,
+          pickUpDateInString: params.pickUpDetails.pickUpDateInString,
+          storeLocation: params.pickUpDetails.storeLocation,
         },
         paymentDetails: {
           paymentType: params.paymentType,
@@ -428,39 +492,92 @@ export class OrdersService {
     // await axios.post(url, postBody);
   }
 
-  async _handleSendOrderPlacedMail(order: any) {
-    console.log('sending order mail');
-    if (order.deliveryType == 'STORE PICKUP') {
-      const msg = {
-        to: order.userDetails.emailId,
-        from: 'info@unboxedkart.com',
-        templateId: 'd-a138d401839444518e9515218e7af1e7',
-        dynamic_template_data: {
-          order: order.orderDetails.productTitle,
-          orderId: order.orderNumber,
-          userName: order.userDetails.userName,
-        },
-      };
-      const transport = await SendGrid.send(msg)
-        .then(() => console.log('email send'))
-        .catch((e) => console.log('email error', e));
-      return transport;
-    } else if (order.deliveryType == 'HOME DELIVERY') {
-      const msg = {
-        to: 'bsunil135@gmail.com',
-        from: 'info@unboxedkart.com',
-        templateId: 'd-a138d401839444518e9515218e7af1e7',
-        dynamic_template_data: {
-          order: order.orderDetails.productTitle,
-          orderId: order.orderNumber,
-          userName: order.userDetails.userName,
-        },
-      };
-      const transport = await SendGrid.send(msg)
-        .then(() => console.log('email send'))
-        .catch((e) => console.log('email error', e));
-      return transport;
+  async _handleSendOrderPlacedMail(userDoc: any, orderItems: any) {
+    console.log('sending order mail', orderItems);
+    let order = orderItems[0].productDetails.title;
+    if (orderItems.count > 1) {
+      order =
+        orderItems[0].productDetails.title +
+        '+' +
+        `${orderItems.count - 1} ${orderItems.count > 2 ? 'items' : 'item'}`;
     }
+    const msg = {
+      to: userDoc.emailId,
+      from: 'info@unboxedkart.com',
+      templateId: process.env.ORDER_PLACED_TEMPLATE_ID,
+      dynamic_template_data: {
+        order: order,
+        name: userDoc.name,
+      },
+    };
+    const transport = await SendGrid.send(msg)
+      .then(() => console.log('email send'))
+      .catch((e) => console.log('email error', e));
+    return transport;
+
+    // if (order.deliveryType == 'STORE PICKUP') {
+    //   const msg = {
+    //     to: order.userDetails.emailId,
+    //     from: 'info@unboxedkart.com',
+    //     templateId: 'd-a138d401839444518e9515218e7af1e7',
+    //     dynamic_template_data: {
+    //       order: order.orderDetails.productTitle,
+    //       orderId: order.orderNumber,
+    //       userName: order.userDetails.userName,
+    //     },
+    //   };
+    //   const transport = await SendGrid.send(msg)
+    //     .then(() => console.log('email send'))
+    //     .catch((e) => console.log('email error', e));
+    //   return transport;
+    // } else if (order.deliveryType == 'HOME DELIVERY') {
+    //   const msg = {
+    //     to: 'bsunil135@gmail.com',
+    //     from: 'info@unboxedkart.com',
+    //     templateId: 'd-a138d401839444518e9515218e7af1e7',
+    //     dynamic_template_data: {
+    //       order: order.orderDetails.productTitle,
+    //       orderId: order.orderNumber,
+    //       userName: order.userDetails.userName,
+    //     },
+    //   };
+    //   const transport = await SendGrid.send(msg)
+    //     .then(() => console.log('email send'))
+    //     .catch((e) => console.log('email error', e));
+    //   return transport;
+    // }
+  }
+
+  async _handleSendReferralOrderPlaceMessage(
+    name: string,
+    phoneNumber: number,
+  ) {
+    console.log('sending referral message');
+    const url = 'https://api.msg91.com/api/v5/flow';
+    const postBody = {
+      flow_id: process.env.REFERRAL_ORDER_FLOW_ID,
+      sender: process.env.ORDER_SMS_SENDER_ID,
+      mobiles: '91' + phoneNumber,
+      name: name,
+      authkey: process.env.SMS_AUTH_KEY,
+    };
+    console.log('91' + phoneNumber);
+    await axios.post(url, postBody);
+  }
+
+  async _handleSendReferralOrderPlaceMail(userName: any, emailId: string) {
+    const msg = {
+      to: emailId,
+      from: 'info@unboxedkart.com',
+      templateId: process.env.REFERRAL_ORDER_TEMPLATE_ID,
+      dynamic_template_data: {
+        name: userName,
+      },
+    };
+    const transport = await SendGrid.send(msg)
+      .then(() => console.log('email send'))
+      .catch((e) => console.log('email error', e));
+    return transport;
   }
 
   async _handleSendOrderConfirmedMessage(order: any) {
@@ -498,14 +615,14 @@ export class OrdersService {
         from: 'info@unboxedkart.com',
         templateId: process.env.PICKUP_ORDER_CONFIRMED_TEMPLATE_ID,
         dynamic_template_data: {
-          name: order.userDetails.userName,
-          order: order.orderDetails.productTitle,
+          name: order.userDetails.name,
+          order: order.orderDetails.title,
           orderId: order.orderNumber,
           pickupdate: order.pickUpDetails.pickUpDateInString,
         },
       };
       const transport = await SendGrid.send(msg)
-        .then(() => console.log('email send'))
+        .then(() => console.log('email send', 'confirmed'))
         .catch((e) => console.log('email error', e));
       return transport;
     } else if (order.deliveryType == 'HOME DELIVERY') {
@@ -514,8 +631,8 @@ export class OrdersService {
         from: 'info@unboxedkart.com',
         templateId: process.env.DELIVERY_ORDER_CONFIRMED_TEMPLATE_ID,
         dynamic_template_data: {
-          name: order.userDetails.userName,
-          order: order.orderDetails.productTitle,
+          name: order.userDetails.name,
+          order: order.orderDetails.title,
           orderId: order.orderNumber,
           deliverydate: order.shippingDetails.deliveryDateInString,
         },
@@ -672,10 +789,24 @@ export interface IndividualOrderItem {
   itemsCount: number;
   orderData: any;
   orderNumber: string;
-  deliveryAddress: string;
-  storeLocation: string;
+  // deliveryAddress: string;
+  // storeLocation: string;
   couponCode: string;
   couponDiscount: number;
+  shippingDetails: {
+    shipDate: any;
+    deliveryDate: string;
+    deliveryDateInString: string;
+    deliveryAddress: any;
+  };
+  pickUpDetails: {
+    pickUpDate: any;
+    storeLocation: any;
+    pickUpTimeStart: string;
+    pickUpTimeEnd: string;
+    pickUpTimeInString: string;
+    pickUpDateInString: string;
+  };
 }
 
 // console.log('single product', order);

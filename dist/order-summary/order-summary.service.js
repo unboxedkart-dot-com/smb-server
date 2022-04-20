@@ -146,44 +146,59 @@ let OrderSummaryService = class OrderSummaryService {
     }
     async addDeliveryAddress(userId, entireBody) {
         console.log('adding delivery address');
-        await this.userModel.findByIdAndUpdate(userId, {
+        const user = await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.deliveryType': order_model_1.DeliveryTypes.HOME_DELIVERY,
-            'orderSummary.deliveryAddress': {
-                userId: userId,
-                name: entireBody.name,
-                phoneNumber: entireBody.phoneNumber,
-                doorNo: entireBody.doorNo,
-                street: entireBody.street,
-                cityName: entireBody.cityName,
-                landmark: entireBody.landmark,
-                stateName: entireBody.stateName,
-                pinCode: entireBody.pinCode,
-                addressType: entireBody.addressType,
+            'orderSummary.shippingDetails': {
+                deliveryAddress: {
+                    userId: userId,
+                    name: entireBody.name,
+                    phoneNumber: entireBody.phoneNumber,
+                    doorNo: entireBody.doorNo,
+                    street: entireBody.street,
+                    cityName: entireBody.cityName,
+                    landmark: entireBody.landmark,
+                    stateName: entireBody.stateName,
+                    pinCode: entireBody.pinCode,
+                    addressType: entireBody.addressType,
+                },
+                deliveryDate: '1234',
+                deliveryDateInString: '1234',
             },
-            'orderSummary.deliveryDate': entireBody.deliveryDate,
         });
+        console.log('address added', user);
     }
     async addSelectedStoreDetails(userId, entireBody) {
-        await this.userModel.findByIdAndUpdate(userId, {
+        console.log('adding store details', entireBody);
+        console.log('userId', userId);
+        const user = await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.deliveryType': order_model_1.DeliveryTypes.STORE_PICKUP,
-            'orderSummary.storeLocation': {
-                storeName: entireBody.storeName,
-                streetName: entireBody.streetName,
-                cityName: entireBody.cityName,
-                pinCode: entireBody.pinCode,
-                directionsUrl: entireBody.directionsUrl,
-                storeOpenDays: entireBody.storeOpenDays,
-                storeTimings: entireBody.storeTimings,
-                contactNumber: entireBody.contactNumber,
-                alternateContactNumber: entireBody.alternateContactNumber,
+            'orderSummary.pickUpDetails': {
+                storeLocation: {
+                    storeName: entireBody.storeName,
+                    streetName: entireBody.streetName,
+                    cityName: entireBody.cityName,
+                    pinCode: entireBody.pinCode,
+                    directionsUrl: entireBody.directionsUrl,
+                    storeOpenDays: entireBody.storeOpenDays,
+                    storeTimings: entireBody.storeTimings,
+                    contactNumber: entireBody.contactNumber,
+                    alternateContactNumber: entireBody.alternateContactNumber,
+                },
+                pickUpTimeStart: entireBody.pickUpTimeStart,
+                pickUpTimeEnd: entireBody.pickUpTimeEnd,
+                pickUpDate: entireBody.pickUpDate,
+                pickUpTimeInString: entireBody.pickUpTimeInString,
+                pickUpDateInString: entireBody.pickUpDateInString,
             },
-            'orderSummary.pickUpTimeStart': entireBody.pickUpTimeStart,
-            'orderSummary.pickUpTimeEnd': entireBody.pickUpTimeEnd,
         });
+        console.log('store location added', user);
     }
-    async addCouponDetails(userId, entireBody) {
+    async addCouponDetails(userId, couponCode) {
+        const couponDetails = await this.couponModel.find({
+            couponCode: couponCode,
+        });
         await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.couponCode': 'SUNIL500',
+            'orderSummary.couponCode': couponCode,
         });
     }
     async updateCount(userId, entireBody) {

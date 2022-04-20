@@ -45,8 +45,4 @@ export class AddAddressDto {
   @IsNotEmpty()
   @IsString()
   addressType: string;
-
-  @IsNotEmpty()
-  @IsString()
-  deliveryDate: string;
 }

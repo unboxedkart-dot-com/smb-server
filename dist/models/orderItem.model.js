@@ -13,12 +13,13 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         userName: { type: String, required: true },
         emailId: { type: String, required: true },
     },
+    isDelivered: { type: Boolean, required: false, default: false },
     shippingDetails: {
         shipDate: { type: String, required: false },
         deliveryDate: { type: String, required: false },
         deliveryDateInString: { type: String, required: false },
         deliveryAddress: { type: address_model_1.AddressSchema, required: false },
-        isDelivered: { type: String, required: false },
+        isDelivered: { type: String, required: false, default: false },
     },
     pickUpDetails: {
         pickUpDate: { type: String, required: false },

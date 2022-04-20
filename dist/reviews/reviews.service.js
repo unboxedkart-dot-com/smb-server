@@ -53,15 +53,14 @@ let ReviewsService = class ReviewsService {
         }
     }
     async updateReview(userId, entireBody) {
-        await this.reviewModel.findOneAndUpdate({ userId: userId, _id: entireBody.reviewId }, {
-            userName: entireBody.userName,
+        console.log('updating review', entireBody);
+        const review = await this.reviewModel.findByIdAndUpdate(entireBody.reviewId, {
             rating: entireBody.rating,
             reviewTitle: entireBody.reviewTitle,
-            reviewSubTitle: entireBody.reviewSubTitle,
-            productId: entireBody.productId,
-            productTitle: entireBody.productTitle,
-            imageUrl: entireBody.imageUrl,
+            reviewContent: entireBody.reviewContent,
+            isApproved: false,
         });
+        console.log('updated review', review);
     }
     async deleteReview(userId, reviewId) {
         await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });

@@ -37,6 +37,11 @@ exports.OrderSchema = new mongoose_1.default.Schema({
     orderDate: { type: String, required: true, default: Date.now() },
     updatedDate: { type: String, required: false },
     userId: { type: String, required: true },
+    userDetails: {
+        phoneNumber: { type: Number, required: true },
+        name: { type: String, required: true },
+        emailId: { type: String, required: true },
+    },
     orderStatus: {
         type: String,
         required: true,

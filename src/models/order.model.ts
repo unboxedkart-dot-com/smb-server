@@ -35,6 +35,11 @@ export const OrderSchema = new mongoose.Schema({
   orderDate: { type: String, required: true, default: Date.now() },
   updatedDate: { type: String, required: false },
   userId: { type: String, required: true },
+  userDetails: {
+    phoneNumber: { type: Number, required: true },
+    name: { type: String, required: true },
+    emailId: { type: String, required: true },
+  },
   orderStatus: {
     type: String,
     required: true,
@@ -70,6 +75,11 @@ export interface Order {
   orderNumber: string;
   orderDate: Date;
   updatedDate: Date;
+  userDetails: {
+    name: string;
+    phoneNumber: number;
+    emailId: string;
+  };
   paymentDetails: {
     paymentDate: string;
     paymentId: string;

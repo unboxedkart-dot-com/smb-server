@@ -16,7 +16,8 @@ exports.AnswerSchema = new mongoose_1.default.Schema({
     isApproved: { type: Boolean, required: true, default: false },
     answer: { type: String, required: true },
     questionDetails: {
-        question: { type: String, required: true },
+        questionTitle: { type: String, required: true },
+        productTitle: { type: String, required: true },
         timestamp: { type: Date, required: true, default: Date.now() },
     },
     timestamp: { type: Date, required: true, default: Date.now() },

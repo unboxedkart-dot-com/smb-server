@@ -3,6 +3,7 @@ import { Coupon } from 'src/models/coupon.model';
 import { Order, paymentTypes } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
 import { Product } from 'src/models/product.model';
+import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -13,12 +14,16 @@ export declare class OrdersService {
     private readonly orderItemModel;
     private readonly userModel;
     private readonly reviewModel;
-    constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>);
+    private readonly referralModel;
+    constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, referralModel: Model<ReferralOrder>);
     deleteAll(): Promise<void>;
     createOrder(entireBody: CreateOrderDto, userId: string): Promise<{
         orderNumber: string;
         orderDate: number;
         selectedPickUpDate: number;
+        deliveryDate: string;
+        pickUpDateInString: string;
+        pickUpTimeInString: string;
         paymentType: paymentTypes;
         deliveryType: String;
         selectedAddress: any;
@@ -59,7 +64,7 @@ export declare class OrdersService {
         };
     }>;
     _generateOrderNumber(): string;
-    _getCouponDiscount(couponCode: string, orderTotal: number): Promise<number>;
+    _getCouponDiscount(userId: string, userName: string, orderNumber: string, couponCode: string, orderTotal: number): Promise<number>;
     _validateCouponCode(couponCode: string, orderTotal: number): Promise<{
         couponDiscount: number;
         payableAmount: number;
@@ -87,7 +92,9 @@ export declare class OrdersService {
     createPaymentOrder(): Promise<void>;
     validatePaymentSignature(): Promise<void>;
     _handleSendOrderPlacedMessage(userDoc: any, orderItems: any): Promise<void>;
-    _handleSendOrderPlacedMail(order: any): Promise<void>;
+    _handleSendOrderPlacedMail(userDoc: any, orderItems: any): Promise<void>;
+    _handleSendReferralOrderPlaceMessage(name: string, phoneNumber: number): Promise<void>;
+    _handleSendReferralOrderPlaceMail(userName: any, emailId: string): Promise<void>;
     _handleSendOrderConfirmedMessage(order: any): Promise<void>;
     _handleSendOrderConfirmedMail(order: any): Promise<void>;
     _handleSendOutForPickUpMail(order: any): Promise<void>;
@@ -105,8 +112,20 @@ export interface IndividualOrderItem {
     itemsCount: number;
     orderData: any;
     orderNumber: string;
-    deliveryAddress: string;
-    storeLocation: string;
     couponCode: string;
     couponDiscount: number;
+    shippingDetails: {
+        shipDate: any;
+        deliveryDate: string;
+        deliveryDateInString: string;
+        deliveryAddress: any;
+    };
+    pickUpDetails: {
+        pickUpDate: any;
+        storeLocation: any;
+        pickUpTimeStart: string;
+        pickUpTimeEnd: string;
+        pickUpTimeInString: string;
+        pickUpDateInString: string;
+    };
 }

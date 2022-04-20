@@ -41,6 +41,7 @@ export class ReviewsController {
     @Req() request: any,
     @Body() entireBody: UpdateReviewDto,
   ) {
+    console.log('updating review');
     const userId = request.user.userId;
     const review = await this.reviewsService.updateReview(userId, entireBody);
     return review;
@@ -62,7 +63,7 @@ export class ReviewsController {
   }
 
   @Get('/:id')
-  async handleGetProductReviews(@Param('id') productId : string){
+  async handleGetProductReviews(@Param('id') productId: string) {
     const reviews = await this.reviewsService.getProductReviews(productId);
     return reviews;
   }

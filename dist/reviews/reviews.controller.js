@@ -33,6 +33,7 @@ let ReviewsController = class ReviewsController {
         await this.reviewsService.createReview(userId, entireBody);
     }
     async handleUpdateReview(request, entireBody) {
+        console.log('updating review');
         const userId = request.user.userId;
         const review = await this.reviewsService.updateReview(userId, entireBody);
         return review;

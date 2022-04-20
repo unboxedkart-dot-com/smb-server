@@ -9,6 +9,9 @@ export declare class OrdersController {
         orderNumber: string;
         orderDate: number;
         selectedPickUpDate: number;
+        deliveryDate: string;
+        pickUpDateInString: string;
+        pickUpTimeInString: string;
         paymentType: import("../models/order.model").paymentTypes;
         deliveryType: String;
         selectedAddress: any;

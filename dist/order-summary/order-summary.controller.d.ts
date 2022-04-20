@@ -1,5 +1,5 @@
-import { AddAddressDto } from 'src/addresses/dto';
-import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
+import { AddDeliveryAddressDto } from './dto/add-address.dto';
+import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
@@ -10,9 +10,9 @@ export declare class OrderSummaryController {
     handleGetOrderSummaryItems(request: any): Promise<import("../models/cart-item.model").CartItem[]>;
     handleCreateOrderSummaryItems(request: any, entireBody: CreateOrderSummaryDto): Promise<void>;
     handleUpdateCount(request: any, entireBody: UpdateProductCountDto): Promise<void>;
-    handleAddCoupon(request: any, entireBody: any): Promise<void>;
-    handleAddStoreDetails(request: any, entireBody: AddStoreLocationDto): Promise<void>;
-    handleAddDeliveryAddress(entireBody: AddAddressDto, request: any): Promise<void>;
+    handleAddCoupon(request: any, couponCode: string): Promise<void>;
+    handleAddStoreDetails(request: any, entireBody: AddSelectedStoreDto): Promise<void>;
+    handleAddDeliveryAddress(entireBody: AddDeliveryAddressDto, request: any): Promise<void>;
     handleGetPayableAmount(request: any): Promise<{
         payableAmount: number;
         orderId: any;

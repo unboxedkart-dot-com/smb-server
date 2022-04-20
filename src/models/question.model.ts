@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { Answer, AnswerSchema } from './answer.model';
 
 export const QuestionSchema = new mongoose.Schema({
-
   userId: { type: String, required: true, select: false },
   userName: { type: String, required: true },
   userRole: { type: String, required: true },
@@ -11,8 +10,8 @@ export const QuestionSchema = new mongoose.Schema({
   question: { type: String, required: true },
   timestamp: { type: Date, required: true, default: Date.now() },
 });
-
-export interface Question {  
+ 
+export interface Question {
   userId: string;
   userName: string;
   userRole: string;

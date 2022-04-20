@@ -50,7 +50,8 @@ let CouponsService = class CouponsService {
         });
         if (coupon) {
             console.log('ppp', coupon);
-            if (cartTotal > coupon.minimumOrderTotal) {
+            if (cartTotal > coupon.minimumOrderTotal && coupon.couponDetails.userId != userId) {
+                console.log('cart total', cartTotal);
                 return {
                     isValid: true,
                     couponDetails: {
@@ -70,7 +71,7 @@ let CouponsService = class CouponsService {
         else {
             return {
                 isValid: false,
-                errorText: 'Entered coupon is not valid',
+                errorText: 'Entered coupon is not valid for your account',
             };
         }
     }

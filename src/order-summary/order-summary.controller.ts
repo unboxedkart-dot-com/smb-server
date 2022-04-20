@@ -10,6 +10,8 @@ import {
 import { AddAddressDto } from 'src/addresses/dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
+import { AddDeliveryAddressDto } from './dto/add-address.dto';
+import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
@@ -54,11 +56,11 @@ export class OrderSummaryController {
   }
 
   @Patch('update/coupon')
-  async handleAddCoupon(@Req() request: any, @Body() entireBody: any) {
+  async handleAddCoupon(@Req() request: any, @Body('couponCode') couponCode : string) {
     const userId = request.user.userId;
     const result = await this.orderSummaryService.addCouponDetails(
       userId,
-      entireBody,
+      couponCode,
     );
     return result;
   }
@@ -76,7 +78,7 @@ export class OrderSummaryController {
   @Patch('update/store-details')
   async handleAddStoreDetails(
     @Req() request: any,
-    @Body() entireBody: AddStoreLocationDto,
+    @Body() entireBody: AddSelectedStoreDto,
   ) {
     const userId = request.user.userId;
     console.log('entre body', entireBody);
@@ -89,7 +91,7 @@ export class OrderSummaryController {
 
   @Patch('update/address-details')
   async handleAddDeliveryAddress(
-    @Body() entireBody: AddAddressDto,
+    @Body() entireBody: AddDeliveryAddressDto,
     @Req() request: any,
   ) {
     console.log('addddd bodt', entireBody);
@@ -109,9 +111,15 @@ export class OrderSummaryController {
   }
 
   @Post('verify-payment')
-  async handleVerifyPayment(@Req() request : any, @Body() entireBody : VerifyPaymentDto){
+  async handleVerifyPayment(
+    @Req() request: any,
+    @Body() entireBody: VerifyPaymentDto,
+  ) {
     const userId = request.user.userId;
-    const response = await this.orderSummaryService.verifyPaymentSignature(userId , entireBody);
+    const response = await this.orderSummaryService.verifyPaymentSignature(
+      userId,
+      entireBody,
+    );
     return response;
   }
 }

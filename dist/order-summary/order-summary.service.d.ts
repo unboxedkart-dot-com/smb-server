@@ -5,9 +5,10 @@ import { Model } from 'mongoose';
 import { CartItem } from 'src/models/cart-item.model';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
 import { Coupon } from 'src/models/coupon.model';
-import { AddAddressDto } from 'src/addresses/dto';
 import { UpdateProductCountDto } from './dto/update-count.dto';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
+import { AddDeliveryAddressDto } from './dto/add-address.dto';
+import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
 export declare class OrderSummaryService {
     private readonly orderSummaryModel;
     private readonly userModel;
@@ -30,8 +31,8 @@ export declare class OrderSummaryService {
     _getSingleItemPrice(productId: string, productCount: number): Promise<number>;
     getOrderSummaryItems(userId: string): Promise<CartItem[]>;
     createOrderSummaryItems(userId: string, entireBody: CreateOrderSummaryDto): Promise<void>;
-    addDeliveryAddress(userId: string, entireBody: AddAddressDto): Promise<void>;
-    addSelectedStoreDetails(userId: string, entireBody: any): Promise<void>;
-    addCouponDetails(userId: string, entireBody: any): Promise<void>;
+    addDeliveryAddress(userId: string, entireBody: AddDeliveryAddressDto): Promise<void>;
+    addSelectedStoreDetails(userId: string, entireBody: AddSelectedStoreDto): Promise<void>;
+    addCouponDetails(userId: string, couponCode: String): Promise<void>;
     updateCount(userId: string, entireBody: UpdateProductCountDto): Promise<void>;
 }

@@ -22,6 +22,11 @@ export interface Order {
     orderNumber: string;
     orderDate: Date;
     updatedDate: Date;
+    userDetails: {
+        name: string;
+        phoneNumber: number;
+        emailId: string;
+    };
     paymentDetails: {
         paymentDate: string;
         paymentId: string;
