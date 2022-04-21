@@ -120,6 +120,7 @@ let OrdersService = class OrdersService {
         });
         this._handleSendOrderConfirmedMessage(order);
         this._handleSendOrderConfirmedMail(order);
+        this._handleOrderConfirmationNotification(order);
     }
     async orderReadyForPickUp(userId, orderItemId) {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
@@ -475,6 +476,32 @@ let OrdersService = class OrdersService {
             return transport;
         }
     }
+    sendNotification(data) {
+        var headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            Authorization: `Basic NzRjZDliNTUtY2Q5ZC00MjExLTk4MWEtZDZlMjg5MDYyYzBm`,
+        };
+        var options = {
+            host: 'onesignal.com',
+            port: 443,
+            path: '/api/v1/notifications',
+            method: 'POST',
+            headers: headers,
+        };
+        var https = require('https');
+        var req = https.request(options, function (res) {
+            res.on('data', function (data) {
+                console.log('Response:');
+                console.log(JSON.parse(data));
+            });
+        });
+        req.on('error', function (e) {
+            console.log('ERROR:');
+            console.log(e);
+        });
+        req.write(JSON.stringify(data));
+        req.end();
+    }
     async _handleSendOutForPickUpMail(order) {
         const msg = {
             to: order.userDetails.emailId,
@@ -512,6 +539,21 @@ let OrdersService = class OrdersService {
             directions: order.pickUpDetails.storeLocation.directions,
         };
         await axios_1.default.post(url, postBody);
+    }
+    async _handleOrderConfirmationNotification(order) {
+        console.log('sending push', order.userId.substring(0, 20));
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            contents: {
+                en: `Hey Sunil, your order is confirmedHey ${order.userDetails.name}, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmed`,
+            },
+            channel_for_external_user_ids: 'push',
+            include_external_user_ids: [
+                order.userId.substring(0, 20),
+            ],
+        };
+        const response = this.sendNotification(message);
+        console.log('response', response);
     }
     async _handleSendOrderShippedMessage(order) {
         const url = process.env.SMS_FLOW_URL;

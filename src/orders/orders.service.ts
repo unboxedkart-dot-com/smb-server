@@ -154,6 +154,7 @@ export class OrdersService {
     });
     this._handleSendOrderConfirmedMessage(order);
     this._handleSendOrderConfirmedMail(order);
+    this._handleOrderConfirmationNotification(order);
   }
 
   async orderReadyForPickUp(userId: string, orderItemId: string) {
@@ -644,6 +645,37 @@ export class OrdersService {
     }
   }
 
+  sendNotification(data: any) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: `Basic NzRjZDliNTUtY2Q5ZC00MjExLTk4MWEtZDZlMjg5MDYyYzBm`,
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers,
+    };
+
+    var https = require('https');
+    var req = https.request(options, function (res) {
+      res.on('data', function (data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function (e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  }
+
   async _handleSendOutForPickUpMail(order: any) {
     const msg = {
       to: order.userDetails.emailId,
@@ -682,6 +714,27 @@ export class OrdersService {
       directions: order.pickUpDetails.storeLocation.directions,
     };
     await axios.post(url, postBody);
+  }
+
+  // async handleOrderPlacedNotification(){}
+
+  async _handleOrderConfirmationNotification(order: any) {
+    console.log('sending push', order.userId.substring(0, 20));
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      contents: {
+        en: `Hey Sunil, your order is confirmedHey ${order.userDetails.name}, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmed`,
+      },
+      channel_for_external_user_ids: 'push',
+      // included_segments: ['Subscribed Users'],
+      include_external_user_ids: [
+        order.userId.substring(0, 20),
+        // '796733d5-3865-46cb-bf4c-c6986d861e92',
+        // '8180d163-e411-44d2-bd70-c0610495aff9',
+      ],
+    };
+    const response = this.sendNotification(message);
+    console.log('response', response);
   }
 
   async _handleSendOrderShippedMessage(order: any) {

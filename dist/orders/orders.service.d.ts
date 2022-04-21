@@ -97,8 +97,10 @@ export declare class OrdersService {
     _handleSendReferralOrderPlaceMail(userName: any, emailId: string): Promise<void>;
     _handleSendOrderConfirmedMessage(order: any): Promise<void>;
     _handleSendOrderConfirmedMail(order: any): Promise<void>;
+    sendNotification(data: any): void;
     _handleSendOutForPickUpMail(order: any): Promise<void>;
     _handleSendOutForPickUpMessage(order: any): Promise<void>;
+    _handleOrderConfirmationNotification(order: any): Promise<void>;
     _handleSendOrderShippedMessage(order: any): Promise<void>;
     _handleSendOrderShippedMail(order: any): Promise<void>;
     _handleSendOutForDeliveryMessage(order: any): Promise<void>;

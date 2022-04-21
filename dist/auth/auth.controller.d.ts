@@ -30,6 +30,7 @@ export declare class AuthController {
             accessToken: string;
             wishlist: string[];
             cart: string[];
+            userId: string;
         };
     }>;
     handleSignupUser(entireBody: SignUpDto): Promise<{
@@ -41,6 +42,7 @@ export declare class AuthController {
         message: string;
         data: {
             accessToken: string;
+            userId: string;
         };
     }>;
 }

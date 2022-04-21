@@ -122,4 +122,10 @@ export class OrdersController {
     );
     return response;
   }
+
+  // @Post('dummy-push')
+  // async handleSendPushNotification() {
+  //   console.log('dummt push started');
+  //   const response = this.ordersService.handleOrderConfirmationNotification();
+  // }
 }

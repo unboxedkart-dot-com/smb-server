@@ -112,6 +112,7 @@ let AuthService = class AuthService {
                         accessToken: accessToken,
                         wishlist: user.favoriteItemIds,
                         cart: user.cartItemIds,
+                        userId: user._id.toString().substring(0, 20),
                     },
                 };
             }
@@ -201,6 +202,7 @@ let AuthService = class AuthService {
                     message: 'user created successfully',
                     data: {
                         accessToken: accessToken,
+                        userId: newUser._id.toString().substring(0, 20),
                     },
                 };
             }

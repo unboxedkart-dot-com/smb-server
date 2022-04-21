@@ -26,6 +26,7 @@ export declare class AuthService {
             accessToken: string;
             wishlist: string[];
             cart: string[];
+            userId: string;
         };
     }>;
     validateOtp(phoneNumber: number, otp: number): Promise<{
@@ -47,6 +48,7 @@ export declare class AuthService {
         message: string;
         data: {
             accessToken: string;
+            userId: string;
         };
     }>;
     _sendAccountCreatedMail(userDoc: any): Promise<void>;
