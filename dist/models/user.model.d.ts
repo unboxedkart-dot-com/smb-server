@@ -51,4 +51,6 @@ export interface User {
         };
     };
     personalCouponCode: string;
+    purchasedItemIds: string[];
+    answeredQuestionIds: string[];
 }

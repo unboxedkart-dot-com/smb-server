@@ -31,6 +31,11 @@ let UserController = class UserController {
         const response = await this.userService.updateUserDetails(userId, entireBody);
         return response;
     }
+    async handleGetUserData(request) {
+        const userId = request.user.userId;
+        const response = await this.userService.getUserData(userId);
+        return response;
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -47,6 +52,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_user_details_dto_1.UpdateUserDetailsDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "handleUpdateUserDetails", null);
+__decorate([
+    (0, common_1.Get)('user-data'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "handleGetUserData", null);
 UserController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('user-details'),

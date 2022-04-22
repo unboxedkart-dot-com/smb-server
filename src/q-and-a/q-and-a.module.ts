@@ -8,6 +8,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserSchema } from 'src/models/user.model';
 import { QuestionSchema } from 'src/models/question.model';
 import { ProductSchema } from 'src/models/product.model';
+import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ProductSchema } from 'src/models/product.model';
       { name: 'User', schema: UserSchema },
       { name: 'Question', schema: QuestionSchema },
       { name: 'Product', schema: ProductSchema },
+      { name: 'ItemPurchasedUsers', schema: ItemPurchasedUsersSchema },
     ]),
   ],
   controllers: [QAndAController],

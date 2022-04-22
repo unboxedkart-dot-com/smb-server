@@ -11,7 +11,10 @@ exports.ReferralOrderSchema = new mongoose_1.default.Schema({
         userName: { type: String, required: true },
         userEmail: { type: String, required: false },
     },
-    refereeId: { type: String, required: true, select: true },
+    refereeDetails: {
+        userId: { type: String, required: true, select: false },
+        userName: { type: String, required: true },
+    },
     cashBackDetails: {
         cashBackAmount: { type: Number, required: true },
         isCredited: { type: Boolean, required: true, default: false },
@@ -20,5 +23,6 @@ exports.ReferralOrderSchema = new mongoose_1.default.Schema({
         discountAmount: { type: Number, required: true },
     },
     isCompeleted: { type: Boolean, required: true, default: false },
+    timestamp: { type: Date, required: true, default: Date.now() },
 });
 //# sourceMappingURL=referral_order.js.map

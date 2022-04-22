@@ -10,4 +10,8 @@ export declare class UserController {
         _id: import("mongoose").Types.ObjectId;
     }>;
     handleUpdateUserDetails(request: any, entireBody: UpdateUserDetailsDto): Promise<void>;
+    handleGetUserData(request: any): Promise<{
+        purchasedItemIds: string[];
+        answeredQuestionIds: string[];
+    }>;
 }

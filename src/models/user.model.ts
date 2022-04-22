@@ -40,6 +40,8 @@ export const UserSchema = new mongoose.Schema({
     },
   },
   personalCouponCode: { type: String, required: false },
+  purchasedItemIds: { type: Array, required: false, default: [] },
+  answeredQuestionIds: { type: Array, required: false, default: [] },
 });
 
 export interface User {
@@ -94,4 +96,6 @@ export interface User {
     };
   };
   personalCouponCode: string;
+  purchasedItemIds: string[];
+  answeredQuestionIds: string[];
 }

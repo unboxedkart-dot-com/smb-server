@@ -11,16 +11,26 @@ export class UserService {
     private readonly userModel: Model<User>,
   ) {}
 
-  async getUserDetails(userId : string){
+  async getUserDetails(userId: string) {
     const user = await this.userModel.findById(userId);
     return user;
-
   }
 
-  async updateUserDetails(userId : string, entireBody : UpdateUserDetailsDto){
+  async getUserData(userId: string) {
+    const user = await this.userModel.findById(userId, {
+      purchasedItemIds: 1,
+      answeredQuestionIds: 1,
+    });
+    return {
+      'purchasedItemIds' : user.purchasedItemIds,
+      'answeredQuestionIds' : user.answeredQuestionIds
+    }
+  }
+
+  async updateUserDetails(userId: string, entireBody: UpdateUserDetailsDto) {
     await this.userModel.findByIdAndUpdate(userId, {
-        name : entireBody.name,
-        gender : entireBody.gender,
+      name: entireBody.name,
+      gender: entireBody.gender,
     });
   }
 }

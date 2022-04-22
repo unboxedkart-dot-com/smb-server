@@ -9,12 +9,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { HttpModule } from '@nestjs/axios';
 import { CouponSchema } from 'src/models/coupon.model';
+import { SearchTermSchema } from 'src/models/search_term';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'User', schema: UserSchema },
       { name: 'Coupon', schema: CouponSchema },
+      { name: 'SearchTerm', schema: SearchTermSchema },
     ]),
     PassportModule,
     HttpModule,

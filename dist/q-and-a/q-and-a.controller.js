@@ -26,6 +26,11 @@ let QAndAController = class QAndAController {
         const result = await this.qAndAService.getProductQuestionAndAnswers(productId);
         return result;
     }
+    async handleGetProductReviews(productId) {
+        console.log('given product id', productId);
+        const reviews = await this.qAndAService.getProductQuestionAndAnswers(productId);
+        return reviews;
+    }
     async handleGetAnswers(request) {
         console.log('getting answers');
         const userId = request.user.userId;
@@ -50,13 +55,18 @@ let QAndAController = class QAndAController {
     async handleCreateAnswer(request, entireBody) {
         const userId = request.user.userId;
         await this.qAndAService.createAnswer(userId, entireBody);
-        return 'answer added';
     }
     async handleApproveAnswer(answerId) {
         await this.qAndAService.approveAnswer(answerId);
     }
+    async handleGetQuestionsFeed(request) {
+        const userId = request.user.userId;
+        const response = await this.qAndAService.getQuestionsFeed(userId);
+        return response;
+    }
 };
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('id')),
     __metadata("design:type", Function),
@@ -64,6 +74,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetQuestionAndAnswers", null);
 __decorate([
+    (0, common_1.Get)('/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetProductReviews", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('/answers'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -71,6 +89,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetAnswers", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('/questions'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -78,6 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetQuestions", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('create/question'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -86,6 +106,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleCreateQuestion", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)('approve/question/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
@@ -94,6 +115,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleApproveQuestion", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('/create/answer'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -102,14 +124,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleCreateAnswer", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('approve/answer/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleApproveAnswer", null);
-QAndAController = __decorate([
+__decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/feed'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetQuestionsFeed", null);
+QAndAController = __decorate([
     (0, common_1.Controller)('q-and-a'),
     __metadata("design:paramtypes", [q_and_a_service_1.QAndAService])
 ], QAndAController);

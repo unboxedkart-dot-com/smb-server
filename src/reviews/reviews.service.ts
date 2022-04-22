@@ -26,9 +26,12 @@ export class ReviewsService {
   async getProductReviews(productId: string) {
     const reviews = await this.reviewModel.find({
       productId: productId,
-      isApproved: true,
+      // isApproved: true,
     });
-    return reviews;
+    const reviewsData = await this.reviewsDataModel.find({
+      productId: productId,
+    });
+    return { reviews: reviews, reviewsData: reviewsData };
   }
 
   async createReview(userId: string, entireBody: CreateReviewDto) {
@@ -46,7 +49,9 @@ export class ReviewsService {
         imageUrl: product.imageUrls.coverImage,
       });
       console.log('new review', newReview);
-      newReview.save();
+      await newReview.save();
+      console.log('apprive');
+      await this.approveReview('123', newReview._id.toString());
     }
   }
 
@@ -72,13 +77,12 @@ export class ReviewsService {
     await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });
   }
 
-  async approveReview(userId: string, entireBody: ApproveReviewDto) {
-    const review = await this.reviewModel.findByIdAndUpdate(
-      entireBody.reviewId,
-      {
-        isApproved: true,
-      },
-    );
+  async approveReview(userId: string, reviewId: string) {
+    console.log('approving review', reviewId);
+    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
+      isApproved: true,
+    });
+    console.log('reviewww', review);
     const reviewsData = await this.reviewsDataModel.findOne({
       productId: review.productId,
     });

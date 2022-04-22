@@ -10,6 +10,9 @@ export declare class QAndAController {
     handleGetQuestionAndAnswers(productId: string): Promise<(import("mongoose").Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
+    handleGetProductReviews(productId: string): Promise<(import("mongoose").Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
     handleGetAnswers(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/answer.model").Answer> & import("../models/answer.model").Answer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
@@ -21,6 +24,9 @@ export declare class QAndAController {
         message: string;
     }>;
     handleApproveQuestion(questionId: string, request: any): Promise<void>;
-    handleCreateAnswer(request: any, entireBody: CreateAnswerDto): Promise<string>;
+    handleCreateAnswer(request: any, entireBody: CreateAnswerDto): Promise<void>;
     handleApproveAnswer(answerId: string): Promise<void>;
+    handleGetQuestionsFeed(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
 }

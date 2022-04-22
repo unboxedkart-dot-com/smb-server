@@ -17,12 +17,13 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let QAndAService = class QAndAService {
-    constructor(answerModel, questionAndAnswerModel, questionModel, productModel, userModel) {
+    constructor(answerModel, questionAndAnswerModel, questionModel, productModel, userModel, itemPurchasedUsersModel) {
         this.answerModel = answerModel;
         this.questionAndAnswerModel = questionAndAnswerModel;
         this.questionModel = questionModel;
         this.productModel = productModel;
         this.userModel = userModel;
+        this.itemPurchasedUsersModel = itemPurchasedUsersModel;
     }
     async getProductQuestionAndAnswers(productId) {
         const questionAndAnswers = await this.questionAndAnswerModel.find({
@@ -97,13 +98,20 @@ let QAndAService = class QAndAService {
             },
         });
         newQAndA.save();
+        const users = await this.itemPurchasedUsersModel.findOne({
+            productId: newQAndA.productId,
+        });
         console.log('updating question', question);
     }
     async createAnswer(userId, entireBody) {
-        const userDetails = await this._getUserDetails(userId);
+        console.log('creating answer', entireBody);
+        const user = await this.userModel.findByIdAndUpdate(userId, {
+            $push: { answeredQuestionIds: entireBody.questionId },
+        });
         const newAnswer = new this.answerModel({
             userId: userId,
-            userName: userDetails.userName,
+            productId: entireBody.productId,
+            userName: user.name,
             userRole: 'user',
             questionId: entireBody.questionId,
             questionDetails: {
@@ -112,7 +120,9 @@ let QAndAService = class QAndAService {
             },
             answer: entireBody.answer,
         });
-        newAnswer.save();
+        await newAnswer.save();
+        this.approveAnswer(newAnswer._id.toString());
+        console.log('answer craeted');
     }
     async approveAnswer(answerId) {
         const answer = await this.answerModel
@@ -144,6 +154,15 @@ let QAndAService = class QAndAService {
             userName: user.name,
         };
     }
+    async getQuestionsFeed(userId) {
+        const user = await this.userModel.findById(userId);
+        console.log('iiii', user.purchasedItemIds);
+        const questions = await this.questionAndAnswerModel.find({
+            productId: { $in: user.purchasedItemIds },
+            'questionDetails.questionId': { $nin: user.answeredQuestionIds },
+        });
+        return questions;
+    }
 };
 QAndAService = __decorate([
     (0, common_1.Injectable)(),
@@ -152,7 +171,9 @@ QAndAService = __decorate([
     __param(2, (0, mongoose_1.InjectModel)('Question')),
     __param(3, (0, mongoose_1.InjectModel)('Product')),
     __param(4, (0, mongoose_1.InjectModel)('User')),
+    __param(5, (0, mongoose_1.InjectModel)('ItemPurchasedUsers')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

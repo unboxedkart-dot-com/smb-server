@@ -1,3 +1,4 @@
+import { SearchTerm } from 'src/models/search_term';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User } from 'src/models/user.model';
@@ -7,8 +8,9 @@ import { Coupon } from 'src/models/coupon.model';
 export declare class AuthService {
     private readonly userModel;
     private readonly couponModel;
+    private readonly searchTermModel;
     private jwtService;
-    constructor(userModel: Model<User>, couponModel: Model<Coupon>, jwtService: JwtService);
+    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, jwtService: JwtService);
     sendMail(): Promise<void>;
     sendOtp(phoneNumber: number): Promise<{
         status: string;
@@ -19,6 +21,8 @@ export declare class AuthService {
         status: string;
         message: string;
     }>;
+    _getRecentSearches(recentSearches: any): Promise<any[]>;
+    _getPopularSearches(): Promise<any[]>;
     loginUser(entireBody: LoginDto): Promise<{
         status: string;
         message: string;
@@ -27,6 +31,9 @@ export declare class AuthService {
             wishlist: string[];
             cart: string[];
             userId: string;
+            recentSearches: any[];
+            popularSearches: any[];
+            purchasedItemIds: string[];
         };
     }>;
     validateOtp(phoneNumber: number, otp: number): Promise<{
@@ -49,6 +56,7 @@ export declare class AuthService {
         data: {
             accessToken: string;
             userId: string;
+            popularSearches: any[];
         };
     }>;
     _sendAccountCreatedMail(userDoc: any): Promise<void>;

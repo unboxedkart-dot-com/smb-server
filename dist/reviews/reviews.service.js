@@ -30,9 +30,11 @@ let ReviewsService = class ReviewsService {
     async getProductReviews(productId) {
         const reviews = await this.reviewModel.find({
             productId: productId,
-            isApproved: true,
         });
-        return reviews;
+        const reviewsData = await this.reviewsDataModel.find({
+            productId: productId,
+        });
+        return { reviews: reviews, reviewsData: reviewsData };
     }
     async createReview(userId, entireBody) {
         const user = await this.userModel.findById(userId);
@@ -49,7 +51,9 @@ let ReviewsService = class ReviewsService {
                 imageUrl: product.imageUrls.coverImage,
             });
             console.log('new review', newReview);
-            newReview.save();
+            await newReview.save();
+            console.log('apprive');
+            await this.approveReview('123', newReview._id.toString());
         }
     }
     async updateReview(userId, entireBody) {
@@ -65,10 +69,12 @@ let ReviewsService = class ReviewsService {
     async deleteReview(userId, reviewId) {
         await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });
     }
-    async approveReview(userId, entireBody) {
-        const review = await this.reviewModel.findByIdAndUpdate(entireBody.reviewId, {
+    async approveReview(userId, reviewId) {
+        console.log('approving review', reviewId);
+        const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
             isApproved: true,
         });
+        console.log('reviewww', review);
         const reviewsData = await this.reviewsDataModel.findOne({
             productId: review.productId,
         });

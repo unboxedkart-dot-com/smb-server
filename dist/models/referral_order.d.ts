@@ -9,7 +9,10 @@ export interface ReferralOrder {
         userName: string;
         userEmail: string;
     };
-    refereeId: string;
+    refereeDetails: {
+        userId: string;
+        userName: string;
+    };
     cashBackDetails: {
         cashBackAmount: string;
         isCredited: string;
@@ -18,4 +21,5 @@ export interface ReferralOrder {
         discountAmount: string;
     };
     isCompeleted: boolean;
+    timestamp: Date;
 }

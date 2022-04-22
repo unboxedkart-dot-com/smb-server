@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,11 +16,10 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
 
-@UseGuards(JwtAuthGuard)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   async handleGetUserReviews(@Req() request: any) {
     const userId = request.user.userId;
@@ -27,6 +27,11 @@ export class ReviewsController {
     return reviews;
   }
 
+  // @Get('/:id')
+  // async handleGetProductReviews(@Param('id')){
+  //   const reviews = await this.reviewsService.getProductReviews()
+  // }
+  @UseGuards(JwtAuthGuard)
   @Post('/create')
   async handleCreateReview(
     @Req() request: any,
@@ -36,6 +41,7 @@ export class ReviewsController {
     await this.reviewsService.createReview(userId, entireBody);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('/update')
   async handleUpdateReview(
     @Req() request: any,
@@ -47,15 +53,17 @@ export class ReviewsController {
     return review;
   }
 
-  @Patch('/approve')
+  @UseGuards(JwtAuthGuard)
+  @Patch('/approve/:id')
   async handleApproveReview(
     @Req() request: any,
-    @Body() entireBody: ApproveReviewDto,
+    @Param('id') reviewId: string,
   ) {
     const userId = request.user.userId;
-    await this.reviewsService.approveReview(userId, entireBody);
+    await this.reviewsService.approveReview(userId, reviewId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/delete/:id')
   async handleDeleteReview(@Param('id') reviewId: string, @Req() request: any) {
     const userId = request.user.userId;

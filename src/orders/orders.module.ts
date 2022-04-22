@@ -10,6 +10,7 @@ import { OrderItemSchema } from 'src/models/orderItem.model';
 import { UserSchema } from 'src/models/user.model';
 import { ReviewSchema } from 'src/models/review.model';
 import { ReferralOrderSchema } from 'src/models/referral_order';
+import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReferralOrderSchema } from 'src/models/referral_order';
       { name: 'User', schema: UserSchema },
       { name: 'Review', schema: ReviewSchema },
       { name: 'ReferralOrder', schema: ReferralOrderSchema },
+      { name: 'ItemPurchasedUsers', schema: ItemPurchasedUsersSchema },
     ]),
   ],
   controllers: [OrdersController],

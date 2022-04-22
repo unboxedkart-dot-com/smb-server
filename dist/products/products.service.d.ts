@@ -5,14 +5,16 @@ import { Product } from '../models/product.model';
 export declare class ProductsService {
     private readonly productModel;
     private readonly reviewModel;
+    private readonly productSpecsModel;
     private readonly questionAndAnswersModel;
-    constructor(productModel: Model<Product>, reviewModel: Model<Review>, questionAndAnswersModel: Model<QuestionAndAnswer>);
+    constructor(productModel: Model<Product>, reviewModel: Model<Review>, productSpecsModel: Model<Product>, questionAndAnswersModel: Model<QuestionAndAnswer>);
     insertProduct(product: Product): Promise<any>;
     getProducts(): Promise<Product[]>;
     getProduct(id: string): Promise<{
         product: import("mongoose").Document<unknown, any, Product> & Product & {
             _id: import("mongoose").Types.ObjectId;
         };
+        productSpecs: any;
         productReviews: (import("mongoose").Document<unknown, any, Review> & Review & {
             _id: import("mongoose").Types.ObjectId;
         })[];

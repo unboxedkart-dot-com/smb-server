@@ -25,6 +25,10 @@ let CouponsController = class CouponsController {
         const response = await this.couponsService.getPersonalCoupon(userId);
         return response;
     }
+    async handleGetCoupons() {
+        const response = await this.couponsService.getCoupons();
+        return response;
+    }
     async handleCreateCoupon(request) {
         const userId = request.user.userId;
         const response = await this.couponsService.createPersonalCoupon(userId);
@@ -37,13 +41,21 @@ let CouponsController = class CouponsController {
     }
 };
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/referral-coupon'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], CouponsController.prototype, "handleGetPersonalCoupon", null);
 __decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CouponsController.prototype, "handleGetCoupons", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('personal-coupon'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -51,6 +63,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CouponsController.prototype, "handleCreateCoupon", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('validate'),
     __param(0, (0, common_1.Query)('couponCode')),
     __param(1, (0, common_1.Query)('cartTotal')),
@@ -60,7 +73,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CouponsController.prototype, "handleValidateCoupon", null);
 CouponsController = __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('coupons'),
     __metadata("design:paramtypes", [coupons_service_1.CouponsService])
 ], CouponsController);

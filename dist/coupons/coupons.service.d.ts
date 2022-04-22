@@ -11,6 +11,7 @@ export declare class CouponsService {
     getPersonalCoupon(userId: string): Promise<import("mongoose").Document<unknown, any, Coupon> & Coupon & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    getCoupons(): Promise<Coupon[]>;
     createPersonalCoupon(userId: string): Promise<void>;
     validateCoupon(userId: string, couponCode: string, cartTotal: number): Promise<{
         isValid: boolean;

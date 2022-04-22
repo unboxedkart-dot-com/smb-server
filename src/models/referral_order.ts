@@ -9,7 +9,10 @@ export const ReferralOrderSchema = new mongoose.Schema({
     userName: { type: String, required: true },
     userEmail: { type: String, required: false },
   },
-  refereeId: { type: String, required: true, select: true },
+  refereeDetails: {
+    userId: { type: String, required: true, select: false },
+    userName: { type: String, required: true },
+  },
   cashBackDetails: {
     cashBackAmount: { type: Number, required: true },
     isCredited: { type: Boolean, required: true, default: false },
@@ -18,24 +21,29 @@ export const ReferralOrderSchema = new mongoose.Schema({
     discountAmount: { type: Number, required: true },
   },
   isCompeleted: { type: Boolean, required: true, default: false },
+  timestamp: { type: Date, required: true, default: Date.now() },
 });
 
 export interface ReferralOrder {
-    couponCode: string;
-    orderNumber: string;
-    referrerDetails: {
-      userId: string;
-      phoneNumber: string;
-      userName: string;
-      userEmail: string;
-    },
-    refereeId: string;
-    cashBackDetails: {
-      cashBackAmount: string;
-      isCredited: string;
-    },
-    discountDetails: {
-      discountAmount: string;
-    },
-    isCompeleted: boolean;
+  couponCode: string;
+  orderNumber: string;
+  referrerDetails: {
+    userId: string;
+    phoneNumber: string;
+    userName: string;
+    userEmail: string;
+  };
+  refereeDetails: {
+    userId: string;
+    userName: string;
+  };
+  cashBackDetails: {
+    cashBackAmount: string;
+    isCredited: string;
+  };
+  discountDetails: {
+    discountAmount: string;
+  };
+  isCompeleted: boolean;
+  timestamp : Date;
 }

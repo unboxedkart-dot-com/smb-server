@@ -17,9 +17,10 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let ProductsService = class ProductsService {
-    constructor(productModel, reviewModel, questionAndAnswersModel) {
+    constructor(productModel, reviewModel, productSpecsModel, questionAndAnswersModel) {
         this.productModel = productModel;
         this.reviewModel = reviewModel;
+        this.productSpecsModel = productSpecsModel;
         this.questionAndAnswersModel = questionAndAnswersModel;
     }
     async insertProduct(product) {
@@ -37,17 +38,24 @@ let ProductsService = class ProductsService {
             if (!product) {
                 throw new common_1.NotFoundException('could not find product');
             }
-            const productQuestionAndAnswers = await this.questionAndAnswersModel.find({
+            const productQuestionAndAnswers = await this.questionAndAnswersModel
+                .find({
                 productId: id,
-            });
+            })
+                .limit(5);
             const productReviews = await this.reviewModel
                 .find({
                 productId: id,
             })
-                .limit(10);
+                .limit(5);
             const reviewsData = await this.reviewModel.find({ productId: id });
+            const response = await this.productSpecsModel.findOne({
+                productId: '123',
+            }, { _id: 0, productSpecs: 1 });
+            const productSpecs = response['productSpecs'];
             return {
                 product: product,
+                productSpecs: productSpecs,
                 productReviews: productReviews,
                 reviewsData: reviewsData,
                 productQAndA: productQuestionAndAnswers,
@@ -173,8 +181,10 @@ let ProductsService = class ProductsService {
 ProductsService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Product')),
     __param(1, (0, mongoose_1.InjectModel)('Review')),
-    __param(2, (0, mongoose_1.InjectModel)('QuestionAndAnswer')),
+    __param(2, (0, mongoose_1.InjectModel)('ProductSpecs')),
+    __param(3, (0, mongoose_1.InjectModel)('QuestionAndAnswer')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])
 ], ProductsService);

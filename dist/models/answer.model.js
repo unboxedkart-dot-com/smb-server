@@ -14,6 +14,7 @@ exports.AnswerSchema = new mongoose_1.default.Schema({
     userRole: { type: String, required: true },
     questionId: { type: String, required: true },
     isApproved: { type: Boolean, required: true, default: false },
+    productId: { type: String, required: true },
     answer: { type: String, required: true },
     questionDetails: {
         questionTitle: { type: String, required: true },

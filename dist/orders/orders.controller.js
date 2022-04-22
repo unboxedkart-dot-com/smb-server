@@ -21,6 +21,11 @@ let OrdersController = class OrdersController {
     constructor(ordersService) {
         this.ordersService = ordersService;
     }
+    async handleGetReferrals(request) {
+        const userId = request.user.userId;
+        const referrals = await this.ordersService.getReferrals(userId);
+        return referrals;
+    }
     async handleDeleteAllOrder() {
         const orders = await this.ordersService.deleteAll();
         return orders;
@@ -73,6 +78,13 @@ let OrdersController = class OrdersController {
         return response;
     }
 };
+__decorate([
+    (0, common_1.Get)('/referrals'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleGetReferrals", null);
 __decorate([
     (0, common_1.Delete)('/deleteall'),
     __metadata("design:type", Function),

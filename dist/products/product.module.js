@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const product_model_1 = require("../models/product.model");
 const review_model_1 = require("../models/review.model");
 const q_and_a_model_1 = require("../models/q_and_a.model");
+const product_specs_1 = require("../models/product-specs");
 let ProductsModule = class ProductsModule {
 };
 ProductsModule = __decorate([
@@ -23,6 +24,7 @@ ProductsModule = __decorate([
                 { name: 'Product', schema: product_model_1.ProductSchema },
                 { name: 'Review', schema: review_model_1.ReviewSchema },
                 { name: 'QuestionAndAnswer', schema: q_and_a_model_1.QuestionAndAnswerSchema },
+                { name: 'ProductSpecs', schema: product_specs_1.ProductSpecsSchema },
             ]),
         ],
         controllers: [products_controller_1.ProductsController],

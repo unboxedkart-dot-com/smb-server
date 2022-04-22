@@ -20,6 +20,13 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @Get('/referrals')
+  async handleGetReferrals(@Req() request: any) {
+    const userId = request.user.userId;
+    const referrals = await this.ordersService.getReferrals(userId);
+    return referrals;
+  }
+
   @Delete('/deleteall')
   async handleDeleteAllOrder() {
     const orders = await this.ordersService.deleteAll();

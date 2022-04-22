@@ -1,5 +1,6 @@
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
+import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
 import { Order, paymentTypes } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
 import { Product } from 'src/models/product.model';
@@ -14,9 +15,11 @@ export declare class OrdersService {
     private readonly orderItemModel;
     private readonly userModel;
     private readonly reviewModel;
+    private readonly itemPurchasedUsersModel;
     private readonly referralModel;
-    constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, referralModel: Model<ReferralOrder>);
+    constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
     deleteAll(): Promise<void>;
+    getReferrals(userId: string): Promise<ReferralOrder[]>;
     createOrder(entireBody: CreateOrderDto, userId: string): Promise<{
         orderNumber: string;
         orderDate: number;
@@ -103,8 +106,13 @@ export declare class OrdersService {
     _handleOrderConfirmationNotification(order: any): Promise<void>;
     _handleSendOrderShippedMessage(order: any): Promise<void>;
     _handleSendOrderShippedMail(order: any): Promise<void>;
+    _handleSendOrderReadyForPickUpNotification(order: any): Promise<void>;
+    _handleSendOrderDeliveredNotification(order: any): Promise<void>;
+    _handleSendOrderShippedNotification(order: any): Promise<void>;
+    referralOrderNotification(referrerName: any, referrerId: any, referreName: any): Promise<void>;
     _handleSendOutForDeliveryMessage(order: any): Promise<void>;
     _handleSendOutForDeliveryMail(order: any): Promise<void>;
+    _handleSendOutForDeliveryNotification(order: any): Promise<void>;
     _handleSendOrderDeliveredMessage(order: any): Promise<void>;
     _handleSendOrderDeliveredMail(order: any): Promise<void>;
 }

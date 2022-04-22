@@ -29,6 +29,10 @@ let CouponsService = class CouponsService {
         console.log('personal coupon', coupon);
         return coupon;
     }
+    async getCoupons() {
+        const coupons = await this.couponModel.find({ isPersonalCoupon: false });
+        return coupons;
+    }
     async createPersonalCoupon(userId) {
         const userDetails = await this._getUserDetails(userId);
         const newCoupon = new this.couponModel({
@@ -50,7 +54,8 @@ let CouponsService = class CouponsService {
         });
         if (coupon) {
             console.log('ppp', coupon);
-            if (cartTotal > coupon.minimumOrderTotal && coupon.couponDetails.userId != userId) {
+            if (cartTotal > coupon.minimumOrderTotal &&
+                coupon.couponDetails.userId != userId) {
                 console.log('cart total', cartTotal);
                 return {
                     isValid: true,

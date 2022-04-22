@@ -21,9 +21,10 @@ const axios_1 = require("axios");
 const coupon_model_1 = require("../models/coupon.model");
 const SendGrid = require("@sendgrid/mail");
 let AuthService = class AuthService {
-    constructor(userModel, couponModel, jwtService) {
+    constructor(userModel, couponModel, searchTermModel, jwtService) {
         this.userModel = userModel;
         this.couponModel = couponModel;
+        this.searchTermModel = searchTermModel;
         this.jwtService = jwtService;
         SendGrid.setApiKey('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');
     }
@@ -95,6 +96,34 @@ let AuthService = class AuthService {
             };
         }
     }
+    async _getRecentSearches(recentSearches) {
+        const searches = [];
+        console.log('length', recentSearches.length);
+        recentSearches.forEach((value, index) => {
+            console.log(index);
+            console.log(value);
+        });
+        if (recentSearches.length > 0) {
+            for (let i = recentSearches.length - 1; i >= 0 && i > recentSearches.length - 4; i--) {
+                console.log('value of i', i);
+                console.log('recentsearchterm', recentSearches[i].searchTerm);
+                searches.push(recentSearches[i].searchTerm);
+            }
+        }
+        return searches;
+    }
+    async _getPopularSearches() {
+        const popularSearches = [];
+        const searches = await this.searchTermModel
+            .find({ isPopular: true })
+            .limit(3);
+        if (searches.length > 0) {
+            for (let term of searches) {
+                popularSearches.push(term.searchTerm);
+            }
+        }
+        return popularSearches;
+    }
     async loginUser(entireBody) {
         const otpStatus = await this.verifyOtp(entireBody.phoneNumber, entireBody.otp);
         console.log('login status', otpStatus);
@@ -103,8 +132,13 @@ let AuthService = class AuthService {
                 .findOne({ phoneNumber: { $eq: entireBody.phoneNumber } })
                 .exec();
             if (user) {
-                await this.userModel.findOneAndUpdate({ phoneNumber: { $eq: entireBody.phoneNumber } }, { lastLoggedIn: Date.now(), deviceId: entireBody.deviceId });
+                await this.userModel.findOneAndUpdate({ phoneNumber: { $eq: entireBody.phoneNumber } }, { lastLoggedIn: Date.now() });
                 const accessToken = await this.createJwt(user.id);
+                console.log('user recent', user.recentSearches);
+                const recentSearches = await this._getRecentSearches(user.recentSearches);
+                const popularSearches = await this._getPopularSearches();
+                console.log('recent searches array');
+                console.log(recentSearches);
                 return {
                     status: 'success',
                     message: 'user logged in',
@@ -113,6 +147,9 @@ let AuthService = class AuthService {
                         wishlist: user.favoriteItemIds,
                         cart: user.cartItemIds,
                         userId: user._id.toString().substring(0, 20),
+                        recentSearches: recentSearches,
+                        popularSearches: popularSearches,
+                        purchasedItemIds: user.purchasedItemIds,
                     },
                 };
             }
@@ -153,7 +190,7 @@ let AuthService = class AuthService {
     _createCouponCode(name) {
         const randomNumber = Math.floor(1000 + Math.random() * 9000);
         const couponCode = name.substring(0, 6) + randomNumber;
-        return couponCode;
+        return couponCode.toUpperCase();
     }
     async createUser(entireBody) {
         const otpStatus = await this.verifyOtp(entireBody.phoneNumber, entireBody.otp);
@@ -181,7 +218,7 @@ let AuthService = class AuthService {
                 const userDoc = await newUser.save();
                 console.log('new user doc', userDoc);
                 const newCoupon = new this.couponModel({
-                    couponCode: coupon.toUpperCase,
+                    couponCode: coupon,
                     discountAmount: 500,
                     minimumOrderTotal: 30000,
                     discountType: coupon_model_1.CouponTypes.FLAT,
@@ -196,6 +233,7 @@ let AuthService = class AuthService {
                 newCoupon.save();
                 this._sendAccountCreatedMessage(userDoc);
                 this._sendAccountCreatedMail(userDoc);
+                const popularSearches = await this._getPopularSearches();
                 const accessToken = await this.createJwt(userDoc.id);
                 return {
                     status: 'success',
@@ -203,6 +241,7 @@ let AuthService = class AuthService {
                     data: {
                         accessToken: accessToken,
                         userId: newUser._id.toString().substring(0, 20),
+                        popularSearches: popularSearches,
                     },
                 };
             }
@@ -252,7 +291,9 @@ let AuthService = class AuthService {
 AuthService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('User')),
     __param(1, (0, mongoose_1.InjectModel)('Coupon')),
+    __param(2, (0, mongoose_1.InjectModel)('SearchTerm')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         jwt_1.JwtService])
 ], AuthService);

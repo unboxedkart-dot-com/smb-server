@@ -31,6 +31,9 @@ export declare class AuthController {
             wishlist: string[];
             cart: string[];
             userId: string;
+            recentSearches: any[];
+            popularSearches: any[];
+            purchasedItemIds: string[];
         };
     }>;
     handleSignupUser(entireBody: SignUpDto): Promise<{
@@ -43,6 +46,7 @@ export declare class AuthController {
         data: {
             accessToken: string;
             userId: string;
+            popularSearches: any[];
         };
     }>;
 }

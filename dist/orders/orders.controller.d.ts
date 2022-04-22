@@ -1,8 +1,12 @@
+/// <reference types="mongoose/types/pipelinestage" />
+/// <reference types="mongoose/types/error" />
+/// <reference types="mongoose" />
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 export declare class OrdersController {
     private readonly ordersService;
     constructor(ordersService: OrdersService);
+    handleGetReferrals(request: any): Promise<import("../models/referral_order").ReferralOrder[]>;
     handleDeleteAllOrder(): Promise<void>;
     createDummyOrder(): Promise<void>;
     handleCreateOrder(request: any, entireBody: CreateOrderDto): Promise<{

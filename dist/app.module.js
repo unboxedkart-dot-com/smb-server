@@ -7,23 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
-const config_1 = require("@nestjs/config");
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
-const auth_module_1 = require("./auth/auth.module");
-const product_module_1 = require("./products/product.module");
-const search_module_1 = require("./search/search.module");
-const orders_module_1 = require("./orders/orders.module");
-const favorites_module_1 = require("./favorites/favorites.module");
-const cart_module_1 = require("./cart/cart.module");
 const addresses_module_1 = require("./addresses/addresses.module");
-const reviews_module_1 = require("./reviews/reviews.module");
+const auth_module_1 = require("./auth/auth.module");
+const cart_module_1 = require("./cart/cart.module");
 const coupons_module_1 = require("./coupons/coupons.module");
-const q_and_a_module_1 = require("./q-and-a/q-and-a.module");
-const order_summary_module_1 = require("./order-summary/order-summary.module");
-const store_location_module_1 = require("./store-location/store-location.module");
+const faqs_module_1 = require("./faqs/faqs.module");
+const favorites_module_1 = require("./favorites/favorites.module");
 const mail_module_1 = require("./mail/mail.module");
+const order_summary_module_1 = require("./order-summary/order-summary.module");
+const orders_module_1 = require("./orders/orders.module");
+const product_module_1 = require("./products/product.module");
+const q_and_a_module_1 = require("./q-and-a/q-and-a.module");
+const reviews_module_1 = require("./reviews/reviews.module");
+const search_module_1 = require("./search/search.module");
+const store_location_module_1 = require("./store-location/store-location.module");
 const user_module_1 = require("./user/user.module");
+const product_details_module_1 = require("./product-details/product-details.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -33,7 +35,7 @@ AppModule = __decorate([
             product_module_1.ProductsModule,
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
-            mongoose_1.MongooseModule.forRoot("mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"),
+            mongoose_1.MongooseModule.forRoot('mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'),
             orders_module_1.OrdersModule,
             favorites_module_1.FavoritesModule,
             cart_module_1.CartModule,
@@ -45,6 +47,8 @@ AppModule = __decorate([
             store_location_module_1.StoreLocationModule,
             mail_module_1.MailModule,
             user_module_1.UserModule,
+            faqs_module_1.FaqsModule,
+            product_details_module_1.ProductDetailsModule,
         ],
     })
 ], AppModule);

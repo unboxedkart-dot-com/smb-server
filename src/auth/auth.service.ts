@@ -1,5 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { HttpService } from '@nestjs/axios';
+import { SearchTerm } from 'src/models/search_term';
 import {
   HttpCode,
   NotFoundException,
@@ -22,6 +23,8 @@ export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
+    @InjectModel('SearchTerm')
+    private readonly searchTermModel: Model<SearchTerm>,
     private jwtService: JwtService,
   ) {
     SendGrid.setApiKey(
@@ -108,7 +111,52 @@ export class AuthService {
     }
   }
 
+  async _getRecentSearches(recentSearches: any) {
+    const searches = [];
+    console.log('length', recentSearches.length);
+    recentSearches.forEach((value, index) => {
+      console.log(index); // 0, 1, 2
+      console.log(value); // 9, 2, 5
+    });
+    if (recentSearches.length > 0) {
+      for (
+        let i = recentSearches.length - 1;
+        i >= 0 && i > recentSearches.length - 4;
+        i--
+      ) {
+        console.log('value of i', i);
+        console.log('recentsearchterm', recentSearches[i].searchTerm);
+        searches.push(recentSearches[i].searchTerm); //use i instead of 0
+      }
+    }
+
+    return searches;
+  }
+
+  async _getPopularSearches() {
+    const popularSearches = [];
+    const searches = await this.searchTermModel
+      .find({ isPopular: true })
+      .limit(3);
+    if (searches.length > 0) {
+      for (let term of searches) {
+        popularSearches.push(term.searchTerm);
+      }
+    }
+    return popularSearches;
+  }
+
   async loginUser(entireBody: LoginDto) {
+    // console.log('login user');
+    // const user = await this.userModel
+    //   .findOne({ phoneNumber: { $eq: entireBody.phoneNumber } })
+    //   .exec();
+    // console.log('user recent', user.recentSearches);
+    // const recentSearches = await this._getRecentSearches(user.recentSearches);
+    // console.log('recent searches array');
+    // console.log(recentSearches);
+
+    // valid
     const otpStatus = await this.verifyOtp(
       entireBody.phoneNumber,
       entireBody.otp,
@@ -121,9 +169,16 @@ export class AuthService {
       if (user) {
         await this.userModel.findOneAndUpdate(
           { phoneNumber: { $eq: entireBody.phoneNumber } },
-          { lastLoggedIn: Date.now(), deviceId: entireBody.deviceId },
+          { lastLoggedIn: Date.now() },
         );
         const accessToken = await this.createJwt(user.id);
+        console.log('user recent', user.recentSearches);
+        const recentSearches = await this._getRecentSearches(
+          user.recentSearches,
+        );
+        const popularSearches = await this._getPopularSearches();
+        console.log('recent searches array');
+        console.log(recentSearches);
         return {
           status: 'success',
           message: 'user logged in',
@@ -132,7 +187,9 @@ export class AuthService {
             wishlist: user.favoriteItemIds,
             cart: user.cartItemIds,
             userId: user._id.toString().substring(0, 20),
-            // recentSearches :
+            recentSearches: recentSearches,
+            popularSearches: popularSearches,
+            purchasedItemIds: user.purchasedItemIds,
           },
         };
       } else {
@@ -181,7 +238,7 @@ export class AuthService {
   _createCouponCode(name: string) {
     const randomNumber = Math.floor(1000 + Math.random() * 9000);
     const couponCode = name.substring(0, 6) + randomNumber;
-    return couponCode;
+    return couponCode.toUpperCase();
   }
 
   async createUser(entireBody: SignUpDto) {
@@ -220,7 +277,7 @@ export class AuthService {
         const userDoc = await newUser.save();
         console.log('new user doc', userDoc);
         const newCoupon = new this.couponModel({
-          couponCode: coupon.toUpperCase,
+          couponCode: coupon,
           discountAmount: 500,
           minimumOrderTotal: 30000,
           discountType: CouponTypes.FLAT,
@@ -237,6 +294,8 @@ export class AuthService {
         this._sendAccountCreatedMessage(userDoc);
         this._sendAccountCreatedMail(userDoc);
 
+        const popularSearches = await this._getPopularSearches();
+
         // add user
 
         //create jwt token
@@ -249,6 +308,7 @@ export class AuthService {
           data: {
             accessToken: accessToken,
             userId: newUser._id.toString().substring(0, 20),
+            popularSearches: popularSearches,
           },
         };
       }

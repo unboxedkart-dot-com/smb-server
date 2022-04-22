@@ -7,7 +7,8 @@ export class CreateAnswerDto {
 
   @IsString()
   @IsNotEmpty()
-  //   productId: string;
+  productId: string;
+
   @IsString()
   @IsNotEmpty()
   answer: string;

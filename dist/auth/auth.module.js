@@ -18,6 +18,7 @@ const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const axios_1 = require("@nestjs/axios");
 const coupon_model_1 = require("../models/coupon.model");
+const search_term_1 = require("../models/search_term");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -26,6 +27,7 @@ AuthModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
+                { name: 'SearchTerm', schema: search_term_1.SearchTermSchema },
             ]),
             passport_1.PassportModule,
             axios_1.HttpModule,

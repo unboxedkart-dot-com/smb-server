@@ -4,6 +4,7 @@ import * as SendGrid from '@sendgrid/mail';
 import axios from 'axios';
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
+import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
 import { Order, OrderStatuses, paymentTypes } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
 import { Product } from 'src/models/product.model';
@@ -26,6 +27,8 @@ export class OrdersService {
     @InjectModel('OrderItem') private readonly orderItemModel: Model<OrderItem>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Review') private readonly reviewModel: Model<Review>,
+    @InjectModel('ItemPurchasedUsers')
+    private readonly itemPurchasedUsersModel: Model<ItemPurchasedUser>,
     @InjectModel('ReferralOrder')
     private readonly referralModel: Model<ReferralOrder>,
   ) {
@@ -35,6 +38,13 @@ export class OrdersService {
   async deleteAll() {
     await this.orderItemModel.deleteMany();
     await this.orderModel.deleteMany();
+  }
+
+  async getReferrals(userId: string) {
+    const referrals = await this.referralModel.find({
+      'referrerDetails.userId': userId,
+    });
+    return referrals as ReferralOrder[];
   }
 
   async createOrder(entireBody: CreateOrderDto, userId: string) {
@@ -163,6 +173,7 @@ export class OrdersService {
     });
     this._handleSendOutForPickUpMessage(order);
     this._handleSendOutForPickUpMail(order);
+    this._handleSendOrderReadyForPickUpNotification(order);
   }
 
   async orderShipped(userId: string, orderItemId: string) {
@@ -171,6 +182,7 @@ export class OrdersService {
     });
     this._handleSendOrderShippedMessage(order);
     this._handleSendOrderShippedMail(order);
+    this._handleSendOrderShippedNotification(order);
   }
 
   async orderOutForDelivery(userId: string, orderItemId: string) {
@@ -179,14 +191,56 @@ export class OrdersService {
     });
     this._handleSendOutForPickUpMessage(order);
     this._handleSendOutForPickUpMail(order);
+    this._handleSendOutForDeliveryNotification(order);
   }
 
   async orderDelivered(userId: string, orderItemId: string) {
     const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
       orderStatus: OrderStatuses.DELIVERED,
     });
+
     this._handleSendOrderDeliveredMessage(order);
     this._handleSendOrderDeliveredMail(order);
+    this._handleSendOrderDeliveredNotification(order);
+
+    const itemPurchasedUsers = await this.itemPurchasedUsersModel.findOne({
+      productId: order.orderDetails.productId,
+    });
+    if (itemPurchasedUsers) {
+      await this.itemPurchasedUsersModel.findOneAndUpdate(
+        {
+          productId: order.orderDetails.productId,
+        },
+        {
+          $push: {
+            userIds: order.userId.substring(0, 20),
+            users: {
+              userId: order.userId,
+              userName: order.userDetails.userName,
+              phoneNumber: order.userDetails.phoneNumber,
+              emailId: order.userDetails.emailId,
+            },
+          },
+        },
+      );
+    } else {
+      const newItemPurchasedUsers = new this.itemPurchasedUsersModel({
+        productId: order.orderDetails.productId,
+        users: [
+          {
+            userId: order.userId,
+            userName: order.userDetails.userName,
+            phoneNumber: order.userDetails.phoneNumber,
+            emailId: order.userDetails.emailId,
+          },
+        ],
+        userIds: [order.userId.substring(0, 20)],
+      });
+      newItemPurchasedUsers.save();
+    }
+    await this.userModel.findByIdAndUpdate(order.userId, {
+      $push: { purchasedItemIds: order.orderDetails.productId },
+    });
   }
 
   async getOrderItems(userId: string) {
@@ -282,7 +336,10 @@ export class OrdersService {
           userName: coupon.couponDetails.userName,
           userEmail: coupon.couponDetails.userEmail,
         },
-        refereeId: userId,
+        refereeDetails: {
+          userId: userId,
+          userName: userName,
+        },
         cashBackDetails: {
           cashBackAmount: '500',
         },
@@ -300,6 +357,11 @@ export class OrdersService {
       await this._handleSendReferralOrderPlaceMail(
         userName,
         coupon.couponDetails.userEmail,
+      );
+      await this.referralOrderNotification(
+        coupon.couponDetails.userName,
+        coupon.couponDetails.userId,
+        userName,
       );
       console.log('coupon', coupon);
       return coupon.discountAmount;
@@ -617,7 +679,7 @@ export class OrdersService {
         templateId: process.env.PICKUP_ORDER_CONFIRMED_TEMPLATE_ID,
         dynamic_template_data: {
           name: order.userDetails.name,
-          order: order.orderDetails.title,
+          order: order.productDetails.title,
           orderId: order.orderNumber,
           pickupdate: order.pickUpDetails.pickUpDateInString,
         },
@@ -633,7 +695,7 @@ export class OrdersService {
         templateId: process.env.DELIVERY_ORDER_CONFIRMED_TEMPLATE_ID,
         dynamic_template_data: {
           name: order.userDetails.name,
-          order: order.orderDetails.title,
+          order: order.productDetails.title,
           orderId: order.orderNumber,
           deliverydate: order.shippingDetails.deliveryDateInString,
         },
@@ -719,20 +781,54 @@ export class OrdersService {
   // async handleOrderPlacedNotification(){}
 
   async _handleOrderConfirmationNotification(order: any) {
-    console.log('sending push', order.userId.substring(0, 20));
+    const title = `Hey ${order.userDetails.userName}, Your order is confirmed`;
+    const content = `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`;
+    //without template
     var message = {
       app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      contents: {
-        en: `Hey Sunil, your order is confirmedHey ${order.userDetails.name}, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmed`,
-      },
       channel_for_external_user_ids: 'push',
-      // included_segments: ['Subscribed Users'],
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
       include_external_user_ids: [
         order.userId.substring(0, 20),
         // '796733d5-3865-46cb-bf4c-c6986d861e92',
         // '8180d163-e411-44d2-bd70-c0610495aff9',
       ],
     };
+    // var message = {
+    //   app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+    //   // contents: {
+    //   //   en: `Hey ${order.userDetails.userName}, Your order is confirmed...\n
+    //   //   Your order for ${order.orderDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`,
+    //   // },
+    //   channel_for_external_user_ids: 'push',
+    //   // included_segments: ['Subscribed Users'],
+    //   contents: {
+    //     en: `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`,
+    //   },
+    //   headings: {
+    //     en: `Hey ${order.userDetails.userName}, Your order is confirmed....`,
+    //   },
+    //   // subtitle: { en: 'your order will be delivered by' },
+    //   // template_id: '8ff9a58b-1181-4d21-ad79-b2f8b4ea1b23',
+    //   // tags : [
+
+    //   // ],
+    //   // name: 'sunil',
+    //   // order: 'iphone 12 pro',
+
+    //   // tags: { name: 'sunil', order: 'iphone 12 pro' },
+    //   // [{ "name": 'sunil' }, { "order": 'iphone 12 pro' }],
+    //   include_external_user_ids: [
+    //     order.userId.substring(0, 20),
+    //     // '796733d5-3865-46cb-bf4c-c6986d861e92',
+    //     // '8180d163-e411-44d2-bd70-c0610495aff9',
+    //   ],
+    // };
     const response = this.sendNotification(message);
     console.log('response', response);
   }
@@ -769,6 +865,78 @@ export class OrdersService {
     return transport;
   }
 
+  async _handleSendOrderReadyForPickUpNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order is ready for pickup`;
+    const content = `Your order for ${order.productDetails.title} is ready for pickup. Click here to get directions to our store.`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
+  async _handleSendOrderDeliveredNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order has been delivered`;
+    const content = `Your order for ${order.productDetails.title} has been delivered. Click here to rate your purchase`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
+  async _handleSendOrderShippedNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order has been shipped`;
+    const content = `Your order for ${order.productDetails.title} with has been shipped & will be delivered to you by ${order.shippingDetails.deliveryDateInString}.`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
+  async referralOrderNotification(referrerName, referrerId, referreName) {
+    const title = `Hey ${referrerName}, Congratulations !`;
+    const content = `Congratulations. Your friend (${referreName}) has ordered a product from unboxedkart using your referral coupon code. Referral bonus will be credited to your bank account after the product is successfully delivered. Please, add your bank details, if not added.T&Cs Apply.`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [referrerId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
   async _handleSendOutForDeliveryMessage(order: any) {
     const url = process.env.SMS_FLOW_URL;
     const postBody = {
@@ -801,6 +969,25 @@ export class OrdersService {
     return transport;
   }
 
+  async _handleSendOutForDeliveryNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order will be delivered today`;
+    const content = `Your order for ${order.productDetails.title} is confirmed & will be delivered today.`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+    console.log('response', response);
+  }
+
   async _handleSendOrderDeliveredMessage(order: any) {
     const url = process.env.SMS_FLOW_URL;
     const postBody = {
@@ -830,10 +1017,6 @@ export class OrdersService {
       .catch((e) => console.log('email error', e));
     return transport;
   }
-
-  // async _getCouponDiscount(couponCode : string){
-  //   const couponDiscount = await this.
-  // }
 }
 
 export interface IndividualOrderItem {
@@ -861,6 +1044,10 @@ export interface IndividualOrderItem {
     pickUpDateInString: string;
   };
 }
+
+// async _getCouponDiscount(couponCode : string){
+//   const couponDiscount = await this.
+// }
 
 // console.log('single product', order);
 // console.log('order data', order);

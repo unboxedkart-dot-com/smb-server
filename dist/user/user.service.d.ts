@@ -9,5 +9,9 @@ export declare class UserService {
     getUserDetails(userId: string): Promise<import("mongoose").Document<unknown, any, User> & User & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    getUserData(userId: string): Promise<{
+        purchasedItemIds: string[];
+        answeredQuestionIds: string[];
+    }>;
     updateUserDetails(userId: string, entireBody: UpdateUserDetailsDto): Promise<void>;
 }

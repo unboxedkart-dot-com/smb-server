@@ -1,20 +1,22 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { ProductsModule } from './products/product.module';
-import { SearchModule } from './search/search.module';
-import { OrdersModule } from './orders/orders.module';
-import { FavoritesModule } from './favorites/favorites.module';
-import { CartModule } from './cart/cart.module';
 import { AddressesModule } from './addresses/addresses.module';
-import { ReviewsModule } from './reviews/reviews.module';
+import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
 import { CouponsModule } from './coupons/coupons.module';
-import { QAndAModule } from './q-and-a/q-and-a.module';
-import { OrderSummaryModule } from './order-summary/order-summary.module';
-import { StoreLocationModule } from './store-location/store-location.module';
+import { FaqsModule } from './faqs/faqs.module';
+import { FavoritesModule } from './favorites/favorites.module';
 import { MailModule } from './mail/mail.module';
+import { OrderSummaryModule } from './order-summary/order-summary.module';
+import { OrdersModule } from './orders/orders.module';
+import { ProductsModule } from './products/product.module';
+import { QAndAModule } from './q-and-a/q-and-a.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { SearchModule } from './search/search.module';
+import { StoreLocationModule } from './store-location/store-location.module';
 import { UserModule } from './user/user.module';
+import { ProductDetailsModule } from './product-details/product-details.module';
 // require("dotenv").config({ path: "./config/.env" });
 
 @Module({
@@ -24,9 +26,9 @@ import { UserModule } from './user/user.module';
     SearchModule,
     AuthModule,
     MongooseModule.forRoot(
-      "mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+      'mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
       // process.env.DB_CONNECTION_URL
-      ),
+    ),
     OrdersModule,
     FavoritesModule,
     CartModule,
@@ -38,6 +40,8 @@ import { UserModule } from './user/user.module';
     StoreLocationModule,
     MailModule,
     UserModule,
+    FaqsModule,
+    ProductDetailsModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

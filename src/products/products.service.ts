@@ -9,6 +9,8 @@ export class ProductsService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
     @InjectModel('Review') private readonly reviewModel: Model<Review>,
+    @InjectModel('ProductSpecs')
+    private readonly productSpecsModel: Model<Product>,
     @InjectModel('QuestionAndAnswer')
     private readonly questionAndAnswersModel: Model<QuestionAndAnswer>, // @InjectModel('ProductDetails') private readonly productModel: Model<Product>,
   ) {}
@@ -30,20 +32,28 @@ export class ProductsService {
       if (!product) {
         throw new NotFoundException('could not find product');
       }
-      const productQuestionAndAnswers = await this.questionAndAnswersModel.find(
-        {
+      const productQuestionAndAnswers = await this.questionAndAnswersModel
+        .find({
           productId: id,
           // 'questionDetails.isApproved': true,
-        },
-      );
+        })
+        .limit(5);
       const productReviews = await this.reviewModel
         .find({
           productId: id,
         })
-        .limit(10);
+        .limit(5);
       const reviewsData = await this.reviewModel.find({ productId: id });
+      const response = await this.productSpecsModel.findOne(
+        {
+          productId: '123',
+        },
+        { _id: 0, productSpecs: 1 },
+      );
+      const productSpecs = response['productSpecs'];
       return {
         product: product,
+        productSpecs: productSpecs,
         productReviews: productReviews,
         reviewsData: reviewsData,
         productQAndA: productQuestionAndAnswers,

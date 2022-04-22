@@ -20,19 +20,26 @@ const axios_1 = require("axios");
 const mongoose_2 = require("mongoose");
 const order_model_1 = require("../models/order.model");
 let OrdersService = class OrdersService {
-    constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel, referralModel) {
+    constructor(orderModel, productModel, couponModel, orderItemModel, userModel, reviewModel, itemPurchasedUsersModel, referralModel) {
         this.orderModel = orderModel;
         this.productModel = productModel;
         this.couponModel = couponModel;
         this.orderItemModel = orderItemModel;
         this.userModel = userModel;
         this.reviewModel = reviewModel;
+        this.itemPurchasedUsersModel = itemPurchasedUsersModel;
         this.referralModel = referralModel;
         SendGrid.setApiKey(process.env.MAIL_API_KEY);
     }
     async deleteAll() {
         await this.orderItemModel.deleteMany();
         await this.orderModel.deleteMany();
+    }
+    async getReferrals(userId) {
+        const referrals = await this.referralModel.find({
+            'referrerDetails.userId': userId,
+        });
+        return referrals;
     }
     async createOrder(entireBody, userId) {
         console.log('given userid', userId);
@@ -128,6 +135,7 @@ let OrdersService = class OrdersService {
         });
         this._handleSendOutForPickUpMessage(order);
         this._handleSendOutForPickUpMail(order);
+        this._handleSendOrderReadyForPickUpNotification(order);
     }
     async orderShipped(userId, orderItemId) {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
@@ -135,6 +143,7 @@ let OrdersService = class OrdersService {
         });
         this._handleSendOrderShippedMessage(order);
         this._handleSendOrderShippedMail(order);
+        this._handleSendOrderShippedNotification(order);
     }
     async orderOutForDelivery(userId, orderItemId) {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
@@ -142,6 +151,7 @@ let OrdersService = class OrdersService {
         });
         this._handleSendOutForPickUpMessage(order);
         this._handleSendOutForPickUpMail(order);
+        this._handleSendOutForDeliveryNotification(order);
     }
     async orderDelivered(userId, orderItemId) {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
@@ -149,6 +159,43 @@ let OrdersService = class OrdersService {
         });
         this._handleSendOrderDeliveredMessage(order);
         this._handleSendOrderDeliveredMail(order);
+        this._handleSendOrderDeliveredNotification(order);
+        const itemPurchasedUsers = await this.itemPurchasedUsersModel.findOne({
+            productId: order.orderDetails.productId,
+        });
+        if (itemPurchasedUsers) {
+            await this.itemPurchasedUsersModel.findOneAndUpdate({
+                productId: order.orderDetails.productId,
+            }, {
+                $push: {
+                    userIds: order.userId.substring(0, 20),
+                    users: {
+                        userId: order.userId,
+                        userName: order.userDetails.userName,
+                        phoneNumber: order.userDetails.phoneNumber,
+                        emailId: order.userDetails.emailId,
+                    },
+                },
+            });
+        }
+        else {
+            const newItemPurchasedUsers = new this.itemPurchasedUsersModel({
+                productId: order.orderDetails.productId,
+                users: [
+                    {
+                        userId: order.userId,
+                        userName: order.userDetails.userName,
+                        phoneNumber: order.userDetails.phoneNumber,
+                        emailId: order.userDetails.emailId,
+                    },
+                ],
+                userIds: [order.userId.substring(0, 20)],
+            });
+            newItemPurchasedUsers.save();
+        }
+        await this.userModel.findByIdAndUpdate(order.userId, {
+            $push: { purchasedItemIds: order.orderDetails.productId },
+        });
     }
     async getOrderItems(userId) {
         console.log('order user id', userId);
@@ -209,7 +256,10 @@ let OrdersService = class OrdersService {
                     userName: coupon.couponDetails.userName,
                     userEmail: coupon.couponDetails.userEmail,
                 },
-                refereeId: userId,
+                refereeDetails: {
+                    userId: userId,
+                    userName: userName,
+                },
                 cashBackDetails: {
                     cashBackAmount: '500',
                 },
@@ -222,6 +272,7 @@ let OrdersService = class OrdersService {
             await this._handleSendReferralOrderPlaceMessage(userName, coupon.couponDetails.phoneNumber);
             console.log('starting referral mail');
             await this._handleSendReferralOrderPlaceMail(userName, coupon.couponDetails.userEmail);
+            await this.referralOrderNotification(coupon.couponDetails.userName, coupon.couponDetails.userId, userName);
             console.log('coupon', coupon);
             return coupon.discountAmount;
         }
@@ -448,7 +499,7 @@ let OrdersService = class OrdersService {
                 templateId: process.env.PICKUP_ORDER_CONFIRMED_TEMPLATE_ID,
                 dynamic_template_data: {
                     name: order.userDetails.name,
-                    order: order.orderDetails.title,
+                    order: order.productDetails.title,
                     orderId: order.orderNumber,
                     pickupdate: order.pickUpDetails.pickUpDateInString,
                 },
@@ -465,7 +516,7 @@ let OrdersService = class OrdersService {
                 templateId: process.env.DELIVERY_ORDER_CONFIRMED_TEMPLATE_ID,
                 dynamic_template_data: {
                     name: order.userDetails.name,
-                    order: order.orderDetails.title,
+                    order: order.productDetails.title,
                     orderId: order.orderNumber,
                     deliverydate: order.shippingDetails.deliveryDateInString,
                 },
@@ -541,13 +592,17 @@ let OrdersService = class OrdersService {
         await axios_1.default.post(url, postBody);
     }
     async _handleOrderConfirmationNotification(order) {
-        console.log('sending push', order.userId.substring(0, 20));
+        const title = `Hey ${order.userDetails.userName}, Your order is confirmed`;
+        const content = `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`;
         var message = {
             app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-            contents: {
-                en: `Hey Sunil, your order is confirmedHey ${order.userDetails.name}, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmedHey Sunil, your order is confirmed`,
-            },
             channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
             include_external_user_ids: [
                 order.userId.substring(0, 20),
             ],
@@ -585,6 +640,70 @@ let OrdersService = class OrdersService {
             .catch((e) => console.log('email error', e));
         return transport;
     }
+    async _handleSendOrderReadyForPickUpNotification(order) {
+        const title = `Hey ${order.userDetails.userName}, Your order is ready for pickup`;
+        const content = `Your order for ${order.productDetails.title} is ready for pickup. Click here to get directions to our store.`;
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
+            include_external_user_ids: [order.userId.substring(0, 20)],
+        };
+        const response = this.sendNotification(message);
+    }
+    async _handleSendOrderDeliveredNotification(order) {
+        const title = `Hey ${order.userDetails.userName}, Your order has been delivered`;
+        const content = `Your order for ${order.productDetails.title} has been delivered. Click here to rate your purchase`;
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
+            include_external_user_ids: [order.userId.substring(0, 20)],
+        };
+        const response = this.sendNotification(message);
+    }
+    async _handleSendOrderShippedNotification(order) {
+        const title = `Hey ${order.userDetails.userName}, Your order has been shipped`;
+        const content = `Your order for ${order.productDetails.title} with has been shipped & will be delivered to you by ${order.shippingDetails.deliveryDateInString}.`;
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
+            include_external_user_ids: [order.userId.substring(0, 20)],
+        };
+        const response = this.sendNotification(message);
+    }
+    async referralOrderNotification(referrerName, referrerId, referreName) {
+        const title = `Hey ${referrerName}, Congratulations !`;
+        const content = `Congratulations. Your friend (${referreName}) has ordered a product from unboxedkart using your referral coupon code. Referral bonus will be credited to your bank account after the product is successfully delivered. Please, add your bank details, if not added.T&Cs Apply.`;
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
+            include_external_user_ids: [referrerId.substring(0, 20)],
+        };
+        const response = this.sendNotification(message);
+    }
     async _handleSendOutForDeliveryMessage(order) {
         const url = process.env.SMS_FLOW_URL;
         const postBody = {
@@ -614,6 +733,23 @@ let OrdersService = class OrdersService {
             .then(() => console.log('email send'))
             .catch((e) => console.log('email error', e));
         return transport;
+    }
+    async _handleSendOutForDeliveryNotification(order) {
+        const title = `Hey ${order.userDetails.userName}, Your order will be delivered today`;
+        const content = `Your order for ${order.productDetails.title} is confirmed & will be delivered today.`;
+        var message = {
+            app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+            channel_for_external_user_ids: 'push',
+            contents: {
+                en: content,
+            },
+            headings: {
+                en: title,
+            },
+            include_external_user_ids: [order.userId.substring(0, 20)],
+        };
+        const response = this.sendNotification(message);
+        console.log('response', response);
     }
     async _handleSendOrderDeliveredMessage(order) {
         const url = process.env.SMS_FLOW_URL;
@@ -652,8 +788,10 @@ OrdersService = __decorate([
     __param(3, (0, mongoose_1.InjectModel)('OrderItem')),
     __param(4, (0, mongoose_1.InjectModel)('User')),
     __param(5, (0, mongoose_1.InjectModel)('Review')),
-    __param(6, (0, mongoose_1.InjectModel)('ReferralOrder')),
+    __param(6, (0, mongoose_1.InjectModel)('ItemPurchasedUsers')),
+    __param(7, (0, mongoose_1.InjectModel)('ReferralOrder')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

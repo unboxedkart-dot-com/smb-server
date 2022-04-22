@@ -8,6 +8,7 @@ export declare class CouponsController {
     handleGetPersonalCoupon(request: any): Promise<import("mongoose").Document<unknown, any, import("../models/coupon.model").Coupon> & import("../models/coupon.model").Coupon & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    handleGetCoupons(): Promise<import("../models/coupon.model").Coupon[]>;
     handleCreateCoupon(request: any): Promise<void>;
     handleValidateCoupon(couponCode: string, cartTotal: number, request: any): Promise<{
         isValid: boolean;
