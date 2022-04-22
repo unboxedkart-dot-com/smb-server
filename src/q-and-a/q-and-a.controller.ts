@@ -26,7 +26,7 @@ export class QAndAController {
     return result;
   }
 
-  @Get('/:id')
+  @Get('/product/:id')
   async handleGetProductReviews(@Param('id') productId: string) {
     console.log('given product id', productId);
     const reviews = await this.qAndAService.getProductQuestionAndAnswers(
@@ -34,11 +34,13 @@ export class QAndAController {
     );
     return reviews;
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('/answers')
   async handleGetAnswers(@Req() request: any) {
-    console.log('getting answers');
+    console.log('getting answers', request.user.userId);
     const userId = request.user.userId;
+
     const result = await this.qAndAService.getUserAnswers(userId);
     return result;
   }

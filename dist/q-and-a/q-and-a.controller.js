@@ -32,7 +32,7 @@ let QAndAController = class QAndAController {
         return reviews;
     }
     async handleGetAnswers(request) {
-        console.log('getting answers');
+        console.log('getting answers', request.user.userId);
         const userId = request.user.userId;
         const result = await this.qAndAService.getUserAnswers(userId);
         return result;
@@ -74,7 +74,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetQuestionAndAnswers", null);
 __decorate([
-    (0, common_1.Get)('/:id'),
+    (0, common_1.Get)('/product/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
