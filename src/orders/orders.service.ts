@@ -51,13 +51,7 @@ export class OrdersService {
     //get order summary
     console.log('given userid', userId);
     console.log('userid', userId);
-    const userDoc = await this.userModel.findById(
-      userId,
-      //  {
-      // orderSummary: 1,
-      // _id: 0,
-      // }
-    );
+    const userDoc = await this.userModel.findById(userId);
     console.log(userDoc);
     console.log('id is', userDoc.phoneNumber);
 
@@ -142,6 +136,8 @@ export class OrdersService {
       couponCode: orderSummary.couponCode,
       couponDiscount: couponDiscount,
     });
+
+    // await this.userModel.findByIdAndUpdate(userId, { $pull: { cartItems : } });
     // return newOrder;
     return {
       orderNumber: orderNumber,
@@ -189,8 +185,8 @@ export class OrdersService {
     const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
       orderStatus: OrderStatuses.OUT_FOR_DELIVERY,
     });
-    this._handleSendOutForPickUpMessage(order);
-    this._handleSendOutForPickUpMail(order);
+    this._handleSendOutForDeliveryMessage(order);
+    this._handleSendOutForDeliveryMail(order);
     this._handleSendOutForDeliveryNotification(order);
   }
 

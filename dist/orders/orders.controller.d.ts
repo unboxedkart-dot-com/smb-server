@@ -1,6 +1,3 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/error" />
-/// <reference types="mongoose" />
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 export declare class OrdersController {

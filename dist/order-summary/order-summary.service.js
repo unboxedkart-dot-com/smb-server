@@ -146,6 +146,12 @@ let OrderSummaryService = class OrderSummaryService {
     }
     async addDeliveryAddress(userId, entireBody) {
         console.log('adding delivery address');
+        const currentDate = new Date();
+        const deliveryDate = new Date(currentDate.getTime() + 1000 * 60 * 60 * 24 * 5);
+        var month = deliveryDate.getMonth() + 1;
+        var day = deliveryDate.getDate();
+        var year = deliveryDate.getFullYear();
+        const deliveryDateInString = year + '/' + month + '/' + day;
         const user = await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.deliveryType': order_model_1.DeliveryTypes.HOME_DELIVERY,
             'orderSummary.shippingDetails': {
@@ -161,8 +167,8 @@ let OrderSummaryService = class OrderSummaryService {
                     pinCode: entireBody.pinCode,
                     addressType: entireBody.addressType,
                 },
-                deliveryDate: '1234',
-                deliveryDateInString: '1234',
+                deliveryDate: deliveryDate,
+                deliveryDateInString: deliveryDateInString,
             },
         });
         console.log('address added', user);

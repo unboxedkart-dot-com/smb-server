@@ -95,7 +95,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ReviewsController.prototype, "handleDeleteReview", null);
 __decorate([
-    (0, common_1.Get)('/:id'),
+    (0, common_1.Get)('/product/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

@@ -149,8 +149,8 @@ let OrdersService = class OrdersService {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
             orderStatus: order_model_1.OrderStatuses.OUT_FOR_DELIVERY,
         });
-        this._handleSendOutForPickUpMessage(order);
-        this._handleSendOutForPickUpMail(order);
+        this._handleSendOutForDeliveryMessage(order);
+        this._handleSendOutForDeliveryMail(order);
         this._handleSendOutForDeliveryNotification(order);
     }
     async orderDelivered(userId, orderItemId) {

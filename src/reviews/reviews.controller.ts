@@ -70,7 +70,7 @@ export class ReviewsController {
     await this.reviewsService.deleteReview(userId, reviewId);
   }
 
-  @Get('/:id')
+  @Get('/product/:id')
   async handleGetProductReviews(@Param('id') productId: string) {
     const reviews = await this.reviewsService.getProductReviews(productId);
     return reviews;
