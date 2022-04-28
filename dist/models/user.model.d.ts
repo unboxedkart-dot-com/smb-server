@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
+export declare enum userRoles {
+    USER = "USER",
+    SELLER = "SELLER",
+    ADMIN = "ADMIN"
+}
 export declare const UserSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any>, any, any>;
 export interface User {
     name: string;
+    userRole: string;
     phoneNumber: string;
     recentSearches: [
         {

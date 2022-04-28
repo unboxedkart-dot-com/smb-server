@@ -28,7 +28,7 @@ export class UserController {
     return response;
   }
 
-  @Get('user-data')
+  @Get('/user-data')
   async handleGetUserData(@Req() request: any) {
     const userId = request.user.userId;
     const response = await this.userService.getUserData(userId);

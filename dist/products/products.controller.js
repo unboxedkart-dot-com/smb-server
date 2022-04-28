@@ -14,56 +14,99 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const add_product_dto_1 = require("./dto/add-product.dto");
 const products_service_1 = require("./products.service");
 let ProductsController = class ProductsController {
-    constructor(productsService) {
+    constructor(productsService, authService) {
         this.productsService = productsService;
+        this.authService = authService;
     }
-    async addProduct(entireBody) {
+    async addProduct(request, entireBody) {
         const generatedId = await this.productsService.insertProduct(entireBody);
-        return { id: generatedId };
+        return {
+            data: {
+                response: generatedId,
+            },
+        };
+    }
+    async addManyProducts() {
+        const generatedId = await this.productsService.insertAllProdcts();
+        return {
+            data: {
+                response: generatedId,
+            },
+        };
     }
     async getProduct(q) {
         const product = await this.productsService.getProduct(q);
+        return product;
+    }
+    async getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode) {
+        const product = await this.productsService.getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode);
+        console.log('seelcred product', product);
         return product;
     }
     async handleDeleteProducts() {
         await this.productsService.deleteProducts();
         return 'products deleted';
     }
-    async handleDeleteProduct(id) {
-        await this.productsService.deleteSingleProduct(id);
-        return 'product deleted';
+    async handleUpdateInventoryCount(count, request, productId) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (!isAdmin) {
+            await this.productsService.updateInventoryCount({ productId, count });
+            return {
+                statusCode: 200,
+                message: 'product inventory count is updated',
+            };
+        }
+        else {
+            throw new common_1.ForbiddenException('you are not allowed to perform this action');
+        }
+    }
+    async handleDeleteProduct(id, request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            await this.productsService.deleteSingleProduct(id);
+        }
+        else {
+            throw new common_1.ForbiddenException('You are not allowed to perform this action');
+        }
+    }
+    async handleGetSimilarProducts(productId) {
+        const products = await this.productsService.getSimilarProducts(productId);
+        return products;
+    }
+    async handleGetRelatedProducts(productId) {
+        const products = await this.productsService.getRelatedProducts(productId);
+        return products;
     }
     async handleGetBestSellers(brand, condition, category) {
         const products = await this.productsService.getBestSellers(brand, category, condition);
-        console.log("DB URL", process.env.DB_CONNECTION_URL);
         return products;
-    }
-    async handleGetBestSellersByBrand() {
-    }
-    async handleGetBestSellersByCategory() {
-    }
-    async handleGetBestSellersByCondition() {
     }
     async handleGetFeaturedProducts(brand, condition, category) {
         const products = await this.productsService.getFeaturedProducts(brand, category, condition);
         return products;
     }
-    async handleGetFeaturedProductsByBrand() {
-    }
-    async handleGetFeaturedProductsByCategory() {
-    }
-    async handleGetFeaturedProductsByCondition() {
-    }
 };
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Post)('/add'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, add_product_dto_1.CreateProductDto]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "addProduct", null);
+__decorate([
+    (0, common_1.Post)('/add-many'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "addManyProducts", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('q')),
@@ -72,18 +115,56 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getProduct", null);
 __decorate([
+    (0, common_1.Get)('/variant'),
+    __param(0, (0, common_1.Query)('productCode')),
+    __param(1, (0, common_1.Query)('conditionCode')),
+    __param(2, (0, common_1.Query)('storageCode')),
+    __param(3, (0, common_1.Query)('colorCode')),
+    __param(4, (0, common_1.Query)('processorCode')),
+    __param(5, (0, common_1.Query)('ramCode')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "getSelectedVariant", null);
+__decorate([
     (0, common_1.Delete)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "handleDeleteProducts", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('/update-count/:id'),
+    __param(0, (0, common_1.Body)('count')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, String]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "handleUpdateInventoryCount", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Body)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "handleDeleteProduct", null);
+__decorate([
+    (0, common_1.Get)('/similar-products/:id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleDeleteProduct", null);
+], ProductsController.prototype, "handleGetSimilarProducts", null);
+__decorate([
+    (0, common_1.Get)('/related-products/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "handleGetRelatedProducts", null);
 __decorate([
     (0, common_1.Get)('best-sellers'),
     __param(0, (0, common_1.Query)('brand')),
@@ -94,24 +175,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "handleGetBestSellers", null);
 __decorate([
-    (0, common_1.Get)('best-sellers/brand/:brand'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetBestSellersByBrand", null);
-__decorate([
-    (0, common_1.Get)('best-sellers/category/:category'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetBestSellersByCategory", null);
-__decorate([
-    (0, common_1.Get)('best-sellers/condition/:condition'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetBestSellersByCondition", null);
-__decorate([
     (0, common_1.Get)('featured-products'),
     __param(0, (0, common_1.Query)('brand')),
     __param(1, (0, common_1.Query)('condition')),
@@ -120,27 +183,11 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "handleGetFeaturedProducts", null);
-__decorate([
-    (0, common_1.Get)('featured-products/brand/:brand'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetFeaturedProductsByBrand", null);
-__decorate([
-    (0, common_1.Get)('featured-products/category/:category'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetFeaturedProductsByCategory", null);
-__decorate([
-    (0, common_1.Get)('featured-products/condition/:condition'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleGetFeaturedProductsByCondition", null);
 ProductsController = __decorate([
     (0, common_1.Controller)('products'),
-    __metadata("design:paramtypes", [products_service_1.ProductsService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __metadata("design:paramtypes", [products_service_1.ProductsService,
+        auth_service_1.AuthService])
 ], ProductsController);
 exports.ProductsController = ProductsController;
 //# sourceMappingURL=products.controller.js.map

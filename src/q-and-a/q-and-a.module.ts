@@ -9,6 +9,7 @@ import { UserSchema } from 'src/models/user.model';
 import { QuestionSchema } from 'src/models/question.model';
 import { ProductSchema } from 'src/models/product.model';
 import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
       { name: 'Product', schema: ProductSchema },
       { name: 'ItemPurchasedUsers', schema: ItemPurchasedUsersSchema },
     ]),
+    AuthModule,
   ],
   controllers: [QAndAController],
   providers: [QAndAService, JwtAuthGuard],

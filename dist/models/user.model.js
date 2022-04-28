@@ -1,9 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserSchema = void 0;
+exports.UserSchema = exports.userRoles = void 0;
 const mongoose_1 = require("mongoose");
+var userRoles;
+(function (userRoles) {
+    userRoles["USER"] = "USER";
+    userRoles["SELLER"] = "SELLER";
+    userRoles["ADMIN"] = "ADMIN";
+})(userRoles = exports.userRoles || (exports.userRoles = {}));
 exports.UserSchema = new mongoose_1.default.Schema({
     phoneNumber: { type: Number, required: true },
+    userRole: {
+        type: String,
+        required: false,
+        select: false,
+        default: userRoles.USER,
+    },
     name: { type: String, required: true },
     recentSearches: [
         {

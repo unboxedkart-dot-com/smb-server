@@ -17,11 +17,6 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateProductDetailsDto.prototype, "productId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
 ], CreateProductDetailsDto.prototype, "productCode", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),

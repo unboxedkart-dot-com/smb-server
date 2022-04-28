@@ -18,6 +18,7 @@ const user_model_1 = require("../models/user.model");
 const question_model_1 = require("../models/question.model");
 const product_model_1 = require("../models/product.model");
 const item_purchased_user_model_1 = require("../models/item-purchased-user.model");
+const auth_module_1 = require("../auth/auth.module");
 let QAndAModule = class QAndAModule {
 };
 QAndAModule = __decorate([
@@ -31,6 +32,7 @@ QAndAModule = __decorate([
                 { name: 'Product', schema: product_model_1.ProductSchema },
                 { name: 'ItemPurchasedUsers', schema: item_purchased_user_model_1.ItemPurchasedUsersSchema },
             ]),
+            auth_module_1.AuthModule,
         ],
         controllers: [q_and_a_controller_1.QAndAController],
         providers: [q_and_a_service_1.QAndAService, jwt_auth_guard_1.JwtAuthGuard],

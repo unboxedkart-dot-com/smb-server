@@ -11,6 +11,8 @@ import { UserSchema } from 'src/models/user.model';
 import { ReviewSchema } from 'src/models/review.model';
 import { ReferralOrderSchema } from 'src/models/referral_order';
 import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { ItemPurchasedUsersSchema } from 'src/models/item-purchased-user.model';
       { name: 'ReferralOrder', schema: ReferralOrderSchema },
       { name: 'ItemPurchasedUsers', schema: ItemPurchasedUsersSchema },
     ]),
+    AuthModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService, JwtStrategy],

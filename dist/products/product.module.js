@@ -15,6 +15,8 @@ const product_model_1 = require("../models/product.model");
 const review_model_1 = require("../models/review.model");
 const q_and_a_model_1 = require("../models/q_and_a.model");
 const product_specs_1 = require("../models/product-specs");
+const auth_module_1 = require("../auth/auth.module");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let ProductsModule = class ProductsModule {
 };
 ProductsModule = __decorate([
@@ -26,9 +28,10 @@ ProductsModule = __decorate([
                 { name: 'QuestionAndAnswer', schema: q_and_a_model_1.QuestionAndAnswerSchema },
                 { name: 'ProductSpecs', schema: product_specs_1.ProductSpecsSchema },
             ]),
+            auth_module_1.AuthModule
         ],
         controllers: [products_controller_1.ProductsController],
-        providers: [products_service_1.ProductsService],
+        providers: [products_service_1.ProductsService, jwt_auth_guard_1.JwtAuthGuard],
     })
 ], ProductsModule);
 exports.ProductsModule = ProductsModule;

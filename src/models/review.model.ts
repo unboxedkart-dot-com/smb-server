@@ -7,9 +7,10 @@ export const ReviewSchema = new mongoose.Schema({
   reviewTitle: { type: String, required: false },
   reviewContent: { type: String, required: false },
   productId: { type: String, required: true },
+  productCode: { type: String, required: true },
   productTitle: { type: String, required: true },
   imageUrl: { type: String, required: true },
-  isApproved: { type: String, required: false, select : false },
+  isApproved: { type: String, required: false, select: false },
   timestamp: { type: Date, required: true, default: Date.now() },
 });
 
@@ -20,6 +21,7 @@ export interface Review {
   reviewTitle: string;
   reviewContent: string;
   productId: string;
+  productCode : string;
   productTitle: string;
   imageUrl: string;
   isApproved: string;

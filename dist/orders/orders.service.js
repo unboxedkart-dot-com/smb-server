@@ -125,6 +125,9 @@ let OrdersService = class OrdersService {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
             orderStatus: order_model_1.OrderStatuses.ACCEPTED,
         });
+        await this.productModel.findByIdAndUpdate(order.orderDetails.productId, {
+            $inc: { quantity: 1 },
+        });
         this._handleSendOrderConfirmedMessage(order);
         this._handleSendOrderConfirmedMail(order);
         this._handleOrderConfirmationNotification(order);
@@ -705,6 +708,7 @@ let OrdersService = class OrdersService {
         const response = this.sendNotification(message);
     }
     async _handleSendOutForDeliveryMessage(order) {
+        console.log('order details', order);
         const url = process.env.SMS_FLOW_URL;
         const postBody = {
             flow_id: process.env.DELIVERY_ORDER_OUT_FOR_DELIVERY_FLOW_ID,
@@ -752,6 +756,7 @@ let OrdersService = class OrdersService {
         console.log('response', response);
     }
     async _handleSendOrderDeliveredMessage(order) {
+        console.log('order details', order);
         const url = process.env.SMS_FLOW_URL;
         const postBody = {
             flow_id: process.env.ORDER_DELIVERED_FLOW_ID,

@@ -9,6 +9,7 @@ exports.ReviewSchema = new mongoose_1.default.Schema({
     reviewTitle: { type: String, required: false },
     reviewContent: { type: String, required: false },
     productId: { type: String, required: true },
+    productCode: { type: String, required: true },
     productTitle: { type: String, required: true },
     imageUrl: { type: String, required: true },
     isApproved: { type: String, required: false, select: false },

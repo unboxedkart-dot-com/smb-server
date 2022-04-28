@@ -20,6 +20,7 @@ const user_model_1 = require("../models/user.model");
 const review_model_1 = require("../models/review.model");
 const referral_order_1 = require("../models/referral_order");
 const item_purchased_user_model_1 = require("../models/item-purchased-user.model");
+const auth_module_1 = require("../auth/auth.module");
 let OrdersModule = class OrdersModule {
 };
 OrdersModule = __decorate([
@@ -35,6 +36,7 @@ OrdersModule = __decorate([
                 { name: 'ReferralOrder', schema: referral_order_1.ReferralOrderSchema },
                 { name: 'ItemPurchasedUsers', schema: item_purchased_user_model_1.ItemPurchasedUsersSchema },
             ]),
+            auth_module_1.AuthModule,
         ],
         controllers: [orders_controller_1.OrdersController],
         providers: [orders_service_1.OrdersService, jwt_strategy_1.JwtStrategy],

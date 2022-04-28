@@ -6,6 +6,7 @@ import { ReviewSchema } from 'src/models/review.model';
 import { ReviewsDataSchema } from 'src/models/reviews_data.model';
 import { UserSchema } from 'src/models/user.model';
 import { ProductSchema } from 'src/models/product.model';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProductSchema } from 'src/models/product.model';
       { name: 'User', schema: UserSchema },
       { name: 'Product', schema: ProductSchema },
     ]),
+    AuthModule
   ],
   controllers: [ReviewsController],
   providers: [ReviewsService],

@@ -22,7 +22,8 @@ let FavoritesController = class FavoritesController {
     }
     async handleGetFavorites(request) {
         const userId = request.user.userId;
-        return await this.favoritesService.getFavorites(userId);
+        const favorites = await this.favoritesService.getFavorites(userId);
+        return favorites;
     }
     async handleAddFavorite(request, productId) {
         const userId = request.user.userId;

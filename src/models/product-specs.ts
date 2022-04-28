@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 export const ProductSpecsSchema = new mongoose.Schema({
-  productId: { type: String, required: true },
   productCode: { type: String, required: true },
   productSpecs: [
     {
@@ -12,9 +11,8 @@ export const ProductSpecsSchema = new mongoose.Schema({
 });
 
 export interface ProductSpecs {
-  productId: string;
   productCode: string;
-  specs: [
+  productSpecs: [
     {
       title: string;
       values: string[];

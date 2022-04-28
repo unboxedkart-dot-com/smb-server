@@ -53,7 +53,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "handleUpdateUserDetails", null);
 __decorate([
-    (0, common_1.Get)('user-data'),
+    (0, common_1.Get)('/user-data'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

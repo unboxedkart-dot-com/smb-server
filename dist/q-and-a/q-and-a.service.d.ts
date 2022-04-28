@@ -17,9 +17,8 @@ export declare class QAndAService {
     private readonly userModel;
     private readonly itemPurchasedUsersModel;
     constructor(answerModel: Model<Answer>, questionAndAnswerModel: Model<QuestionAndAnswer>, questionModel: Model<Question>, productModel: Model<Product>, userModel: Model<User>, itemPurchasedUsersModel: Model<ItemPurchasedUser>);
-    getProductQuestionAndAnswers(productId: string): Promise<(import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
-        _id: import("mongoose").Types.ObjectId;
-    })[]>;
+    getProductQuestionAndAnswers(productId: string): Promise<QuestionAndAnswer[]>;
+    getAllProductQuestionAndAnswers(productId: string): Promise<QuestionAndAnswer[]>;
     createQuestion(userId: string, entireBody: CreateQuestionDto): Promise<{
         status: string;
         message: string;

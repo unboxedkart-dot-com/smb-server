@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as SendGrid from '@sendgrid/mail';
 import axios from 'axios';
 import { Model } from 'mongoose';
+import { AuthService } from 'src/auth/auth.service';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
 import { Order, OrderStatuses, paymentTypes } from 'src/models/order.model';
@@ -152,11 +153,15 @@ export class OrdersService {
       selectedStore: orderSummary.pickUpDetails.storeLocation,
       orderItems: orderItemDetails,
     };
+    // await this.acceptOrder(orderItemDetails.orderItems[0].)
   }
 
   async acceptOrder(userId: string, orderItemId: string) {
     const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
       orderStatus: OrderStatuses.ACCEPTED,
+    });
+    await this.productModel.findByIdAndUpdate(order.orderDetails.productId, {
+      $inc: { quantity: 1 },
     });
     this._handleSendOrderConfirmedMessage(order);
     this._handleSendOrderConfirmedMail(order);
@@ -934,6 +939,7 @@ export class OrdersService {
   }
 
   async _handleSendOutForDeliveryMessage(order: any) {
+        console.log('order details', order);
     const url = process.env.SMS_FLOW_URL;
     const postBody = {
       flow_id: process.env.DELIVERY_ORDER_OUT_FOR_DELIVERY_FLOW_ID,
@@ -985,6 +991,7 @@ export class OrdersService {
   }
 
   async _handleSendOrderDeliveredMessage(order: any) {
+    console.log('order details', order);
     const url = process.env.SMS_FLOW_URL;
     const postBody = {
       flow_id: process.env.ORDER_DELIVERED_FLOW_ID,

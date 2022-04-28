@@ -28,20 +28,6 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         SendGrid.setApiKey('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');
     }
-    async sendMail() {
-        const msg = {
-            to: 'bsunil135@gmail.com',
-            from: 'info@unboxedkart.com',
-            templateId: 'd-a138d401839444518e9515218e7af1e7',
-            dynamic_template_data: {
-                name: 'Sunil',
-            },
-        };
-        const transport = await SendGrid.send(msg)
-            .then(() => console.log('email send'))
-            .catch((e) => console.log('email error', e));
-        return transport;
-    }
     async sendOtp(phoneNumber) {
         const url = `${process.env.SEND_OTP_URL_PREFIX}template_id=${process.env.OTP_TEMPLATE_ID}&mobile=91${phoneNumber}&authkey=${process.env.SMS_AUTH_KEY}&otp_length=6&otp_expiry=${process.env.OTP_EXPIRY_TIME}`;
         console.log('sms url', url);
@@ -284,6 +270,18 @@ let AuthService = class AuthService {
         console.log('payload', payload);
         const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
         return accessToken;
+    }
+    async CheckIfAdmin(userId) {
+        console.log('checking admin status', userId);
+        const user = await this.userModel.findById(userId).select('+userRole');
+        console.log('new user got', user);
+        if (user && user.userRole == 'ADMIN') {
+            console.log('new sss user', user);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     async sendSampleMail() {
     }

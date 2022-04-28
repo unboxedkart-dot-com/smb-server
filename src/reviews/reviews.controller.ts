@@ -2,14 +2,18 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
   Query,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApproveReviewDto } from './dto/approve-review.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -18,7 +22,11 @@ import { ReviewsService } from './reviews.service';
 
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) {}
+  constructor(
+    private readonly reviewsService: ReviewsService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
   @UseGuards(JwtAuthGuard)
   @Get()
   async handleGetUserReviews(@Req() request: any) {
@@ -60,7 +68,12 @@ export class ReviewsController {
     @Param('id') reviewId: string,
   ) {
     const userId = request.user.userId;
-    await this.reviewsService.approveReview(userId, reviewId);
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      await this.reviewsService.approveReview(userId, reviewId);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -74,5 +87,16 @@ export class ReviewsController {
   async handleGetProductReviews(@Param('id') productId: string) {
     const reviews = await this.reviewsService.getProductReviews(productId);
     return reviews;
+    // return {
+    //   data: reviews,
+    // };
+  }
+
+  @Get('/product/all/:id')
+  async handleGetAllProductReviews(@Param('id') productId: string) {
+    const reviews = await this.reviewsService.getProductReviews(productId);
+    return {
+      data: reviews,
+    };
   }
 }

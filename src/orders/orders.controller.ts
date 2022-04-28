@@ -2,15 +2,19 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { response } from 'express';
 import { request } from 'http';
+import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
@@ -18,7 +22,12 @@ import { OrdersService } from './orders.service';
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    // private readonly authService: AuthService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('/referrals')
   async handleGetReferrals(@Req() request: any) {
@@ -77,8 +86,16 @@ export class OrdersController {
     @Param('id') orderItemId: string,
   ) {
     const userId = request.user.userId;
-    const response = await this.ordersService.acceptOrder(userId, orderItemId);
-    return response;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.acceptOrder(
+        userId,
+        orderItemId,
+      );
+      return response;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @Patch('ready-for-pickup/:id')
@@ -87,11 +104,15 @@ export class OrdersController {
     @Param('id') orderItemId: string,
   ) {
     const userId = request.user.userId;
-    const response = await this.ordersService.orderReadyForPickUp(
-      userId,
-      orderItemId,
-    );
-    return response;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.orderReadyForPickUp(
+        userId,
+        orderItemId,
+      );
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @Patch('delivered/:id')
@@ -100,11 +121,15 @@ export class OrdersController {
     @Param('id') orderItemId: string,
   ) {
     const userId = request.user.userId;
-    const response = await this.ordersService.orderDelivered(
-      userId,
-      orderItemId,
-    );
-    return response;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.orderDelivered(
+        userId,
+        orderItemId,
+      );
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @Patch('shipped/:id')
@@ -113,8 +138,16 @@ export class OrdersController {
     @Param('id') orderItemId: string,
   ) {
     const userId = request.user.userId;
-    const response = await this.ordersService.orderShipped(userId, orderItemId);
-    return response;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.orderShipped(
+        userId,
+        orderItemId,
+      );
+      return response;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @Patch('out-for-delivery/:id')
@@ -123,11 +156,16 @@ export class OrdersController {
     @Param('id') orderItemId: string,
   ) {
     const userId = request.user.userId;
-    const response = await this.ordersService.orderOutForDelivery(
-      userId,
-      orderItemId,
-    );
-    return response;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.orderOutForDelivery(
+        userId,
+        orderItemId,
+      );
+      return response;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   // @Post('dummy-push')

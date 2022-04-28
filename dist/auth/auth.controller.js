@@ -22,10 +22,6 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async sendMail() {
-        const result = this.authService.sendMail();
-        return result;
-    }
     async handlePrintHello(request) {
         console.log('request', request.user.userId);
         return request.user.userId;
@@ -51,12 +47,6 @@ let AuthController = class AuthController {
         return result;
     }
 };
-__decorate([
-    (0, common_1.Post)('send-mail'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "sendMail", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),

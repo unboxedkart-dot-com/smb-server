@@ -28,13 +28,38 @@ let ReviewsService = class ReviewsService {
         return reviews;
     }
     async getProductReviews(productId) {
-        const reviews = await this.reviewModel.find({
-            productId: productId,
-        });
-        const reviewsData = await this.reviewsDataModel.find({
-            productId: productId,
-        });
-        return { reviews: reviews, reviewsData: reviewsData };
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productModel.findById(productId);
+            const reviews = await this.reviewModel
+                .find({
+                productCode: product.productCode,
+                isApproved: true,
+            })
+                .limit(5);
+            const reviewsData = await this.reviewsDataModel.findOne({
+                productCode: product.productCode,
+            });
+            return { reviews: reviews, reviewsData: reviewsData };
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
+    }
+    async getAllProdutReviews(productId) {
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productModel.findById(productId);
+            const reviews = await this.reviewModel.find({
+                productCode: product.productCode,
+                isApproved: true,
+            });
+            const reviewsData = await this.reviewsDataModel.find({
+                productCode: product.productCode,
+            });
+            return { reviews: reviews, reviewsData: reviewsData };
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
     }
     async createReview(userId, entireBody) {
         const user = await this.userModel.findById(userId);
@@ -47,6 +72,7 @@ let ReviewsService = class ReviewsService {
                 reviewTitle: entireBody.reviewTitle,
                 reviewContent: entireBody.reviewContent,
                 productId: product._id,
+                productCode: product.productCode,
                 productTitle: product.title,
                 imageUrl: product.imageUrls.coverImage,
             });
@@ -64,6 +90,7 @@ let ReviewsService = class ReviewsService {
             reviewContent: entireBody.reviewContent,
             isApproved: false,
         });
+        await this.approveReview('123', entireBody.reviewId);
         console.log('updated review', review);
     }
     async deleteReview(userId, reviewId) {

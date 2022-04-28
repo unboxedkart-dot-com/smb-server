@@ -1,7 +1,19 @@
 import mongoose from 'mongoose';
 
+export enum userRoles {
+  USER = 'USER',
+  SELLER = 'SELLER',
+  ADMIN = 'ADMIN',
+}
+
 export const UserSchema = new mongoose.Schema({
   phoneNumber: { type: Number, required: true },
+  userRole: {
+    type: String,
+    required: false,
+    select: false,
+    default: userRoles.USER,
+  },
   name: { type: String, required: true },
   recentSearches: [
     {
@@ -47,6 +59,7 @@ export const UserSchema = new mongoose.Schema({
 export interface User {
   // id: string;
   name: string;
+  userRole: string;
   phoneNumber: string;
   recentSearches: [
     {

@@ -30,5 +30,6 @@ import { SearchTermSchema } from 'src/models/search_term';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports : [AuthService]
 })
 export class AuthModule {}

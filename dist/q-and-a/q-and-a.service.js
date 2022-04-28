@@ -26,6 +26,32 @@ let QAndAService = class QAndAService {
         this.itemPurchasedUsersModel = itemPurchasedUsersModel;
     }
     async getProductQuestionAndAnswers(productId) {
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productModel.findById(productId);
+            const qAndA = await this.questionAndAnswerModel
+                .find({
+                productCode: product.productCode,
+                isApproved: true,
+            })
+                .limit(5);
+            return qAndA;
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
+    }
+    async getAllProductQuestionAndAnswers(productId) {
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productModel.findById(productId);
+            const qAndA = await this.questionAndAnswerModel.find({
+                productCode: product.productCode,
+                isApproved: true,
+            });
+            return qAndA;
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
         const questionAndAnswers = await this.questionAndAnswerModel.find({
             productId: productId,
         });

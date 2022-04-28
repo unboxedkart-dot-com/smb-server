@@ -11,7 +11,6 @@ export declare class AuthService {
     private readonly searchTermModel;
     private jwtService;
     constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, jwtService: JwtService);
-    sendMail(): Promise<void>;
     sendOtp(phoneNumber: number): Promise<{
         status: string;
         message: string;
@@ -62,5 +61,6 @@ export declare class AuthService {
     _sendAccountCreatedMail(userDoc: any): Promise<void>;
     _sendAccountCreatedMessage(userDoc: any): Promise<void>;
     createJwt(id: string): Promise<string>;
+    CheckIfAdmin(userId: string): Promise<boolean>;
     sendSampleMail(): Promise<void>;
 }

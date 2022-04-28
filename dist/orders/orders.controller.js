@@ -14,12 +14,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_order_dto_1 = require("./dto/create-order.dto");
 const orders_service_1 = require("./orders.service");
 let OrdersController = class OrdersController {
-    constructor(ordersService) {
+    constructor(ordersService, authService) {
         this.ordersService = ordersService;
+        this.authService = authService;
     }
     async handleGetReferrals(request) {
         const userId = request.user.userId;
@@ -54,28 +56,56 @@ let OrdersController = class OrdersController {
     }
     async handleAcceptOrder(request, orderItemId) {
         const userId = request.user.userId;
-        const response = await this.ordersService.acceptOrder(userId, orderItemId);
-        return response;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.ordersService.acceptOrder(userId, orderItemId);
+            return response;
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleSetOrderReadyForPickup(request, orderItemId) {
         const userId = request.user.userId;
-        const response = await this.ordersService.orderReadyForPickUp(userId, orderItemId);
-        return response;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.ordersService.orderReadyForPickUp(userId, orderItemId);
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleSerOrderDelivered(request, orderItemId) {
         const userId = request.user.userId;
-        const response = await this.ordersService.orderDelivered(userId, orderItemId);
-        return response;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.ordersService.orderDelivered(userId, orderItemId);
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleSetOrderShipped(request, orderItemId) {
         const userId = request.user.userId;
-        const response = await this.ordersService.orderShipped(userId, orderItemId);
-        return response;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.ordersService.orderShipped(userId, orderItemId);
+            return response;
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleSetOrderOutForDelivery(request, orderItemId) {
         const userId = request.user.userId;
-        const response = await this.ordersService.orderOutForDelivery(userId, orderItemId);
-        return response;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.ordersService.orderOutForDelivery(userId, orderItemId);
+            return response;
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
 };
 __decorate([
@@ -171,7 +201,9 @@ __decorate([
 OrdersController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),
-    __metadata("design:paramtypes", [orders_service_1.OrdersService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __metadata("design:paramtypes", [orders_service_1.OrdersService,
+        auth_service_1.AuthService])
 ], OrdersController);
 exports.OrdersController = OrdersController;
 //# sourceMappingURL=orders.controller.js.map

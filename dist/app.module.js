@@ -26,6 +26,7 @@ const search_module_1 = require("./search/search.module");
 const store_location_module_1 = require("./store-location/store-location.module");
 const user_module_1 = require("./user/user.module");
 const product_details_module_1 = require("./product-details/product-details.module");
+const variants_module_1 = require("./variants/variants.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -35,7 +36,7 @@ AppModule = __decorate([
             product_module_1.ProductsModule,
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
-            mongoose_1.MongooseModule.forRoot('mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'),
+            mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
             orders_module_1.OrdersModule,
             favorites_module_1.FavoritesModule,
             cart_module_1.CartModule,
@@ -49,6 +50,7 @@ AppModule = __decorate([
             user_module_1.UserModule,
             faqs_module_1.FaqsModule,
             product_details_module_1.ProductDetailsModule,
+            variants_module_1.VariantsModule,
         ],
     })
 ], AppModule);

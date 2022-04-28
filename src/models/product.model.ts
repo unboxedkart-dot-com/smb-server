@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
   SKU: { type: String, required: true },
+  productCode: { type: String, required: true },
+  aboutProduct: { type: [String], required: true },
   title: { type: String, required: true },
   modelNumber: { type: String, required: true },
   brand: { type: String, required: true },
@@ -21,21 +23,20 @@ export const ProductSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   highlights: { type: [String], required: false },
   searchCases: { type: [String], required: true },
-  isBestSeller: { type: Boolean, required: false },
-  isFeatured: { type: Boolean, required: false },
+  isBestSeller: { type: Boolean, required: false, default: false },
+  isFeatured: { type: Boolean, required: false, default: false },
   moreDetails: {
     color: { type: String, required: true },
     colorCode: { type: String, required: true },
     storage: { type: String, required: true },
     storageCode: { type: String, required: true },
   },
-  productDetails: { type: Map, required: false },
-  qAndA: { type: Map, required: false },
-  ratingsAndReviews: { type: Map, required: false },
 });
 
 export interface Product {
   id: string;
+  productCode: string;
+  aboutProduct: string;
   SKU: string;
   title: string;
   modelNumber: string;
@@ -64,7 +65,4 @@ export interface Product {
     storage: string;
     storageCode: string;
   };
-  productDetails: any;
-  qAndA: any;
-  ratingsAndReviews: any;
 }

@@ -17,7 +17,7 @@ import { SearchModule } from './search/search.module';
 import { StoreLocationModule } from './store-location/store-location.module';
 import { UserModule } from './user/user.module';
 import { ProductDetailsModule } from './product-details/product-details.module';
-// require("dotenv").config({ path: "./config/.env" });
+import { VariantsModule } from './variants/variants.module';
 
 @Module({
   imports: [
@@ -26,8 +26,7 @@ import { ProductDetailsModule } from './product-details/product-details.module';
     SearchModule,
     AuthModule,
     MongooseModule.forRoot(
-      'mongodb+srv://imsunil:8qHcnXGeqJKX84aE@ukart-india.kmpe6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-      // process.env.DB_CONNECTION_URL
+      process.env.DB_CONNECTION_URL
     ),
     OrdersModule,
     FavoritesModule,
@@ -42,6 +41,7 @@ import { ProductDetailsModule } from './product-details/product-details.module';
     UserModule,
     FaqsModule,
     ProductDetailsModule,
+    VariantsModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

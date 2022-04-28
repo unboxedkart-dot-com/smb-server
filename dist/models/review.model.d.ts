@@ -7,6 +7,7 @@ export interface Review {
     reviewTitle: string;
     reviewContent: string;
     productId: string;
+    productCode: string;
     productTitle: string;
     imageUrl: string;
     isApproved: string;

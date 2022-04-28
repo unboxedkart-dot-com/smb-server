@@ -17,9 +17,13 @@ export declare class ReviewsService {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     getProductReviews(productId: string): Promise<{
-        reviews: (import("mongoose").Document<unknown, any, Review> & Review & {
+        reviews: Review[];
+        reviewsData: import("mongoose").Document<unknown, any, ReviewsData> & ReviewsData & {
             _id: import("mongoose").Types.ObjectId;
-        })[];
+        };
+    }>;
+    getAllProdutReviews(productId: string): Promise<{
+        reviews: Review[];
         reviewsData: (import("mongoose").Document<unknown, any, ReviewsData> & ReviewsData & {
             _id: import("mongoose").Types.ObjectId;
         })[];

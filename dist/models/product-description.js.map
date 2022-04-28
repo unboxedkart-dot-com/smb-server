@@ -1,0 +1,1 @@
+{"version":3,"file":"product-description.js","sourceRoot":"","sources":["../../src/models/product-description.ts"],"names":[],"mappings":";;;AAAA,uCAAgC;AAEnB,QAAA,wBAAwB,GAAG,IAAI,kBAAQ,CAAC,MAAM,CAAC;IAC1D,WAAW,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE;IAC7C,mBAAmB,EAAE,EAAE,IAAI,EAAE,KAAK,EAAE,QAAQ,EAAE,IAAI,EAAE;CACrD,CAAC,CAAC"}

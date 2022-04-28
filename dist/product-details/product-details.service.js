@@ -17,29 +17,62 @@ const common_1 = require("@nestjs/common");
 const mongoose_decorators_1 = require("@nestjs/mongoose/dist/common/mongoose.decorators");
 const mongoose_1 = require("mongoose");
 let ProductDetailsService = class ProductDetailsService {
-    constructor(productSpecsModel) {
+    constructor(productModel, productSpecsModel, productDescriptionModel) {
+        this.productModel = productModel;
         this.productSpecsModel = productSpecsModel;
+        this.productDescriptionModel = productDescriptionModel;
     }
     async getProductSpecs(productId) {
-        const response = await this.productSpecsModel.findOne({
-            productId: productId,
-        }, { _id: 0, productSpecs: 1 });
-        return response['productSpecs'];
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productModel.findById(productId);
+            if (!product) {
+                throw new common_1.NotFoundException('could not find the product');
+            }
+            else {
+                const productSpecs = await this.productSpecsModel.findOne({
+                    productCode: product.productCode,
+                }, { _id: 0, productSpecs: 1 });
+                return productSpecs.productSpecs;
+            }
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
+    }
+    async getProductDescription(productId) {
+        if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+            const product = await this.productDescriptionModel.findById(productId);
+            const productDetails = await this.productDescriptionModel.findOne({
+                productCode: product.productCode,
+            }, { _id: 0, productSpecs: 1 });
+            return productDetails.productDescription;
+        }
+        else {
+            throw new common_1.NotFoundException('product id is not valid');
+        }
     }
     async addProductSpecs(entireBody) {
-        console.log('adding specs', entireBody);
         const newProductSpecs = new this.productSpecsModel({
-            productId: entireBody.productId,
             productCode: entireBody.productCode,
             productSpecs: entireBody.productSpecs,
         });
         newProductSpecs.save();
     }
+    async addProductDescription(entireBody) {
+        const newProductSpecs = new this.productSpecsModel({
+            productCode: entireBody.productCode,
+            productSpecs: entireBody.productDescription,
+        });
+    }
 };
 ProductDetailsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_decorators_1.InjectModel)('ProductSpecs')),
-    __metadata("design:paramtypes", [mongoose_1.Model])
+    __param(0, (0, mongoose_decorators_1.InjectModel)('Product')),
+    __param(1, (0, mongoose_decorators_1.InjectModel)('ProductSpecs')),
+    __param(2, (0, mongoose_decorators_1.InjectModel)('ProductDescription')),
+    __metadata("design:paramtypes", [mongoose_1.Model,
+        mongoose_1.Model,
+        mongoose_1.Model])
 ], ProductDetailsService);
 exports.ProductDetailsService = ProductDetailsService;
 //# sourceMappingURL=product-details.service.js.map

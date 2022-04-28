@@ -1,14 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
   Query,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create_answer.dto';
 import { CreateQuestionDto } from './dto/create_question.dto';
@@ -16,7 +21,11 @@ import { QAndAService } from './q-and-a.service';
 
 @Controller('q-and-a')
 export class QAndAController {
-  constructor(private readonly qAndAService: QAndAService) {}
+  constructor(
+    private readonly qAndAService: QAndAService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
   @UseGuards(JwtAuthGuard)
   @Get()
   async handleGetQuestionAndAnswers(@Query('id') productId: string) {
@@ -29,10 +38,22 @@ export class QAndAController {
   @Get('/product/:id')
   async handleGetProductReviews(@Param('id') productId: string) {
     console.log('given product id', productId);
-    const reviews = await this.qAndAService.getProductQuestionAndAnswers(
+    const qAndA = await this.qAndAService.getProductQuestionAndAnswers(
       productId,
     );
-    return reviews;
+    return qAndA;
+    // return {
+    //   data: reviews,
+    // };
+  }
+
+  @Get('/product/all/:id')
+  async handleGetAllProductReviews(@Param('id') productId: string) {
+    console.log('given product id', productId);
+    const qAndA = await this.qAndAService.getAllProductQuestionAndAnswers(
+      productId,
+    );
+    return qAndA;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,6 +65,7 @@ export class QAndAController {
     const result = await this.qAndAService.getUserAnswers(userId);
     return result;
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('/questions')
   async handleGetQuestions(@Req() request: any) {
@@ -86,8 +108,17 @@ export class QAndAController {
 
   @UseGuards(JwtAuthGuard)
   @Post('approve/answer/:id')
-  async handleApproveAnswer(@Param('id') answerId: string) {
-    await this.qAndAService.approveAnswer(answerId);
+  async handleApproveAnswer(
+    @Param('id') answerId: string,
+    @Req() request: any,
+  ) {
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      await this.qAndAService.approveAnswer(answerId);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @UseGuards(JwtAuthGuard)

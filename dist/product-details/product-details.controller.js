@@ -21,23 +21,34 @@ let ProductDetailsController = class ProductDetailsController {
         this.productDetailsService = productDetailsService;
     }
     async handleGetProductSpecs(productId) {
-        const response = await this.productDetailsService.getProductSpecs(productId);
-        return response;
+        const productSpecs = await this.productDetailsService.getProductSpecs(productId);
+        return productSpecs;
+    }
+    async handleGetProductDescription(productId) {
+        const productDescription = await this.productDetailsService.getProductDescription(productId);
+        return productDescription;
     }
     async handleSetProductSpecs(entireBody) {
         const response = await this.productDetailsService.addProductSpecs(entireBody);
     }
 };
 __decorate([
-    (0, common_1.Get)('/:id'),
+    (0, common_1.Get)('/specs/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleGetProductSpecs", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)('')),
+    (0, common_1.Get)('/description/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleGetProductDescription", null);
+__decorate([
+    (0, common_1.Post)('/specs'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_product_details_dto_1.CreateProductDetailsDto]),
     __metadata("design:returntype", Promise)

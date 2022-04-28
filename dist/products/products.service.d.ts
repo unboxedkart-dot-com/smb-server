@@ -1,29 +1,29 @@
+/// <reference types="mongoose/types/pipelinestage" />
+/// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
-import { QuestionAndAnswer } from 'src/models/q_and_a.model';
 import { Review } from 'src/models/review.model';
 import { Product } from '../models/product.model';
+import { CreateProductDto } from './dto/add-product.dto';
 export declare class ProductsService {
     private readonly productModel;
     private readonly reviewModel;
-    private readonly productSpecsModel;
-    private readonly questionAndAnswersModel;
-    constructor(productModel: Model<Product>, reviewModel: Model<Review>, productSpecsModel: Model<Product>, questionAndAnswersModel: Model<QuestionAndAnswer>);
-    insertProduct(product: Product): Promise<any>;
+    constructor(productModel: Model<Product>, reviewModel: Model<Review>);
+    insertAllProdcts(): Promise<void>;
+    insertProduct(entireBody: CreateProductDto): Promise<any>;
+    updateInventoryCount({ productId, count, }: {
+        productId: string;
+        count: number;
+    }): Promise<void>;
     getProducts(): Promise<Product[]>;
-    getProduct(id: string): Promise<{
-        product: import("mongoose").Document<unknown, any, Product> & Product & {
-            _id: import("mongoose").Types.ObjectId;
-        };
-        productSpecs: any;
-        productReviews: (import("mongoose").Document<unknown, any, Review> & Review & {
-            _id: import("mongoose").Types.ObjectId;
-        })[];
-        reviewsData: (import("mongoose").Document<unknown, any, Review> & Review & {
-            _id: import("mongoose").Types.ObjectId;
-        })[];
-        productQAndA: (import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
-            _id: import("mongoose").Types.ObjectId;
-        })[];
+    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<string>;
+    getSimilarProducts(productId: string): Promise<(import("mongoose").Document<unknown, any, Product> & Product & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
+    getRelatedProducts(productId: string): Promise<(import("mongoose").Document<unknown, any, Product> & Product & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
+    getProduct(id: string): Promise<import("mongoose").Document<unknown, any, Product> & Product & {
+        _id: import("mongoose").Types.ObjectId;
     }>;
     deleteProducts(): Promise<void>;
     deleteSingleProduct(id: string): Promise<void>;

@@ -14,13 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReviewsController = void 0;
 const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_review_dto_1 = require("./dto/create-review.dto");
 const update_review_dto_1 = require("./dto/update-review.dto");
 const reviews_service_1 = require("./reviews.service");
 let ReviewsController = class ReviewsController {
-    constructor(reviewsService) {
+    constructor(reviewsService, authService) {
         this.reviewsService = reviewsService;
+        this.authService = authService;
     }
     async handleGetUserReviews(request) {
         const userId = request.user.userId;
@@ -39,7 +41,13 @@ let ReviewsController = class ReviewsController {
     }
     async handleApproveReview(request, reviewId) {
         const userId = request.user.userId;
-        await this.reviewsService.approveReview(userId, reviewId);
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            await this.reviewsService.approveReview(userId, reviewId);
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleDeleteReview(reviewId, request) {
         const userId = request.user.userId;
@@ -48,6 +56,12 @@ let ReviewsController = class ReviewsController {
     async handleGetProductReviews(productId) {
         const reviews = await this.reviewsService.getProductReviews(productId);
         return reviews;
+    }
+    async handleGetAllProductReviews(productId) {
+        const reviews = await this.reviewsService.getProductReviews(productId);
+        return {
+            data: reviews,
+        };
     }
 };
 __decorate([
@@ -101,9 +115,18 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ReviewsController.prototype, "handleGetProductReviews", null);
+__decorate([
+    (0, common_1.Get)('/product/all/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ReviewsController.prototype, "handleGetAllProductReviews", null);
 ReviewsController = __decorate([
     (0, common_1.Controller)('reviews'),
-    __metadata("design:paramtypes", [reviews_service_1.ReviewsService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __metadata("design:paramtypes", [reviews_service_1.ReviewsService,
+        auth_service_1.AuthService])
 ], ReviewsController);
 exports.ReviewsController = ReviewsController;
 //# sourceMappingURL=reviews.controller.js.map

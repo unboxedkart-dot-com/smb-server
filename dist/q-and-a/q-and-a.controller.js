@@ -14,13 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QAndAController = void 0;
 const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_answer_dto_1 = require("./dto/create_answer.dto");
 const create_question_dto_1 = require("./dto/create_question.dto");
 const q_and_a_service_1 = require("./q-and-a.service");
 let QAndAController = class QAndAController {
-    constructor(qAndAService) {
+    constructor(qAndAService, authService) {
         this.qAndAService = qAndAService;
+        this.authService = authService;
     }
     async handleGetQuestionAndAnswers(productId) {
         const result = await this.qAndAService.getProductQuestionAndAnswers(productId);
@@ -28,8 +30,13 @@ let QAndAController = class QAndAController {
     }
     async handleGetProductReviews(productId) {
         console.log('given product id', productId);
-        const reviews = await this.qAndAService.getProductQuestionAndAnswers(productId);
-        return reviews;
+        const qAndA = await this.qAndAService.getProductQuestionAndAnswers(productId);
+        return qAndA;
+    }
+    async handleGetAllProductReviews(productId) {
+        console.log('given product id', productId);
+        const qAndA = await this.qAndAService.getAllProductQuestionAndAnswers(productId);
+        return qAndA;
     }
     async handleGetAnswers(request) {
         console.log('getting answers', request.user.userId);
@@ -56,8 +63,15 @@ let QAndAController = class QAndAController {
         const userId = request.user.userId;
         await this.qAndAService.createAnswer(userId, entireBody);
     }
-    async handleApproveAnswer(answerId) {
-        await this.qAndAService.approveAnswer(answerId);
+    async handleApproveAnswer(answerId, request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            await this.qAndAService.approveAnswer(answerId);
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
     }
     async handleGetQuestionsFeed(request) {
         const userId = request.user.userId;
@@ -80,6 +94,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetProductReviews", null);
+__decorate([
+    (0, common_1.Get)('/product/all/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetAllProductReviews", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('/answers'),
@@ -127,8 +148,9 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('approve/answer/:id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleApproveAnswer", null);
 __decorate([
@@ -141,7 +163,9 @@ __decorate([
 ], QAndAController.prototype, "handleGetQuestionsFeed", null);
 QAndAController = __decorate([
     (0, common_1.Controller)('q-and-a'),
-    __metadata("design:paramtypes", [q_and_a_service_1.QAndAService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __metadata("design:paramtypes", [q_and_a_service_1.QAndAService,
+        auth_service_1.AuthService])
 ], QAndAController);
 exports.QAndAController = QAndAController;
 //# sourceMappingURL=q-and-a.controller.js.map

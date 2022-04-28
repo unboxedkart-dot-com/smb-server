@@ -15,6 +15,7 @@ const review_model_1 = require("../models/review.model");
 const reviews_data_model_1 = require("../models/reviews_data.model");
 const user_model_1 = require("../models/user.model");
 const product_model_1 = require("../models/product.model");
+const auth_module_1 = require("../auth/auth.module");
 let ReviewsModule = class ReviewsModule {
 };
 ReviewsModule = __decorate([
@@ -26,6 +27,7 @@ ReviewsModule = __decorate([
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
             ]),
+            auth_module_1.AuthModule
         ],
         controllers: [reviews_controller_1.ReviewsController],
         providers: [reviews_service_1.ReviewsService],

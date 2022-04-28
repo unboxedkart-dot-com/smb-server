@@ -19,7 +19,9 @@ export class FavoritesController {
   @Get()
   async handleGetFavorites(@Req() request: any) {
     const userId = request.user.userId;
-    return await this.favoritesService.getFavorites(userId);
+    const favorites = await this.favoritesService.getFavorites(userId);
+    // return await this.favoritesService.getFavorites(userId);
+    return favorites;
   }
 
   @Post('add')

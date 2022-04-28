@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Answer } from 'src/models/answer.model';
@@ -26,6 +26,32 @@ export class QAndAService {
   ) {}
 
   async getProductQuestionAndAnswers(productId: string) {
+    if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+      const product = await this.productModel.findById(productId);
+      const qAndA = await this.questionAndAnswerModel
+        .find({
+          productCode: product.productCode,
+          isApproved: true,
+        })
+        .limit(5);
+      return qAndA as QuestionAndAnswer[];
+    } else {
+      throw new NotFoundException('product id is not valid');
+    }
+  }
+
+  async getAllProductQuestionAndAnswers(productId: string) {
+    if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+      const product = await this.productModel.findById(productId);
+      const qAndA = await this.questionAndAnswerModel.find({
+        productCode: product.productCode,
+        isApproved: true,
+      });
+      return qAndA as QuestionAndAnswer[];
+    } else {
+      throw new NotFoundException('product id is not valid');
+    }
+
     const questionAndAnswers = await this.questionAndAnswerModel.find({
       productId: productId,
     });

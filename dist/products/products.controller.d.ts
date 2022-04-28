@@ -1,35 +1,38 @@
 import mongoose from 'mongoose';
+import { AuthService } from 'src/auth/auth.service';
 import { Product } from '../models/product.model';
+import { CreateProductDto } from './dto/add-product.dto';
 import { ProductsService } from './products.service';
 export declare class ProductsController {
     private readonly productsService;
-    constructor(productsService: ProductsService);
-    addProduct(entireBody: Product): Promise<{
-        id: any;
-    }>;
-    getProduct(q: string): Promise<{
-        product: mongoose.Document<unknown, any, Product> & Product & {
-            _id: mongoose.Types.ObjectId;
+    private readonly authService;
+    constructor(productsService: ProductsService, authService: AuthService);
+    addProduct(request: any, entireBody: CreateProductDto): Promise<{
+        data: {
+            response: any;
         };
-        productSpecs: any;
-        productReviews: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
-            _id: mongoose.Types.ObjectId;
-        })[];
-        reviewsData: (mongoose.Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
-            _id: mongoose.Types.ObjectId;
-        })[];
-        productQAndA: (mongoose.Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
-            _id: mongoose.Types.ObjectId;
-        })[];
     }>;
+    addManyProducts(): Promise<{
+        data: {
+            response: void;
+        };
+    }>;
+    getProduct(q: string): Promise<mongoose.Document<unknown, any, Product> & Product & {
+        _id: mongoose.Types.ObjectId;
+    }>;
+    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<string>;
     handleDeleteProducts(): Promise<string>;
-    handleDeleteProduct(id: string): Promise<string>;
+    handleUpdateInventoryCount(count: number, request: any, productId: string): Promise<{
+        statusCode: number;
+        message: string;
+    }>;
+    handleDeleteProduct(id: string, request: any): Promise<void>;
+    handleGetSimilarProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
+        _id: mongoose.Types.ObjectId;
+    })[]>;
+    handleGetRelatedProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
+        _id: mongoose.Types.ObjectId;
+    })[]>;
     handleGetBestSellers(brand: string, condition: string, category: string): Promise<Product[]>;
-    handleGetBestSellersByBrand(): Promise<void>;
-    handleGetBestSellersByCategory(): Promise<void>;
-    handleGetBestSellersByCondition(): Promise<void>;
     handleGetFeaturedProducts(brand: string, condition: string, category: string): Promise<Product[]>;
-    handleGetFeaturedProductsByBrand(): Promise<void>;
-    handleGetFeaturedProductsByCategory(): Promise<void>;
-    handleGetFeaturedProductsByCondition(): Promise<void>;
 }

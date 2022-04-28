@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 export declare const ProductSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any>, any, any>;
 export interface Product {
     id: string;
+    productCode: string;
+    aboutProduct: string;
     SKU: string;
     title: string;
     modelNumber: string;
@@ -30,7 +32,4 @@ export interface Product {
         storage: string;
         storageCode: string;
     };
-    productDetails: any;
-    qAndA: any;
-    ratingsAndReviews: any;
 }

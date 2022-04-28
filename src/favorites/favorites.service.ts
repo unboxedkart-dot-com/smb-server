@@ -19,7 +19,7 @@ export class FavoritesService {
   async getFavorites(userId: string) {
     const userDoc = await this.userModel.findOne({ _id: userId }).exec();
     const favorites = userDoc.favoriteItemIds;
-
+    console.log('getting favorites');
     if (favorites.length > 0) {
       console.log('fav', favorites);
       const products = await this.productModel.find({

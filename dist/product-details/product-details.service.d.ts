@@ -1,9 +1,19 @@
 import { Product } from 'src/models/product.model';
 import { Model } from 'mongoose';
-import { CreateProductDetailsDto } from './dto/create-product-details.dto';
+import { ProductSpecs } from 'src/models/product-specs';
+import { ProductDescription } from 'src/models/product-description';
+import { AddProductSpecsDto } from './dto/add-product-specs.dto';
+import { AddProductDescriptionDto } from './dto/add-product-description.dto';
 export declare class ProductDetailsService {
+    private readonly productModel;
     private readonly productSpecsModel;
-    constructor(productSpecsModel: Model<Product>);
-    getProductSpecs(productId: string): Promise<any>;
-    addProductSpecs(entireBody: CreateProductDetailsDto): Promise<void>;
+    private readonly productDescriptionModel;
+    constructor(productModel: Model<Product>, productSpecsModel: Model<ProductSpecs>, productDescriptionModel: Model<ProductDescription>);
+    getProductSpecs(productId: string): Promise<[{
+        title: string;
+        values: string[];
+    }]>;
+    getProductDescription(productId: string): Promise<string[]>;
+    addProductSpecs(entireBody: AddProductSpecsDto): Promise<void>;
+    addProductDescription(entireBody: AddProductDescriptionDto): Promise<void>;
 }

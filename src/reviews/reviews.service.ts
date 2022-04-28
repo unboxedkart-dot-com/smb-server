@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from 'src/models/product.model';
@@ -24,14 +24,37 @@ export class ReviewsService {
   }
 
   async getProductReviews(productId: string) {
-    const reviews = await this.reviewModel.find({
-      productId: productId,
-      // isApproved: true,
-    });
-    const reviewsData = await this.reviewsDataModel.find({
-      productId: productId,
-    });
-    return { reviews: reviews, reviewsData: reviewsData };
+    if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+      const product = await this.productModel.findById(productId);
+      const reviews = await this.reviewModel
+        .find({
+          productCode: product.productCode,
+          isApproved: true,
+        })
+        .limit(5);
+      const reviewsData = await this.reviewsDataModel.findOne({
+        productCode: product.productCode,
+      });
+      return { reviews: reviews as Review[], reviewsData: reviewsData };
+    } else {
+      throw new NotFoundException('product id is not valid');
+    }
+  }
+
+  async getAllProdutReviews(productId: string) {
+    if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+      const product = await this.productModel.findById(productId);
+      const reviews = await this.reviewModel.find({
+        productCode: product.productCode,
+        isApproved: true,
+      });
+      const reviewsData = await this.reviewsDataModel.find({
+        productCode: product.productCode,
+      });
+      return { reviews: reviews as Review[], reviewsData: reviewsData };
+    } else {
+      throw new NotFoundException('product id is not valid');
+    }
   }
 
   async createReview(userId: string, entireBody: CreateReviewDto) {
@@ -45,6 +68,7 @@ export class ReviewsService {
         reviewTitle: entireBody.reviewTitle,
         reviewContent: entireBody.reviewContent,
         productId: product._id,
+        productCode: product.productCode,
         productTitle: product.title,
         imageUrl: product.imageUrls.coverImage,
       });
@@ -70,6 +94,7 @@ export class ReviewsService {
         // imageUrl: entireBody.imageUrl,
       },
     );
+    await this.approveReview('123', entireBody.reviewId);
     console.log('updated review', review);
   }
 

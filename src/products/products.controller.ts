@@ -6,30 +6,64 @@ import {
   Param,
   Query,
   Delete,
+  Req,
+  Inject,
+  forwardRef,
+  UnauthorizedException,
+  Patch,
+  UseFilters,
+  ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
+import { Http2ServerResponse } from 'http2';
 import mongoose from 'mongoose';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
 import { Product } from '../models/product.model';
+import { CreateProductDto } from './dto/add-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
 
-  @Post()
+  // @UseGuards(JwtAuthGuard)
+
+  @Post('/add')
   async addProduct(
+    @Req() request: any,
     @Body()
-    entireBody: Product,
+    entireBody: CreateProductDto,
   ) {
-    const generatedId = await this.productsService.insertProduct(
-      entireBody,
-      // entireBody.title,
-      // entireBody.price,
-      // entireBody.sellingPrice,
-      // entireBody.condition,
-      // entireBody.searchCases,
-      // entireBody('title'), entireBody('price') entireBody('sellingPrice'), entireBody('condition')
-    );
-    return { id: generatedId };
+    // const userId = request.user.userId;
+    // console.log('user id 1', userId);
+    // const isAdmin = await this.authService.CheckIfAdmin(userId);
+    // console.log('isadmin', isAdmin);
+    // if (isAdmin) {
+    const generatedId = await this.productsService.insertProduct(entireBody);
+    return {
+      data: {
+        response: generatedId,
+      },
+    };
+    // } else {
+    //   throw new ForbiddenException();
+    // }
+  }
+
+  @Post('/add-many')
+  async addManyProducts() {
+    const generatedId = await this.productsService.insertAllProdcts();
+    return {
+      data: {
+        response: generatedId,
+      },
+    };
   }
 
   // @Get()
@@ -42,6 +76,32 @@ export class ProductsController {
   async getProduct(@Query('q') q: string) {
     const product = await this.productsService.getProduct(q);
     return product;
+    // {
+    //   data: {
+    //     response:
+    //   },
+    // };
+  }
+
+  @Get('/variant')
+  async getSelectedVariant(
+    @Query('productCode') productCode: string,
+    @Query('conditionCode') conditionCode: string,
+    @Query('storageCode') storageCode: string,
+    @Query('colorCode') colorCode: string,
+    @Query('processorCode') processorCode: string,
+    @Query('ramCode') ramCode: string,
+  ) {
+    const product = await this.productsService.getSelectedVariant(
+      productCode,
+      conditionCode,
+      storageCode,
+      colorCode,
+      processorCode,
+      ramCode,
+    );
+    console.log('seelcred product', product);
+    return product;
   }
 
   @Delete()
@@ -50,10 +110,53 @@ export class ProductsController {
     return 'products deleted';
   }
 
+  // @UseFilters(HttpExceptionFilter)
+  // @Catch()
+  @UseGuards(JwtAuthGuard)
+  @Patch('/update-count/:id')
+  async handleUpdateInventoryCount(
+    @Body('count') count: number,
+    @Req() request: any,
+    @Param('id') productId: string,
+  ) {
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (!isAdmin) {
+      await this.productsService.updateInventoryCount({ productId, count });
+      return {
+        statusCode: 200,
+        message: 'product inventory count is updated',
+      };
+    } else {
+      throw new ForbiddenException(
+        'you are not allowed to perform this action',
+      );
+    }
+  }
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async handleDeleteProduct(@Body('id') id: string) {
-    await this.productsService.deleteSingleProduct(id);
-    return 'product deleted';
+  async handleDeleteProduct(@Body('id') id: string, @Req() request: any) {
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      await this.productsService.deleteSingleProduct(id);
+    } else {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
+  }
+
+  @Get('/similar-products/:id')
+  async handleGetSimilarProducts(@Param('id') productId: string) {
+    const products = await this.productsService.getSimilarProducts(productId);
+    return products;
+  }
+
+  @Get('/related-products/:id')
+  async handleGetRelatedProducts(@Param('id') productId: string) {
+    const products = await this.productsService.getRelatedProducts(productId);
+    return products;
   }
 
   @Get('best-sellers')
@@ -67,23 +170,12 @@ export class ProductsController {
       category,
       condition,
     );
-    console.log("DB URL", process.env.DB_CONNECTION_URL)
     return products;
-  }
-
-  @Get('best-sellers/brand/:brand')
-  async handleGetBestSellersByBrand(){
-
-  }
-
-  @Get('best-sellers/category/:category')
-  async handleGetBestSellersByCategory(){
-
-  }
-
-  @Get('best-sellers/condition/:condition')
-  async handleGetBestSellersByCondition(){
-
+    //  {
+    //   data: {
+    //     response: products,
+    //   },
+    // };
   }
 
   @Get('featured-products')
@@ -99,19 +191,24 @@ export class ProductsController {
     );
     return products;
   }
-
-  @Get('featured-products/brand/:brand')
-  async handleGetFeaturedProductsByBrand(){
-
-  }
-
-  @Get('featured-products/category/:category')
-  async handleGetFeaturedProductsByCategory(){
-
-  }
-
-  @Get('featured-products/condition/:condition')
-  async handleGetFeaturedProductsByCondition(){
-
-  }
 }
+
+// @Get('best-sellers/brand/:brand')
+// async handleGetBestSellersByBrand() {
+
+// }
+
+// @Get('best-sellers/category/:category')
+// async handleGetBestSellersByCategory() {}
+
+// @Get('best-sellers/condition/:condition')
+// async handleGetBestSellersByCondition() {}
+
+// @Get('featured-products/brand/:brand')
+// async handleGetFeaturedProductsByBrand() {}
+
+// @Get('featured-products/category/:category')
+// async handleGetFeaturedProductsByCategory() {}
+
+// @Get('featured-products/condition/:condition')
+// async handleGetFeaturedProductsByCondition() {}
