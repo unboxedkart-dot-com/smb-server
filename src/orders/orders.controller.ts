@@ -16,6 +16,7 @@ import { response } from 'express';
 import { request } from 'http';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 
@@ -166,6 +167,16 @@ export class OrdersController {
     } else {
       throw new UnauthorizedException();
     }
+  }
+
+  @Patch('/cancel-order')
+  async handleCancelOrder(
+    @Req() request: any,
+    @Body() entireBody: CancelOrderDto,
+  ) {
+    const userId: string = request.user.userId;
+    const response = await this.ordersService.cancelOrder(userId, entireBody);
+    return response;
   }
 
   // @Post('dummy-push')

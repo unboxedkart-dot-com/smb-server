@@ -7,6 +7,7 @@ export enum OrderStatuses {
   READY_FOR_PICKUP = 'READY FOR PICKUP',
   OUT_FOR_DELIVERY = 'OUT FOR DELIVERY',
   DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
 }
 
 export enum paymentTypes {

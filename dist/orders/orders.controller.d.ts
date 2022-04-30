@@ -1,7 +1,5 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/error" />
-/// <reference types="mongoose" />
 import { AuthService } from 'src/auth/auth.service';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 export declare class OrdersController {
@@ -58,4 +56,5 @@ export declare class OrdersController {
     handleSerOrderDelivered(request: any, orderItemId: string): Promise<void>;
     handleSetOrderShipped(request: any, orderItemId: string): Promise<void>;
     handleSetOrderOutForDelivery(request: any, orderItemId: string): Promise<void>;
+    handleCancelOrder(request: any, entireBody: CancelOrderDto): Promise<void>;
 }

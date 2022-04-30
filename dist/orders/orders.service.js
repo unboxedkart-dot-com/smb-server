@@ -200,6 +200,16 @@ let OrdersService = class OrdersService {
             $push: { purchasedItemIds: order.orderDetails.productId },
         });
     }
+    async cancelOrder(userId, entireBody) {
+        console.log('cancelling order');
+        const order = await this.orderItemModel.findById(entireBody.orderId);
+        if (order.userId == userId) {
+            await this.orderItemModel.findByIdAndUpdate(entireBody.orderId, {
+                orderStatus: order_model_1.OrderStatuses.CANCELLED,
+            });
+            console.log('canclled order');
+        }
+    }
     async getOrderItems(userId) {
         console.log('order user id', userId);
         const orderItems = await this.orderItemModel.find({

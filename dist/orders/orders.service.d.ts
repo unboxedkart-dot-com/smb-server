@@ -7,6 +7,7 @@ import { Product } from 'src/models/product.model';
 import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 export declare class OrdersService {
     private readonly orderModel;
@@ -42,6 +43,7 @@ export declare class OrdersService {
     orderShipped(userId: string, orderItemId: string): Promise<void>;
     orderOutForDelivery(userId: string, orderItemId: string): Promise<void>;
     orderDelivered(userId: string, orderItemId: string): Promise<void>;
+    cancelOrder(userId: string, entireBody: CancelOrderDto): Promise<void>;
     getOrderItems(userId: string): Promise<OrderItem[]>;
     getOrderItem(userId: string, orderItemId: string): Promise<{
         status: string;

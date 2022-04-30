@@ -10,6 +10,7 @@ var OrderStatuses;
     OrderStatuses["READY_FOR_PICKUP"] = "READY FOR PICKUP";
     OrderStatuses["OUT_FOR_DELIVERY"] = "OUT FOR DELIVERY";
     OrderStatuses["DELIVERED"] = "DELIVERED";
+    OrderStatuses["CANCELLED"] = "CANCELLED";
 })(OrderStatuses = exports.OrderStatuses || (exports.OrderStatuses = {}));
 var paymentTypes;
 (function (paymentTypes) {

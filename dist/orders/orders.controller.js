@@ -16,6 +16,7 @@ exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const cancel_order_dto_1 = require("./dto/cancel-order.dto");
 const create_order_dto_1 = require("./dto/create-order.dto");
 const orders_service_1 = require("./orders.service");
 let OrdersController = class OrdersController {
@@ -106,6 +107,11 @@ let OrdersController = class OrdersController {
         else {
             throw new common_1.UnauthorizedException();
         }
+    }
+    async handleCancelOrder(request, entireBody) {
+        const userId = request.user.userId;
+        const response = await this.ordersService.cancelOrder(userId, entireBody);
+        return response;
     }
 };
 __decorate([
@@ -198,6 +204,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleSetOrderOutForDelivery", null);
+__decorate([
+    (0, common_1.Patch)('/cancel-order'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, cancel_order_dto_1.CancelOrderDto]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleCancelOrder", null);
 OrdersController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),

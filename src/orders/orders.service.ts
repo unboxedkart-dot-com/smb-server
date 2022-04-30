@@ -12,6 +12,7 @@ import { Product } from 'src/models/product.model';
 import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 // var instance = new Razorpay({
@@ -242,6 +243,17 @@ export class OrdersService {
     await this.userModel.findByIdAndUpdate(order.userId, {
       $push: { purchasedItemIds: order.orderDetails.productId },
     });
+  }
+
+  async cancelOrder(userId: string, entireBody: CancelOrderDto) {
+    console.log('cancelling order');
+    const order = await this.orderItemModel.findById(entireBody.orderId);
+    if (order.userId == userId) {
+      await this.orderItemModel.findByIdAndUpdate(entireBody.orderId, {
+        orderStatus: OrderStatuses.CANCELLED,
+      });
+      console.log('canclled order');
+    }
   }
 
   async getOrderItems(userId: string) {
@@ -939,7 +951,7 @@ export class OrdersService {
   }
 
   async _handleSendOutForDeliveryMessage(order: any) {
-        console.log('order details', order);
+    console.log('order details', order);
     const url = process.env.SMS_FLOW_URL;
     const postBody = {
       flow_id: process.env.DELIVERY_ORDER_OUT_FOR_DELIVERY_FLOW_ID,

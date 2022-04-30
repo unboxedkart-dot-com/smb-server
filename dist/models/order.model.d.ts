@@ -5,7 +5,8 @@ export declare enum OrderStatuses {
     SHIPPED = "SHIPPED",
     READY_FOR_PICKUP = "READY FOR PICKUP",
     OUT_FOR_DELIVERY = "OUT FOR DELIVERY",
-    DELIVERED = "DELIVERED"
+    DELIVERED = "DELIVERED",
+    CANCELLED = "CANCELLED"
 }
 export declare enum paymentTypes {
     PAY_AT_STORE = "PAY AT STORE",
