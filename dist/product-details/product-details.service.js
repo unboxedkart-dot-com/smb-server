@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const mongoose_decorators_1 = require("@nestjs/mongoose/dist/common/mongoose.decorators");
 const mongoose_1 = require("mongoose");
 let ProductDetailsService = class ProductDetailsService {
-    constructor(productModel, productSpecsModel, productDescriptionModel) {
+    constructor(productModel, productSpecsModel, productDataModel, productImagesModel, productDescriptionModel) {
         this.productModel = productModel;
         this.productSpecsModel = productSpecsModel;
+        this.productDataModel = productDataModel;
+        this.productImagesModel = productImagesModel;
         this.productDescriptionModel = productDescriptionModel;
     }
     async getProductSpecs(productId) {
@@ -64,13 +66,53 @@ let ProductDetailsService = class ProductDetailsService {
             productSpecs: entireBody.productDescription,
         });
     }
+    async addSomething() { }
+    async addProductData(entireBody) {
+        console.log('new entire body', entireBody);
+        const newProductData = new this.productDataModel({
+            productCode: entireBody.productCode,
+            categoryCode: entireBody.categoryCode,
+            brand: entireBody.brand,
+            category: entireBody.category,
+            brandCode: entireBody.brandCode,
+            highlights: entireBody.highlights,
+            title: entireBody.title,
+            modelNumber: entireBody.modelNumber,
+            modelCode: entireBody.modelCode,
+            processors: entireBody.processors,
+            rams: entireBody.rams,
+            colors: entireBody.colors,
+            storages: entireBody.storages,
+        });
+        newProductData.save();
+    }
+    async getAvailableProducts(brandCode, categoryCode) {
+        console.log('given data', brandCode, categoryCode);
+        const products = await this.productDataModel.find({
+            brandCode: brandCode,
+            categoryCode: categoryCode,
+        });
+        return products;
+    }
+    async addProductImages(entireBody) {
+        const productImages = new this.productImagesModel({
+            productCode: entireBody.productCode,
+            colorCode: entireBody.colorCode,
+            count: entireBody.count,
+        });
+        productImages.save();
+    }
 };
 ProductDetailsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_decorators_1.InjectModel)('Product')),
     __param(1, (0, mongoose_decorators_1.InjectModel)('ProductSpecs')),
-    __param(2, (0, mongoose_decorators_1.InjectModel)('ProductDescription')),
+    __param(2, (0, mongoose_decorators_1.InjectModel)('ProductData')),
+    __param(3, (0, mongoose_decorators_1.InjectModel)('ProductImages')),
+    __param(4, (0, mongoose_decorators_1.InjectModel)('ProductDescription')),
     __metadata("design:paramtypes", [mongoose_1.Model,
+        mongoose_1.Model,
+        mongoose_1.Model,
         mongoose_1.Model,
         mongoose_1.Model])
 ], ProductDetailsService);

@@ -6,6 +6,10 @@ import { ProductSpecs } from 'src/models/product-specs';
 import { ProductDescription } from 'src/models/product-description';
 import { AddProductSpecsDto } from './dto/add-product-specs.dto';
 import { AddProductDescriptionDto } from './dto/add-product-description.dto';
+import { AddProductDataDto } from './dto/add-product-data.dto';
+import { ProductData } from 'src/models/product_data.model';
+import { AddProductImagesDto } from './dto/add-product-images.dto';
+import { ProductImages } from 'src/models/product_images.model';
 
 @Injectable()
 export class ProductDetailsService {
@@ -13,6 +17,10 @@ export class ProductDetailsService {
     @InjectModel('Product') private readonly productModel: Model<Product>,
     @InjectModel('ProductSpecs')
     private readonly productSpecsModel: Model<ProductSpecs>,
+    @InjectModel('ProductData')
+    private readonly productDataModel: Model<ProductData>,
+    @InjectModel('ProductImages')
+    private readonly productImagesModel: Model<ProductImages>,
     @InjectModel('ProductDescription')
     private readonly productDescriptionModel: Model<ProductDescription>, // @InjectModel('ProductDetails') private readonly productModel: Model<Product>,
   ) {}
@@ -65,6 +73,48 @@ export class ProductDetailsService {
       productCode: entireBody.productCode,
       productSpecs: entireBody.productDescription,
     });
+  }
+
+  async addSomething() {}
+
+  //adding product specific details
+  async addProductData(entireBody: AddProductDataDto) {
+    console.log('new entire body', entireBody);
+    const newProductData = new this.productDataModel({
+      productCode: entireBody.productCode,
+      categoryCode: entireBody.categoryCode,
+      brand: entireBody.brand,
+      category: entireBody.category,
+      brandCode: entireBody.brandCode,
+      highlights: entireBody.highlights,
+      title: entireBody.title,
+      modelNumber: entireBody.modelNumber,
+      modelCode: entireBody.modelCode,
+      processors: entireBody.processors,
+      rams: entireBody.rams,
+      colors: entireBody.colors,
+      storages: entireBody.storages,
+    });
+    newProductData.save();
+  }
+
+  //getting suitable products
+  async getAvailableProducts(brandCode: string, categoryCode: string) {
+    console.log('given data', brandCode, categoryCode);
+    const products = await this.productDataModel.find({
+      brandCode: brandCode,
+      categoryCode: categoryCode,
+    });
+    return products;
+  }
+
+  async addProductImages(entireBody: AddProductImagesDto) {
+    const productImages = new this.productImagesModel({
+      productCode: entireBody.productCode,
+      colorCode: entireBody.colorCode,
+      count: entireBody.count,
+    });
+    productImages.save();
   }
 
   // async addProductSpecs(entireBody: CreatePro) {

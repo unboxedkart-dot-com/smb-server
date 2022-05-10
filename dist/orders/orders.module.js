@@ -21,6 +21,8 @@ const review_model_1 = require("../models/review.model");
 const referral_order_1 = require("../models/referral_order");
 const item_purchased_user_model_1 = require("../models/item-purchased-user.model");
 const auth_module_1 = require("../auth/auth.module");
+const s3_module_1 = require("../s3/s3.module");
+const s3_service_1 = require("../s3/s3.service");
 let OrdersModule = class OrdersModule {
 };
 OrdersModule = __decorate([
@@ -36,10 +38,11 @@ OrdersModule = __decorate([
                 { name: 'ReferralOrder', schema: referral_order_1.ReferralOrderSchema },
                 { name: 'ItemPurchasedUsers', schema: item_purchased_user_model_1.ItemPurchasedUsersSchema },
             ]),
+            s3_module_1.S3Module,
             auth_module_1.AuthModule,
         ],
         controllers: [orders_controller_1.OrdersController],
-        providers: [orders_service_1.OrdersService, jwt_strategy_1.JwtStrategy],
+        providers: [orders_service_1.OrdersService, jwt_strategy_1.JwtStrategy, s3_service_1.S3Service],
     })
 ], OrdersModule);
 exports.OrdersModule = OrdersModule;

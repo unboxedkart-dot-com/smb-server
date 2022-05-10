@@ -23,7 +23,7 @@ let FaqsService = class FaqsService {
     }
     async getFaqs() {
         const faqs = await this.faqModel.find({});
-        return faqs;
+        return faqs.reverse();
     }
     async createFaq(userId, entireBody) {
         const newFaq = new this.faqModel({

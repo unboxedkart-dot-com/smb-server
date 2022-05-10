@@ -13,6 +13,9 @@ export declare class ReviewsService {
     private reviewsDataModel;
     private productModel;
     constructor(reviewModel: Model<Review>, userModel: Model<User>, reviewsDataModel: Model<ReviewsData>, productModel: Model<Product>);
+    getAllReviews(): Promise<(import("mongoose").Document<unknown, any, Review> & Review & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
     getUserReviews(userId: string): Promise<(import("mongoose").Document<unknown, any, Review> & Review & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;

@@ -34,8 +34,13 @@ export declare class QAndAService {
     })[]>;
     _getUserDetails(userId: string): Promise<{
         userName: string;
+        userRole: string;
     }>;
     getQuestionsFeed(userId: string): Promise<(import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
+    getNewQuestions(): Promise<Question[]>;
+    getApprovedQAndA(): Promise<QuestionAndAnswer[]>;
+    getNewAnswers(): Promise<Answer[]>;
+    getApprovedAnswers(): Promise<Answer[]>;
 }

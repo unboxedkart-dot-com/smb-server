@@ -23,6 +23,10 @@ let ReviewsService = class ReviewsService {
         this.reviewsDataModel = reviewsDataModel;
         this.productModel = productModel;
     }
+    async getAllReviews() {
+        const reviews = await this.reviewModel.find().select('+isApproved');
+        return reviews;
+    }
     async getUserReviews(userId) {
         const reviews = await this.reviewModel.find({ userId: userId });
         return reviews;

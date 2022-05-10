@@ -45,12 +45,12 @@ export class ProductsController {
     // const isAdmin = await this.authService.CheckIfAdmin(userId);
     // console.log('isadmin', isAdmin);
     // if (isAdmin) {
-    const generatedId = await this.productsService.insertProduct(entireBody);
-    return {
-      data: {
-        response: generatedId,
-      },
-    };
+      const generatedId = await this.productsService.insertProduct(entireBody);
+      return {
+        data: {
+          response: generatedId,
+        },
+      };
     // } else {
     //   throw new ForbiddenException();
     // }

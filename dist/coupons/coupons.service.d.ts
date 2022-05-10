@@ -2,15 +2,17 @@
 /// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
-import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { User } from 'src/models/user.model';
+import { CreateCouponDto } from './dto/create-coupon.dto';
 export declare class CouponsService {
     private readonly couponModel;
     private readonly userModel;
     constructor(couponModel: Model<Coupon>, userModel: Model<User>);
+    getAllCoupons(): Promise<Coupon[]>;
     getPersonalCoupon(userId: string): Promise<import("mongoose").Document<unknown, any, Coupon> & Coupon & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    createCoupon(entireBody: CreateCouponDto): Promise<void>;
     getCoupons(): Promise<Coupon[]>;
     createPersonalCoupon(userId: string): Promise<void>;
     validateCoupon(userId: string, couponCode: string, cartTotal: number): Promise<{
@@ -26,7 +28,6 @@ export declare class CouponsService {
         errorText: string;
         couponDetails?: undefined;
     }>;
-    createCoupon(userId: string, entireBody: CreateOrderDto): Promise<void>;
     _getUserDetails(userId: string): Promise<{
         userDetails: {
             userId: string;

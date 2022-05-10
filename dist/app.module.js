@@ -27,6 +27,7 @@ const store_location_module_1 = require("./store-location/store-location.module"
 const user_module_1 = require("./user/user.module");
 const product_details_module_1 = require("./product-details/product-details.module");
 const variants_module_1 = require("./variants/variants.module");
+const s3_module_1 = require("./s3/s3.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -51,6 +52,7 @@ AppModule = __decorate([
             faqs_module_1.FaqsModule,
             product_details_module_1.ProductDetailsModule,
             variants_module_1.VariantsModule,
+            s3_module_1.S3Module,
         ],
     })
 ], AppModule);

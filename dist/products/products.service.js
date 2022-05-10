@@ -17,8 +17,10 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let ProductsService = class ProductsService {
-    constructor(productModel, reviewModel) {
+    constructor(productModel, productDataModel, productImagesModel, reviewModel) {
         this.productModel = productModel;
+        this.productDataModel = productDataModel;
+        this.productImagesModel = productImagesModel;
         this.reviewModel = reviewModel;
     }
     async insertAllProdcts() {
@@ -258,28 +260,46 @@ let ProductsService = class ProductsService {
         ]);
     }
     async insertProduct(entireBody) {
-        console.log('inserting product', entireBody);
+        const productData = await this.productDataModel.findOne({
+            productCode: entireBody.productCode,
+        });
+        const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
+        const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
+        const productImages = await this.productImagesModel.findOne({
+            productCode: entireBody.productCode,
+            colorCode: entireBody.colorCode,
+        });
+        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, productImages.count);
+        const searchCases = this._handleCreateProductSearchCases(productData.category, productData.brand, productData.title, entireBody);
+        const newTitle = this._handleGenerateNewTitle(productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor);
+        const aboutProduct = entireBody.aboutProduct.split('...');
+        console.log('new title', newTitle);
         const newProduct = new this.productModel({
             productCode: entireBody.productCode,
-            SKU: entireBody.SKU,
-            title: entireBody.title,
-            modelNumber: entireBody.modelNumber,
-            brand: entireBody.brand,
-            brandCode: entireBody.brandCode,
-            category: entireBody.category,
-            categoryCode: entireBody.categoryCode,
+            SKU: 'ABCD',
+            title: newTitle,
+            highlights: productData.highlights,
+            aboutProduct: aboutProduct,
+            modelNumber: productData.modelNumber,
+            brand: productData.brandCode,
+            brandCode: productData.brandCode,
+            category: productData.category,
+            categoryCode: productData.categoryCode,
             condition: entireBody.condition,
             conditionCode: entireBody.conditionCode,
             imageUrls: {
-                coverImage: entireBody.coverImage,
-                images: entireBody.images,
+                coverImage: imageUrls.coverImage,
+                images: imageUrls.images,
+                thumbnails: imageUrls.thumbnails,
             },
             pricing: {
                 price: entireBody.price,
                 sellingPrice: entireBody.sellingPrice,
             },
-            quantity: entireBody.quantity,
-            searchCases: entireBody.searchCases,
+            quantity: entireBody.inventoryCount,
+            searchCases: searchCases,
+            isBestSeller: entireBody.isBestSeller,
+            isFeatured: entireBody.isFeatured,
             moreDetails: {
                 color: entireBody.color,
                 colorCode: entireBody.colorCode,
@@ -287,8 +307,56 @@ let ProductsService = class ProductsService {
                 storageCode: entireBody.storageCode,
             },
         });
-        const result = await newProduct.save();
-        return result.id;
+        console.log('new product', newProduct);
+        await newProduct.save();
+    }
+    _handleGetAboutProduct(aboutProduct) {
+        console.log(aboutProduct);
+        const aboutList = aboutProduct.split('...');
+        console.log('aboutList', aboutList);
+    }
+    _handleGenerateNewTitle(title, condition, color, storage, ram, processor) {
+        let newTitle = title +
+            ' (' +
+            condition +
+            ', ' +
+            color +
+            (storage != null ? `, ${storage}` : ``) +
+            (ram != null ? `, ${ram}` : ``) +
+            (processor != null ? `, ${processor}` : ``) +
+            ')';
+        return newTitle;
+    }
+    _handleGetProductImageUrls(imageUrl, thumbnailUrl, count) {
+        const thumbnails = [];
+        const images = [];
+        for (let n = 1; n <= count; n++) {
+            thumbnails.push(`${thumbnailUrl}-1`);
+            images.push(`${imageUrl}-1.webp`);
+        }
+        return {
+            coverImage: `${imageUrl}-1.webp`,
+            thumbnails: thumbnails,
+            images: images,
+        };
+    }
+    _handleCreateProductSearchCases(category, brand, title, entireBody) {
+        var _a, _b, _c;
+        const searchCases = [];
+        function addTerm(term) {
+            searchCases.push(term.toLowerCase().replace(/\s/g, ''));
+        }
+        addTerm(brand);
+        addTerm(category);
+        addTerm(entireBody.color);
+        (_a = entireBody.storage != null) !== null && _a !== void 0 ? _a : addTerm(entireBody.storage);
+        (_b = entireBody.processor != null) !== null && _b !== void 0 ? _b : addTerm(entireBody.processor);
+        (_c = entireBody.ram != null) !== null && _c !== void 0 ? _c : addTerm(entireBody.ram);
+        for (let i = 1; i <= title.length; i++) {
+            addTerm(title.substring(0, i));
+        }
+        console.log('generated search terms', searchCases);
+        return searchCases;
     }
     async updateInventoryCount({ productId, count, }) {
         try {
@@ -484,8 +552,12 @@ let ProductsService = class ProductsService {
 };
 ProductsService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Product')),
-    __param(1, (0, mongoose_1.InjectModel)('Review')),
+    __param(1, (0, mongoose_1.InjectModel)('ProductData')),
+    __param(2, (0, mongoose_1.InjectModel)('ProductImages')),
+    __param(3, (0, mongoose_1.InjectModel)('Review')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model])
 ], ProductsService);
 exports.ProductsService = ProductsService;

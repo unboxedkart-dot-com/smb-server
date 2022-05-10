@@ -78,6 +78,50 @@ let QAndAController = class QAndAController {
         const response = await this.qAndAService.getQuestionsFeed(userId);
         return response;
     }
+    async handleGetNewQuestions(request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.qAndAService.getNewQuestions();
+            return response;
+        }
+        else {
+            throw new common_1.ForbiddenException('you are not allowed to perform this action');
+        }
+    }
+    async handleGetApprovedQAndA(request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.qAndAService.getApprovedQAndA();
+            return response;
+        }
+        else {
+            throw new common_1.ForbiddenException('you are not allowed to perform this action');
+        }
+    }
+    async handleGetNewAnswers(request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.qAndAService.getNewAnswers();
+            return response;
+        }
+        else {
+            throw new common_1.ForbiddenException('you are not allowed to perform this action');
+        }
+    }
+    async handleGetApprovedAnswers(request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const response = await this.qAndAService.getApprovedAnswers();
+            return response;
+        }
+        else {
+            throw new common_1.ForbiddenException('you are not allowed to perform this action');
+        }
+    }
 };
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
@@ -128,7 +172,7 @@ __decorate([
 ], QAndAController.prototype, "handleCreateQuestion", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Patch)('approve/question/:id'),
+    (0, common_1.Patch)('approve-question/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -146,7 +190,7 @@ __decorate([
 ], QAndAController.prototype, "handleCreateAnswer", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Post)('approve/answer/:id'),
+    (0, common_1.Post)('approve-answer/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -161,6 +205,38 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QAndAController.prototype, "handleGetQuestionsFeed", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/new-questions'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetNewQuestions", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/approved-questions'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetApprovedQAndA", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/new-answers'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetNewAnswers", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/approved-answers'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QAndAController.prototype, "handleGetApprovedAnswers", null);
 QAndAController = __decorate([
     (0, common_1.Controller)('q-and-a'),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),

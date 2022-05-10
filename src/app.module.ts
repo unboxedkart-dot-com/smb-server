@@ -18,6 +18,7 @@ import { StoreLocationModule } from './store-location/store-location.module';
 import { UserModule } from './user/user.module';
 import { ProductDetailsModule } from './product-details/product-details.module';
 import { VariantsModule } from './variants/variants.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { VariantsModule } from './variants/variants.module';
     FaqsModule,
     ProductDetailsModule,
     VariantsModule,
+    S3Module,
   ],
   // controllers: [AppController],
   // providers: [AppService],

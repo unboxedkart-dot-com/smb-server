@@ -15,7 +15,7 @@ export class FaqsService {
 
   async getFaqs() {
     const faqs = await this.faqModel.find({});
-    return faqs as Faq[];
+    return faqs.reverse() as Faq[];
   }
 
   async createFaq(userId: string, entireBody: CreateFaqDto) {

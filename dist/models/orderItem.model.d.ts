@@ -38,7 +38,7 @@ export interface OrderItem {
         payableAmount: number;
     };
     orderNumber: string;
-    orderDate: string;
+    orderDate: Date;
     timestamp: string;
     updatedDate: string;
     orderStatus: string;
@@ -55,4 +55,5 @@ export interface OrderItem {
         pricePerItem: number;
         productCount: number;
     };
+    deliveryTimeStamp: Date;
 }

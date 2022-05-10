@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Coupon, CouponTypes } from 'src/models/coupon.model';
 import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { User } from 'src/models/user.model';
+import { CreateCouponDto } from './dto/create-coupon.dto';
 
 @Injectable()
 export class CouponsService {
@@ -12,12 +13,33 @@ export class CouponsService {
     @InjectModel('User') private readonly userModel: Model<User>,
   ) {}
 
+  async getAllCoupons() {
+    const coupons = await this.couponModel.find({ isPersonalCoupon: false });
+    return coupons as Coupon[];
+  }
+
   async getPersonalCoupon(userId: string) {
     const coupon = await this.couponModel.findOne({
       'couponDetails.userId': userId,
     });
     console.log('personal coupon', coupon);
     return coupon;
+  }
+
+  async createCoupon(entireBody: CreateCouponDto) {
+    console.log('entire body', entireBody);
+    const newCoupon = new this.couponModel({
+      couponCode: entireBody.couponCode,
+      description: entireBody.description,
+      discountAmount: entireBody.discountAmount,
+      minimumOrderTotal: entireBody.minimumOrderTotal,
+      discountType: entireBody.discountType,
+      redemptionType: entireBody.redemptionType,
+      expiryType: entireBody.expiryType,
+      expiryTime: entireBody.expiryTime,
+      redemptionLimit: entireBody.redemptionLimit,
+    });
+    newCoupon.save();
   }
 
   async getCoupons() {
@@ -47,9 +69,11 @@ export class CouponsService {
     const coupon = await this.couponModel.findOne({
       couponCode: couponCode,
     });
+
     if (coupon) {
       console.log('ppp', coupon);
       if (
+        coupon.isActive &&
         cartTotal > coupon.minimumOrderTotal &&
         coupon.couponDetails.userId != userId
       ) {
@@ -80,8 +104,6 @@ export class CouponsService {
       };
     }
   }
-
-  async createCoupon(userId: string, entireBody: CreateOrderDto) {}
 
   async _getUserDetails(userId: string) {
     const userDetails = await this.userModel.findById(userId);

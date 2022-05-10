@@ -19,6 +19,7 @@ export declare class OrdersService {
     private readonly itemPurchasedUsersModel;
     private readonly referralModel;
     constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
+    getAllOrders(status: string): Promise<OrderItem[]>;
     deleteAll(): Promise<void>;
     getReferrals(userId: string): Promise<ReferralOrder[]>;
     createOrder(entireBody: CreateOrderDto, userId: string): Promise<{
@@ -117,6 +118,11 @@ export declare class OrdersService {
     _handleSendOutForDeliveryNotification(order: any): Promise<void>;
     _handleSendOrderDeliveredMessage(order: any): Promise<void>;
     _handleSendOrderDeliveredMail(order: any): Promise<void>;
+    getSalesOverview(startDate: string): Promise<{
+        sales: [];
+        orders: [];
+    }>;
+    uploadInvoice(file: any): Promise<void>;
 }
 export interface IndividualOrderItem {
     paymentType: String;

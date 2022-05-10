@@ -14,6 +14,8 @@ const mongoose_1 = require("@nestjs/mongoose");
 const product_specs_1 = require("../models/product-specs");
 const product_description_1 = require("../models/product-description");
 const product_model_1 = require("../models/product.model");
+const product_data_model_1 = require("../models/product_data.model");
+const product_images_model_1 = require("../models/product_images.model");
 let ProductDetailsModule = class ProductDetailsModule {
 };
 ProductDetailsModule = __decorate([
@@ -22,6 +24,8 @@ ProductDetailsModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: 'ProductSpecs', schema: product_specs_1.ProductSpecsSchema },
                 { name: 'ProductDescription', schema: product_description_1.ProductDescriptionSchema },
+                { name: 'ProductData', schema: product_data_model_1.ProductDataSchema },
+                { name: 'ProductImages', schema: product_images_model_1.ProductImagesSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
             ]),
         ],

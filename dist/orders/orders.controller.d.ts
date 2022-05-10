@@ -1,11 +1,15 @@
+/// <reference types="multer" />
 import { AuthService } from 'src/auth/auth.service';
+import { S3Service } from 'src/s3/s3.service';
 import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 export declare class OrdersController {
     private readonly ordersService;
     private readonly authService;
-    constructor(ordersService: OrdersService, authService: AuthService);
+    private readonly s3Service;
+    constructor(ordersService: OrdersService, authService: AuthService, s3Service: S3Service);
+    handleGetAllOrders(request: any, status: string): Promise<import("../models/orderItem.model").OrderItem[]>;
     handleGetReferrals(request: any): Promise<import("../models/referral_order").ReferralOrder[]>;
     handleDeleteAllOrder(): Promise<void>;
     createDummyOrder(): Promise<void>;
@@ -56,5 +60,10 @@ export declare class OrdersController {
     handleSerOrderDelivered(request: any, orderItemId: string): Promise<void>;
     handleSetOrderShipped(request: any, orderItemId: string): Promise<void>;
     handleSetOrderOutForDelivery(request: any, orderItemId: string): Promise<void>;
+    handleGetSalesOverview(request: any, startDate: any): Promise<{
+        sales: [];
+        orders: [];
+    }>;
     handleCancelOrder(request: any, entireBody: CancelOrderDto): Promise<void>;
+    handleUploadInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
 }

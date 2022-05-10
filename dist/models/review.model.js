@@ -12,7 +12,7 @@ exports.ReviewSchema = new mongoose_1.default.Schema({
     productCode: { type: String, required: true },
     productTitle: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    isApproved: { type: String, required: false, select: false },
+    isApproved: { type: Boolean, required: false, default: false, select: false },
     timestamp: { type: Date, required: true, default: Date.now() },
 });
 //# sourceMappingURL=review.model.js.map

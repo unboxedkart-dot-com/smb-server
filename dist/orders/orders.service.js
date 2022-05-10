@@ -31,6 +31,14 @@ let OrdersService = class OrdersService {
         this.referralModel = referralModel;
         SendGrid.setApiKey(process.env.MAIL_API_KEY);
     }
+    async getAllOrders(status) {
+        console.log('status', status);
+        const orderItems = await this.orderItemModel
+            .find({ orderStatus: status })
+            .sort({ orderDate: -1 });
+        console.log('pro', orderItems);
+        return orderItems;
+    }
     async deleteAll() {
         await this.orderItemModel.deleteMany();
         await this.orderModel.deleteMany();
@@ -158,47 +166,10 @@ let OrdersService = class OrdersService {
     }
     async orderDelivered(userId, orderItemId) {
         const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
+            deliveryTimeStamp: Date(),
             orderStatus: order_model_1.OrderStatuses.DELIVERED,
         });
-        this._handleSendOrderDeliveredMessage(order);
-        this._handleSendOrderDeliveredMail(order);
-        this._handleSendOrderDeliveredNotification(order);
-        const itemPurchasedUsers = await this.itemPurchasedUsersModel.findOne({
-            productId: order.orderDetails.productId,
-        });
-        if (itemPurchasedUsers) {
-            await this.itemPurchasedUsersModel.findOneAndUpdate({
-                productId: order.orderDetails.productId,
-            }, {
-                $push: {
-                    userIds: order.userId.substring(0, 20),
-                    users: {
-                        userId: order.userId,
-                        userName: order.userDetails.userName,
-                        phoneNumber: order.userDetails.phoneNumber,
-                        emailId: order.userDetails.emailId,
-                    },
-                },
-            });
-        }
-        else {
-            const newItemPurchasedUsers = new this.itemPurchasedUsersModel({
-                productId: order.orderDetails.productId,
-                users: [
-                    {
-                        userId: order.userId,
-                        userName: order.userDetails.userName,
-                        phoneNumber: order.userDetails.phoneNumber,
-                        emailId: order.userDetails.emailId,
-                    },
-                ],
-                userIds: [order.userId.substring(0, 20)],
-            });
-            newItemPurchasedUsers.save();
-        }
-        await this.userModel.findByIdAndUpdate(order.userId, {
-            $push: { purchasedItemIds: order.orderDetails.productId },
-        });
+        console.log('delivering  order', order);
     }
     async cancelOrder(userId, entireBody) {
         console.log('cancelling order');
@@ -259,35 +230,45 @@ let OrdersService = class OrdersService {
             .findOne({ couponCode: couponCode })
             .select('+couponDetails.userId');
         console.log('coupon', coupon);
+        console.log('coupon redemption', coupon.redemptionType);
         if (coupon && orderTotal >= coupon.minimumOrderTotal) {
-            const newReferral = new this.referralModel({
-                orderNumber: orderNumber,
-                couponCode: coupon.couponCode,
-                referrerDetails: {
-                    userId: coupon.couponDetails.userId,
-                    phoneNumber: coupon.couponDetails.phoneNumber,
-                    userName: coupon.couponDetails.userName,
-                    userEmail: coupon.couponDetails.userEmail,
-                },
-                refereeDetails: {
-                    userId: userId,
-                    userName: userName,
-                },
-                cashBackDetails: {
-                    cashBackAmount: '500',
-                },
-                discountDetails: {
-                    discountAmount: coupon.discountAmount,
-                },
-            });
-            newReferral.save();
-            console.log('starting referral message');
-            await this._handleSendReferralOrderPlaceMessage(userName, coupon.couponDetails.phoneNumber);
-            console.log('starting referral mail');
-            await this._handleSendReferralOrderPlaceMail(userName, coupon.couponDetails.userEmail);
-            await this.referralOrderNotification(coupon.couponDetails.userName, coupon.couponDetails.userId, userName);
-            console.log('coupon', coupon);
-            return coupon.discountAmount;
+            if (coupon.isPersonalCoupon) {
+                const newReferral = new this.referralModel({
+                    orderNumber: orderNumber,
+                    couponCode: coupon.couponCode,
+                    referrerDetails: {
+                        userId: coupon.couponDetails.userId,
+                        phoneNumber: coupon.couponDetails.phoneNumber,
+                        userName: coupon.couponDetails.userName,
+                        userEmail: coupon.couponDetails.userEmail,
+                    },
+                    refereeDetails: {
+                        userId: userId,
+                        userName: userName,
+                    },
+                    cashBackDetails: {
+                        cashBackAmount: '500',
+                    },
+                    discountDetails: {
+                        discountAmount: coupon.discountAmount,
+                    },
+                });
+                newReferral.save();
+                console.log('starting referral message');
+                await this._handleSendReferralOrderPlaceMessage(userName, coupon.couponDetails.phoneNumber);
+                console.log('starting referral mail');
+                await this._handleSendReferralOrderPlaceMail(userName, coupon.couponDetails.userEmail);
+                await this.referralOrderNotification(coupon.couponDetails.userName, coupon.couponDetails.userId, userName);
+                console.log('coupon', coupon);
+                return coupon.discountAmount;
+            }
+            else if (coupon.redemptionType == 'LIMITED') {
+                console.log('decremnting coupon');
+                const updatedCoupon = await this.couponModel.findByIdAndUpdate(coupon._id, {
+                    $inc: { redemptionLimit: -1 },
+                });
+                console.log('coupon udated', updatedCoupon);
+            }
         }
         return 0;
     }
@@ -793,6 +774,21 @@ let OrdersService = class OrdersService {
             .then(() => console.log('email send'))
             .catch((e) => console.log('email error', e));
         return transport;
+    }
+    async getSalesOverview(startDate) {
+        const sales = await this.orderItemModel.find({
+            orderStatus: 'DELIVERED',
+            deliveryTimeStamp: { $gte: startDate },
+        });
+        const orders = await this.orderItemModel.find({
+            orderDate: { $gte: startDate },
+        });
+        return {
+            sales: sales,
+            orders: orders,
+        };
+    }
+    async uploadInvoice(file) {
     }
 };
 OrdersService = __decorate([

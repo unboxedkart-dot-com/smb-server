@@ -14,6 +14,7 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         emailId: { type: String, required: true },
     },
     isDelivered: { type: Boolean, required: false, default: false },
+    deliveryTimeStamp: { type: Date, required: false },
     shippingDetails: {
         shipDate: { type: String, required: false },
         deliveryDate: { type: String, required: false },

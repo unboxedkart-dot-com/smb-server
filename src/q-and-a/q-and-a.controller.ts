@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   forwardRef,
   Get,
   Inject,
@@ -87,7 +88,7 @@ export class QAndAController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('approve/question/:id')
+  @Patch('approve-question/:id')
   async handleApproveQuestion(
     @Param('id') questionId: string,
     @Req() request: any,
@@ -107,7 +108,7 @@ export class QAndAController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('approve/answer/:id')
+  @Post('approve-answer/:id')
   async handleApproveAnswer(
     @Param('id') answerId: string,
     @Req() request: any,
@@ -127,6 +128,76 @@ export class QAndAController {
     const userId = request.user.userId;
     const response = await this.qAndAService.getQuestionsFeed(userId);
     return response;
+  }
+
+  // admin functions
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/new-questions')
+  async handleGetNewQuestions(@Req() request: any) {
+
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.qAndAService.getNewQuestions();
+      return response;
+
+    } else {
+      throw new ForbiddenException(
+        'you are not allowed to perform this action',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/approved-questions')
+  async handleGetApprovedQAndA(@Req() request: any) {
+
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.qAndAService.getApprovedQAndA();
+      return response;
+
+    } else {
+      throw new ForbiddenException(
+        'you are not allowed to perform this action',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/new-answers')
+  async handleGetNewAnswers(@Req() request: any) {
+
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.qAndAService.getNewAnswers();
+      return response;
+
+    } else {
+      throw new ForbiddenException(
+        'you are not allowed to perform this action',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/approved-answers')
+  async handleGetApprovedAnswers(@Req() request: any) {
+
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.qAndAService.getApprovedAnswers();
+      return response;
+
+    } else {
+      throw new ForbiddenException(
+        'you are not allowed to perform this action',
+      );
+    }
   }
 
   // @Get('answers')

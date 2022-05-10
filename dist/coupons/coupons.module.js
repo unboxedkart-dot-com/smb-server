@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const coupon_model_1 = require("../models/coupon.model");
 const user_model_1 = require("../models/user.model");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const auth_module_1 = require("../auth/auth.module");
 let CouponsModule = class CouponsModule {
 };
 CouponsModule = __decorate([
@@ -23,6 +24,7 @@ CouponsModule = __decorate([
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
             ]),
+            auth_module_1.AuthModule,
         ],
         controllers: [coupons_controller_1.CouponsController],
         providers: [coupons_service_1.CouponsService, jwt_auth_guard_1.JwtAuthGuard],

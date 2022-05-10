@@ -1,39 +1,50 @@
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  isBoolean,
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { isMap } from 'util/types';
 
 export class CreateProductDto {
-
   @IsString()
   @IsNotEmpty()
   productCode: string;
 
-  @IsString()
-  @IsNotEmpty()
-  SKU: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // SKU: string;
 
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // title: string;
 
-  @IsString()
-  @IsNotEmpty()
-  modelNumber: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // modelNumber: string;
 
-  @IsString()
-  @IsNotEmpty()
-  brand: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // modelCode: string;
 
-  @IsString()
-  @IsNotEmpty()
-  brandCode: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // brand: string;
 
-  @IsString()
-  @IsNotEmpty()
-  category: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // brandCode: string;
 
-  @IsString()
-  @IsNotEmpty()
-  categoryCode: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // category: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // categoryCode: string;
 
   @IsString()
   @IsNotEmpty()
@@ -45,10 +56,14 @@ export class CreateProductDto {
 
   @IsString()
   @IsNotEmpty()
-  coverImage: string;
+  aboutProduct: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // coverImage: string;
 
   @IsArray()
-  @IsNotEmpty()
+  @IsOptional()
   images: string[];
 
   @IsNumber()
@@ -61,11 +76,7 @@ export class CreateProductDto {
 
   @IsNumber()
   @IsNotEmpty()
-  quantity: number;
-
-  @IsArray()
-  @IsNotEmpty()
-  searchCases: string[];
+  inventoryCount: number;
 
   @IsString()
   @IsNotEmpty()
@@ -76,10 +87,34 @@ export class CreateProductDto {
   colorCode: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   storage: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   storageCode: string;
+
+  @IsString()
+  @IsOptional()
+  processor: string;
+
+  @IsString()
+  @IsOptional()
+  processorCode: string;
+
+  @IsString()
+  @IsOptional()
+  ram: string;
+
+  @IsString()
+  @IsOptional()
+  ramCode: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isFeatured: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isBestSeller: boolean;
 }

@@ -13,6 +13,7 @@ const faqs_controller_1 = require("./faqs.controller");
 const mongoose_module_1 = require("@nestjs/mongoose/dist/mongoose.module");
 const faq_model_1 = require("../models/faq.model");
 const product_model_1 = require("../models/product.model");
+const auth_module_1 = require("../auth/auth.module");
 let FaqsModule = class FaqsModule {
 };
 FaqsModule = __decorate([
@@ -22,6 +23,7 @@ FaqsModule = __decorate([
                 { name: 'Faq', schema: faq_model_1.FaqSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
             ]),
+            auth_module_1.AuthModule,
         ],
         controllers: [faqs_controller_1.FaqsController],
         providers: [faqs_service_1.FaqsService],

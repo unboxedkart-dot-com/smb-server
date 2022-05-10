@@ -28,4 +28,8 @@ export declare class QAndAController {
     handleGetQuestionsFeed(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
+    handleGetNewQuestions(request: any): Promise<import("../models/question.model").Question[]>;
+    handleGetApprovedQAndA(request: any): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
+    handleGetNewAnswers(request: any): Promise<import("../models/answer.model").Answer[]>;
+    handleGetApprovedAnswers(request: any): Promise<import("../models/answer.model").Answer[]>;
 }

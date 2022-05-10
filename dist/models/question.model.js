@@ -9,6 +9,15 @@ exports.QuestionSchema = new mongoose_1.default.Schema({
     productId: { type: String, required: true },
     isApproved: { type: Boolean, required: true, default: false },
     question: { type: String, required: true },
+    productDetails: {
+        id: { type: String, required: true },
+        imageUrl: { type: String, required: true },
+        title: { type: String, required: true },
+        color: { type: String, required: true },
+        condition: { type: String, required: true },
+        brand: { type: String, required: true },
+        category: { type: String, required: true },
+    },
     timestamp: { type: Date, required: true, default: Date.now() },
 });
 //# sourceMappingURL=question.model.js.map

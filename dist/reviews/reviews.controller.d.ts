@@ -9,6 +9,9 @@ export declare class ReviewsController {
     private readonly reviewsService;
     private readonly authService;
     constructor(reviewsService: ReviewsService, authService: AuthService);
+    handleGetAllReviews(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
     handleGetUserReviews(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/review.model").Review> & import("../models/review.model").Review & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;

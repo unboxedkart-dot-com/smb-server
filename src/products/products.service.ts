@@ -7,7 +7,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Mode } from 'fs';
 import { Model } from 'mongoose';
+import { ProductData } from 'src/models/product_data.model';
+import { ProductImages } from 'src/models/product_images.model';
 import { QuestionAndAnswer } from 'src/models/q_and_a.model';
 import { Review } from 'src/models/review.model';
 import { Product } from '../models/product.model';
@@ -16,6 +19,10 @@ import { CreateProductDto } from './dto/add-product.dto';
 export class ProductsService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('ProductData')
+    private readonly productDataModel: Model<ProductData>,
+    @InjectModel('ProductImages')
+    private readonly productImagesModel: Model<ProductImages>,
     @InjectModel('Review') private readonly reviewModel: Model<Review>, // @InjectModel('ProductSpecs') // private readonly productSpecsModel: Model<Product>, // @InjectModel('QuestionAndAnswer') // private readonly questionAndAnswersModel: Model<QuestionAndAnswer>, // @InjectModel('ProductDetails') private readonly productModel: Model<Product>,
   ) {}
 
@@ -263,28 +270,70 @@ export class ProductsService {
   }
 
   async insertProduct(entireBody: CreateProductDto) {
-    console.log('inserting product', entireBody);
+    const productData = await this.productDataModel.findOne({
+      productCode: entireBody.productCode,
+    });
+    const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
+
+    const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
+
+    const productImages = await this.productImagesModel.findOne({
+      productCode: entireBody.productCode,
+      colorCode: entireBody.colorCode,
+    });
+
+    const imageUrls = this._handleGetProductImageUrls(
+      imageUrl,
+      thumbailUrl,
+      productImages.count,
+    );
+
+    const searchCases = this._handleCreateProductSearchCases(
+      productData.category,
+      productData.brand,
+      productData.title,
+      entireBody,
+    );
+
+    const newTitle = this._handleGenerateNewTitle(
+      productData.title,
+      entireBody.condition,
+      entireBody.color,
+      entireBody.storage,
+      entireBody.ram,
+      entireBody.processor,
+    );
+
+    const aboutProduct = entireBody.aboutProduct.split('...');
+
+    console.log('new title', newTitle);
+
     const newProduct = new this.productModel({
       productCode: entireBody.productCode,
-      SKU: entireBody.SKU,
-      title: entireBody.title,
-      modelNumber: entireBody.modelNumber,
-      brand: entireBody.brand,
-      brandCode: entireBody.brandCode,
-      category: entireBody.category,
-      categoryCode: entireBody.categoryCode,
+      SKU: 'ABCD',
+      title: newTitle,
+      highlights: productData.highlights,
+      aboutProduct: aboutProduct,
+      modelNumber: productData.modelNumber,
+      brand: productData.brandCode,
+      brandCode: productData.brandCode,
+      category: productData.category,
+      categoryCode: productData.categoryCode,
       condition: entireBody.condition,
       conditionCode: entireBody.conditionCode,
       imageUrls: {
-        coverImage: entireBody.coverImage,
-        images: entireBody.images,
+        coverImage: imageUrls.coverImage,
+        images: imageUrls.images,
+        thumbnails: imageUrls.thumbnails,
       },
       pricing: {
         price: entireBody.price,
         sellingPrice: entireBody.sellingPrice,
       },
-      quantity: entireBody.quantity,
-      searchCases: entireBody.searchCases,
+      quantity: entireBody.inventoryCount,
+      searchCases: searchCases,
+      isBestSeller: entireBody.isBestSeller,
+      isFeatured: entireBody.isFeatured,
       moreDetails: {
         color: entireBody.color,
         colorCode: entireBody.colorCode,
@@ -292,8 +341,80 @@ export class ProductsService {
         storageCode: entireBody.storageCode,
       },
     });
-    const result = await newProduct.save();
-    return result.id;
+    console.log('new product', newProduct);
+    await newProduct.save();
+    // return result.id;
+  }
+
+  _handleGetAboutProduct(aboutProduct: string) {
+    console.log(aboutProduct);
+    const aboutList = aboutProduct.split('...');
+    console.log('aboutList', aboutList);
+  }
+
+  _handleGenerateNewTitle(
+    title: string,
+    condition: string,
+    color: string,
+    storage: string,
+    ram: string,
+    processor: string,
+  ) {
+    let newTitle =
+      title +
+      ' (' +
+      condition +
+      ', ' +
+      color +
+      (storage != null ? `, ${storage}` : ``) +
+      (ram != null ? `, ${ram}` : ``) +
+      (processor != null ? `, ${processor}` : ``) +
+      ')';
+    return newTitle;
+  }
+
+  _handleGetProductImageUrls(
+    imageUrl: string,
+    thumbnailUrl: string,
+    count: number,
+  ) {
+    const thumbnails = [];
+    const images = [];
+    for (let n = 1; n <= count; n++) {
+      thumbnails.push(`${thumbnailUrl}-1`);
+      images.push(`${imageUrl}-1.webp`);
+    }
+    return {
+      coverImage: `${imageUrl}-1.webp`,
+      thumbnails: thumbnails,
+      images: images,
+    };
+  }
+
+  _handleCreateProductSearchCases(
+    category: string,
+    brand: string,
+    title: string,
+    entireBody: CreateProductDto,
+  ) {
+    const searchCases = [];
+
+    function addTerm(term: string) {
+      searchCases.push(term.toLowerCase().replace(/\s/g, ''));
+    }
+
+    addTerm(brand);
+    addTerm(category);
+    addTerm(entireBody.color);
+    entireBody.storage != null ?? addTerm(entireBody.storage);
+    entireBody.processor != null ?? addTerm(entireBody.processor);
+    entireBody.ram != null ?? addTerm(entireBody.ram);
+
+    for (let i = 1; i <= title.length; i++) {
+      addTerm(title.substring(0, i));
+    }
+    console.log('generated search terms', searchCases);
+    return searchCases;
   }
 
   async updateInventoryCount({

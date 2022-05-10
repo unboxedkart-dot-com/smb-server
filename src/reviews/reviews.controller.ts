@@ -27,6 +27,20 @@ export class ReviewsController {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/all-reviews')
+  async handleGetAllReviews(@Req() request: any) {
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const reviews = await this.reviewsService.getAllReviews();
+      return reviews;
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get()
   async handleGetUserReviews(@Req() request: any) {

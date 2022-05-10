@@ -12,6 +12,7 @@ export const OrderItemSchema = new mongoose.Schema({
     emailId: { type: String, required: true },
   },
   isDelivered: { type: Boolean, required: false, default: false },
+  deliveryTimeStamp: { type: Date, required: false },
   shippingDetails: {
     shipDate: { type: String, required: false },
     deliveryDate: { type: String, required: false },
@@ -97,7 +98,7 @@ export interface OrderItem {
     payableAmount: number;
   };
   orderNumber: string;
-  orderDate: string;
+  orderDate: Date;
   timestamp: string;
   updatedDate: string;
   orderStatus: string;
@@ -114,4 +115,5 @@ export interface OrderItem {
     pricePerItem: number;
     productCount: number;
   };
+  deliveryTimeStamp: Date;
 }

@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductDetailsController = void 0;
 const common_1 = require("@nestjs/common");
+const add_product_data_dto_1 = require("./dto/add-product-data.dto");
+const add_product_images_dto_1 = require("./dto/add-product-images.dto");
 const create_product_details_dto_1 = require("./dto/create-product-details.dto");
 const product_details_service_1 = require("./product-details.service");
 let ProductDetailsController = class ProductDetailsController {
@@ -30,6 +32,21 @@ let ProductDetailsController = class ProductDetailsController {
     }
     async handleSetProductSpecs(entireBody) {
         const response = await this.productDetailsService.addProductSpecs(entireBody);
+    }
+    async addSomething() {
+        const response = await this.productDetailsService.addSomething();
+    }
+    async addProductData(request, entireBody) {
+        const response = await this.productDetailsService.addProductData(entireBody);
+        return response;
+    }
+    async getAvailableProducts(brandCode, categoryCode) {
+        const response = await this.productDetailsService.getAvailableProducts(brandCode, categoryCode);
+        return response;
+    }
+    async handleAddProductImages(entireBody) {
+        const response = await this.productDetailsService.addProductImages(entireBody);
+        return response;
     }
 };
 __decorate([
@@ -53,6 +70,35 @@ __decorate([
     __metadata("design:paramtypes", [create_product_details_dto_1.CreateProductDetailsDto]),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleSetProductSpecs", null);
+__decorate([
+    (0, common_1.Post)('some'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "addSomething", null);
+__decorate([
+    (0, common_1.Post)('/data'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, add_product_data_dto_1.AddProductDataDto]),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "addProductData", null);
+__decorate([
+    (0, common_1.Get)('/available-products'),
+    __param(0, (0, common_1.Query)('brand-code')),
+    __param(1, (0, common_1.Query)('category-code')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "getAvailableProducts", null);
+__decorate([
+    (0, common_1.Post)('/images'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [add_product_images_dto_1.AddProductImagesDto]),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleAddProductImages", null);
 ProductDetailsController = __decorate([
     (0, common_1.Controller)('product-details'),
     __metadata("design:paramtypes", [product_details_service_1.ProductDetailsService])

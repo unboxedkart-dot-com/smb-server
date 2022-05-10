@@ -9,7 +9,7 @@ export declare class ProductsController {
     constructor(productsService: ProductsService, authService: AuthService);
     addProduct(request: any, entireBody: CreateProductDto): Promise<{
         data: {
-            response: any;
+            response: void;
         };
     }>;
     addManyProducts(): Promise<{

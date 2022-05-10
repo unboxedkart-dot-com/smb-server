@@ -69,7 +69,7 @@ export class QAndAService {
     const newQuestion = new this.questionModel({
       userId: userId,
       userName: userDetails.userName,
-      userRole: 'user',
+      userRole: userDetails.userRole,
       productId: entireBody.productId,
       question: entireBody.question,
       productDetails: {
@@ -196,10 +196,13 @@ export class QAndAService {
 
   async _getUserDetails(userId: string) {
     console.log('user details', userId);
-    const user = await this.userModel.findById(userId, { name: 1 });
+    const user = await this.userModel
+      .findById(userId, { name: 1 })
+      .select('+userRole');
     console.log('user', user);
     return {
       userName: user.name,
+      userRole: user.userRole,
     };
   }
 
@@ -211,6 +214,28 @@ export class QAndAService {
       'questionDetails.questionId': { $nin: user.answeredQuestionIds },
     });
     return questions;
+  }
+
+  //admin
+
+  async getNewQuestions() {
+    const questions = await this.questionModel.find({ isApproved: false });
+    return questions as Question[];
+  }
+
+  async getApprovedQAndA() {
+    const qAndA = await this.questionAndAnswerModel.find({ isApproved: true });
+    return qAndA as QuestionAndAnswer[];
+  }
+
+  async getNewAnswers() {
+    const answers = await this.answerModel.find({ isApproved: false });
+    return answers as Answer[];
+  }
+
+  async getApprovedAnswers() {
+    const answers = await this.answerModel.find({ isApproved: true });
+    return answers as Answer[];
   }
 }
 

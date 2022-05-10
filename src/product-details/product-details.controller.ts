@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { AddProductDataDto } from './dto/add-product-data.dto';
+import { AddProductImagesDto } from './dto/add-product-images.dto';
 import { CreateProductDetailsDto } from './dto/create-product-details.dto';
 // import { CreateProductDetailsDto } from './dto/create-product-details.dto';
 import { ProductDetailsService } from './product-details.service';
@@ -13,11 +15,6 @@ export class ProductDetailsController {
       productId,
     );
     return productSpecs;
-    // {
-    //   data: {
-    //     response: productSpecs,
-    //   },
-    // };
   }
 
   @Get('/description/:id')
@@ -26,11 +23,6 @@ export class ProductDetailsController {
       await this.productDetailsService.getProductDescription(productId);
 
     return productDescription;
-    // return {
-    //   data: {
-    //     response: productDescription,
-    //   },
-    // };
   }
 
   @Post('/specs')
@@ -38,5 +30,41 @@ export class ProductDetailsController {
     const response = await this.productDetailsService.addProductSpecs(
       entireBody,
     );
+  }
+
+  @Post('some')
+  async addSomething() {
+    const response = await this.productDetailsService.addSomething();
+  }
+
+  @Post('/data')
+  async addProductData(
+    @Req() request: any,
+    @Body() entireBody: AddProductDataDto,
+  ) {
+    const response = await this.productDetailsService.addProductData(
+      entireBody,
+    );
+    return response;
+  }
+
+  @Get('/available-products')
+  async getAvailableProducts(
+    @Query('brand-code') brandCode: string,
+    @Query('category-code') categoryCode: string,
+  ) {
+    const response = await this.productDetailsService.getAvailableProducts(
+      brandCode,
+      categoryCode,
+    );
+    return response;
+  }
+
+  @Post('/images')
+  async handleAddProductImages(@Body() entireBody: AddProductImagesDto) {
+    const response = await this.productDetailsService.addProductImages(
+      entireBody,
+    );
+    return response;
   }
 }

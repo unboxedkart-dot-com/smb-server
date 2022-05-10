@@ -18,6 +18,11 @@ export class ReviewsService {
     @InjectModel('Product') private productModel: Model<Product>,
   ) {}
 
+  async getAllReviews() {
+    const reviews = await this.reviewModel.find().select('+isApproved');
+    return reviews;
+  }
+
   async getUserReviews(userId: string) {
     const reviews = await this.reviewModel.find({ userId: userId });
     return reviews;

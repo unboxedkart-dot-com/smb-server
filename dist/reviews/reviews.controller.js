@@ -24,6 +24,17 @@ let ReviewsController = class ReviewsController {
         this.reviewsService = reviewsService;
         this.authService = authService;
     }
+    async handleGetAllReviews(request) {
+        const userId = request.user.userId;
+        const isAdmin = await this.authService.CheckIfAdmin(userId);
+        if (isAdmin) {
+            const reviews = await this.reviewsService.getAllReviews();
+            return reviews;
+        }
+        else {
+            throw new common_1.UnauthorizedException();
+        }
+    }
     async handleGetUserReviews(request) {
         const userId = request.user.userId;
         const reviews = await this.reviewsService.getUserReviews(userId);
@@ -64,6 +75,14 @@ let ReviewsController = class ReviewsController {
         };
     }
 };
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/all-reviews'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ReviewsController.prototype, "handleGetAllReviews", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),

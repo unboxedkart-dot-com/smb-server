@@ -8,14 +8,17 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UnauthorizedException,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { response } from 'express';
-import { request } from 'http';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { S3Service } from 'src/s3/s3.service';
 import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
@@ -28,7 +31,25 @@ export class OrdersController {
     // private readonly authService: AuthService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+    @Inject(forwardRef(() => S3Service))
+    private readonly s3Service: S3Service,
   ) {}
+
+  @Get('/all-orders')
+  async handleGetAllOrders(
+    @Req() request: any,
+    @Query('status') status: string,
+  ) {
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.getAllOrders(status);
+      return response;
+    } else {
+      console.log('throwing a new error');
+      throw new UnauthorizedException();
+    }
+  }
 
   @Get('/referrals')
   async handleGetReferrals(@Req() request: any) {
@@ -66,8 +87,8 @@ export class OrdersController {
     return orders;
   }
 
-  @Get('/:id')
-  async handleGetOrderItem(@Req() request: any, @Param('id') orderId: string) {
+  @Get()
+  async handleGetOrderItem(@Req() request: any, @Query('id') orderId: string) {
     const userId = request.user.userId;
     const orders = await this.ordersService.getOrderItem(userId, orderId);
     return orders;
@@ -86,6 +107,7 @@ export class OrdersController {
     @Req() request: any,
     @Param('id') orderItemId: string,
   ) {
+    console.log('accepting order');
     const userId = request.user.userId;
     const isAdmin = await this.authService.CheckIfAdmin(userId);
     if (isAdmin) {
@@ -95,6 +117,7 @@ export class OrdersController {
       );
       return response;
     } else {
+      console.log('throwing a new error');
       throw new UnauthorizedException();
     }
   }
@@ -169,6 +192,23 @@ export class OrdersController {
     }
   }
 
+  @Get('/sales-overview')
+  async handleGetSalesOverview(
+    @Req() request: any,
+    @Query('start-date') startDate: any,
+  ) {
+    console.log('starting sales');
+    console.log('given date', startDate);
+    const userId = request.user.userId;
+    const isAdmin = await this.authService.CheckIfAdmin(userId);
+    if (isAdmin) {
+      const response = await this.ordersService.getSalesOverview(startDate);
+      return response;
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
   @Patch('/cancel-order')
   async handleCancelOrder(
     @Req() request: any,
@@ -184,4 +224,19 @@ export class OrdersController {
   //   console.log('dummt push started');
   //   const response = this.ordersService.handleOrderConfirmationNotification();
   // }
+
+  //admin code
+  @Post('/upload-invoice')
+  @UseInterceptors(FileInterceptor('file'))
+  async handleUploadInvoice(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() request: any,
+    @Body() Body: any,
+  ) {
+    console.log('uploading invoice', file, typeof file);
+    // const response = this.ordersService.uploadInvoice(file);
+    const response = this.s3Service.uploadFile(file);
+    return response;
+    // const userId: string = request.user.userId;
+  }
 }
