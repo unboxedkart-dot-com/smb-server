@@ -87,11 +87,12 @@ export class OrdersController {
     return orders;
   }
 
-  @Get()
+  @Get('/order-item')
   async handleGetOrderItem(@Req() request: any, @Query('id') orderId: string) {
+    console.log('getting single order item', orderId);
     const userId = request.user.userId;
-    const orders = await this.ordersService.getOrderItem(userId, orderId);
-    return orders;
+    const order = await this.ordersService.getOrderItem(userId, orderId);
+    return order;
   }
 
   @Patch('update/:id')

@@ -63,9 +63,10 @@ let OrdersController = class OrdersController {
         return orders;
     }
     async handleGetOrderItem(request, orderId) {
+        console.log('getting single order item', orderId);
         const userId = request.user.userId;
-        const orders = await this.ordersService.getOrderItem(userId, orderId);
-        return orders;
+        const order = await this.ordersService.getOrderItem(userId, orderId);
+        return order;
     }
     async updateOrderItem(request, productId) {
         const userId = request.user.userId;
@@ -192,7 +193,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleGetOrdersItems", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('/order-item'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)('id')),
     __metadata("design:type", Function),
