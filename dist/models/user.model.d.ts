@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { OrderSummary } from './order_summary.model';
 export declare enum userRoles {
     USER = "USER",
     SELLER = "SELLER",
@@ -29,33 +30,15 @@ export interface User {
             productCount: number;
         }
     ];
-    orderSummary: {
-        paymentId: string;
-        paymentOrderId: string;
-        orderItems: [
-            {
-                productId: string;
-                createdTime: Date;
-                productCount: number;
-            }
-        ];
-        couponCode: string;
-        deliveryType: String;
-        pickUpDetails: {
-            storeLocation: any;
-            pickUpTimeStart: string;
-            pickUpTimeEnd: string;
-            pickUpDate: string;
-            pickUpDateInString: string;
-            pickUpTimeInString: string;
-        };
-        shippingDetails: {
-            shipDate: Date;
-            deliveryDate: string;
-            deliveryDateInString: string;
-            deliveryAddress: any;
-        };
-    };
+    savedToLaterProducts: [
+        {
+            productId: string;
+            createdTime: Date;
+            productCount: number;
+        }
+    ];
+    orderSummary: OrderSummary;
+    s: any;
     personalCouponCode: string;
     purchasedItemIds: string[];
     answeredQuestionIds: string[];

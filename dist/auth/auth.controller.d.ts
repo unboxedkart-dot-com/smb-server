@@ -48,4 +48,9 @@ export declare class AuthController {
             popularSearches: any[];
         };
     }>;
+    handleGetNewAccessToken(refreshToken: string, request: any): Promise<"you are not authorised" | {
+        accessToken: string;
+        refreshToken: any;
+    }>;
+    DummyRT(request: any): string;
 }

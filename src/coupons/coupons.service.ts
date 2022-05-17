@@ -5,12 +5,14 @@ import { Coupon, CouponTypes } from 'src/models/coupon.model';
 import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { User } from 'src/models/user.model';
 import { CreateCouponDto } from './dto/create-coupon.dto';
+import { Product } from 'src/models/product.model';
 
 @Injectable()
 export class CouponsService {
   constructor(
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Product') private readonly productModel: Model<Product>,
   ) {}
 
   async getAllCoupons() {
@@ -65,25 +67,42 @@ export class CouponsService {
     // return userDetails;
   }
 
-  async validateCoupon(userId: string, couponCode: string, cartTotal: number) {
+  async _calculateCartValue(orderItems: any) {
+    let cartValue = 0;
+    for (const item of orderItems) {
+      const product = await this.productModel.findById(item.productId);
+      const price = item.productCount * product.pricing.sellingPrice;
+      cartValue += price;
+    }
+    console.log('cartvalue', cartValue);
+    return cartValue;
+  }
+
+  async validateCoupon(userId: string, couponCode: string) {
+    const userDoc = await this.userModel.findById(userId);
+    const cartValue = await this._calculateCartValue(
+      userDoc.orderSummary.orderItems,
+    );
+    console.log('orderSummary', userDoc.orderSummary.orderItems);
     const coupon = await this.couponModel.findOne({
       couponCode: couponCode,
     });
 
     if (coupon) {
       console.log('ppp', coupon);
+
       if (
         coupon.isActive &&
-        cartTotal > coupon.minimumOrderTotal &&
+        cartValue >= coupon.minimumOrderTotal &&
         coupon.couponDetails.userId != userId
       ) {
-        console.log('cart total', cartTotal);
+        console.log('cart total', cartValue);
         return {
           isValid: true,
           couponDetails: {
             couponCode: coupon.couponCode,
-            couponDescription: 'Use this coupon to get 100 off',
-            discountAmount: 500,
+            couponDescription: coupon.description,
+            discountAmount: coupon.discountAmount,
           },
         };
       } else {

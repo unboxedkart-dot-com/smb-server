@@ -15,13 +15,41 @@ export declare class OrderSummaryController {
     handleAddDeliveryAddress(entireBody: AddDeliveryAddressDto, request: any): Promise<void>;
     handleGetPayableAmount(request: any): Promise<{
         payableAmount: number;
+        paymentOrderId: any;
+        partialPaymentOrderId: any;
+        partialPaymentAmount: number;
+        name: string;
+        email: string;
+        phoneNumber: string;
+    }>;
+    handleGetPartialPaymentAmount(request: any): Promise<{
+        payableAmount: number;
         orderId: any;
         name: string;
         email: string;
         phoneNumber: string;
     }>;
+    handleUpdatePaymentMethod(request: any, paymentMethod: string): Promise<{
+        status: string;
+        message: string;
+        orderNumber: string;
+    }>;
     handleVerifyPayment(request: any, entireBody: VerifyPaymentDto): Promise<{
         status: string;
         message: string;
+        orderNumber: string;
+    } | {
+        status: string;
+        message: string;
+        orderNumber?: undefined;
+    }>;
+    handleVerifyPartialPayment(request: any, entireBody: VerifyPaymentDto): Promise<{
+        status: string;
+        message: string;
+        orderNumber: string;
+    } | {
+        status: string;
+        message: string;
+        orderNumber?: undefined;
     }>;
 }

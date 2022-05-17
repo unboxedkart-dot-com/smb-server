@@ -21,27 +21,59 @@ let SearchService = class SearchService {
         this.userModel = userModel;
         this.searchTermModel = searchTermModel;
     }
-    async getSearchedProducts(title, category, brand, condition, pageNumber) {
-        if (!title) {
+    async getNewSearch(title, category, brand, condition, productCode, sellerCode, pageNumber) {
+        console.log('new search', title, category, brand, condition, productCode, sellerCode, pageNumber);
+        const products = await this.productModel.find({
+            conditionCode: condition === undefined || 'null' ? { $ne: null } : condition,
+            categoryCode: category === undefined || 'null' ? { $ne: null } : category,
+            brandCode: brand === undefined || 'null' ? { $ne: null } : brand,
+            productCode: productCode === undefined || 'null' ? { $ne: null } : productCode,
+        });
+        return products.length;
+    }
+    async getSearchedProducts(title, category, brand, condition, productCode, pageNumber) {
+        console.log('dd', productCode);
+        var itemsToSkip = 0;
+        if (pageNumber && parseInt(pageNumber) > 0) {
+            itemsToSkip = 10 * parseInt(pageNumber) - 10;
+        }
+        console.log('ss', itemsToSkip);
+        if (productCode) {
+            console.log('has product code');
+            const products = await this._getProductsByProductCode(productCode, itemsToSkip);
+            return products;
+        }
+        else if (!title) {
             if (category && brand) {
-                const products = await this._getProductsByCategoryAndBrand(category, brand);
+                const products = await this._getProductsByCategoryAndBrand(category, brand, itemsToSkip);
                 return products;
             }
             else if (category && condition) {
-                const products = await this._getProductsByConditionAndCategory(condition, category);
+                const products = await this._getProductsByConditionAndCategory(condition, category, itemsToSkip);
                 return products;
             }
             else if (brand && condition) {
-                const products = await this._getProductsByBrandAndCondition(brand, condition);
+                const products = await this._getProductsByBrandAndCondition(brand, condition, itemsToSkip);
                 return products;
             }
         }
         else {
-            const products = await this._getProductsByTitle(title, pageNumber);
+            const products = await this._getProductsByTitle(title, pageNumber, itemsToSkip);
             return products;
         }
     }
-    async _getProductsByTitle(title, pageNumber) {
+    async _getProductsByProductCode(productCode, itemsToSkip) {
+        console.log('gettin gby products code');
+        const products = await this.productModel
+            .find({
+            productCode: productCode,
+        })
+            .limit(10)
+            .skip(itemsToSkip)
+            .exec();
+        return products;
+    }
+    async _getProductsByTitle(title, pageNumber, itemsToSkip) {
         var itemsToSkip = 0;
         if (pageNumber && parseInt(pageNumber) > 0) {
             itemsToSkip = 10 * parseInt(pageNumber) - 10;
@@ -90,30 +122,37 @@ let SearchService = class SearchService {
             .limit(3);
         return popularSearches;
     }
-    async _getProductsByCategoryAndBrand(category, brand) {
+    async _getProductsByCategoryAndBrand(category, brand, itemsToSkip) {
         const products = await this.productModel
             .find({
             categoryCode: { $eq: category },
             brandCode: { $eq: brand },
         })
+            .skip(itemsToSkip)
+            .limit(10)
+            .skip(itemsToSkip)
             .exec();
         return products;
     }
-    async _getProductsByBrandAndCondition(brand, condition) {
+    async _getProductsByBrandAndCondition(brand, condition, itemsToSkip) {
         const products = await this.productModel
             .find({
             brandCode: { $eq: brand },
             conditionCode: { $eq: condition },
         })
+            .limit(10)
+            .skip(itemsToSkip)
             .exec();
         return products;
     }
-    async _getProductsByConditionAndCategory(condition, category) {
+    async _getProductsByConditionAndCategory(condition, category, itemsToSkip) {
         const products = await this.productModel
             .find({
             categoryCode: { $eq: category },
             conditionCode: { $eq: condition },
         })
+            .limit(10)
+            .skip(itemsToSkip)
             .exec();
         return products;
     }

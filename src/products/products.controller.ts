@@ -18,7 +18,7 @@ import {
 import { Http2ServerResponse } from 'http2';
 import mongoose from 'mongoose';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { HttpExceptionFilter } from 'src/exceptions/http-exception.filter';
 import { Product } from '../models/product.model';
 import { CreateProductDto } from './dto/add-product.dto';

@@ -17,7 +17,8 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const sign_up_dto_1 = require("./dto/sign-up.dto");
-const jwt_auth_guard_1 = require("./jwt-auth.guard");
+const jwt_auth_guard_1 = require("./jwt-strategies/jwt-auth.guard");
+const jwt_refresh_auth_guard_1 = require("./jwt-strategies/jwt-refresh-auth.guard");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -45,6 +46,14 @@ let AuthController = class AuthController {
     handleSignupUser(entireBody) {
         const result = this.authService.createUser(entireBody);
         return result;
+    }
+    handleGetNewAccessToken(refreshToken, request) {
+        const userId = request.user.userId;
+        return this.authService.newAccessToken(userId, refreshToken);
+    }
+    DummyRT(request) {
+        const userId = request.user.userId;
+        return this.authService.createDummyRT(userId);
     }
 };
 __decorate([
@@ -92,6 +101,23 @@ __decorate([
     __metadata("design:paramtypes", [sign_up_dto_1.SignUpDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "handleSignupUser", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_refresh_auth_guard_1.JwtRefreshAuthGuard),
+    (0, common_1.Patch)('new-access-token'),
+    __param(0, (0, common_1.Query)('refreshToken')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "handleGetNewAccessToken", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_refresh_auth_guard_1.JwtRefreshAuthGuard),
+    (0, common_1.Post)('dummy'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "DummyRT", null);
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

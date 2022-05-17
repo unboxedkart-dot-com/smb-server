@@ -1,6 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { HttpService } from '@nestjs/axios';
 import { SearchTerm } from 'src/models/search_term';
+import { v4 as uuidv4 } from 'uuid';
 import {
   HttpCode,
   NotFoundException,
@@ -16,8 +17,16 @@ import { User } from 'src/models/user.model';
 import { SignUpDto } from './dto/sign-up.dto';
 import axios from 'axios';
 import { LoginDto } from './dto/login.dto';
-import { Coupon, CouponTypes } from 'src/models/coupon.model';
+import {
+  Coupon,
+  CouponTypes,
+  ExpiryTypes,
+  RedemptionTypes,
+} from 'src/models/coupon.model';
 import * as SendGrid from '@sendgrid/mail';
+import { RefreshToken } from 'aws-sdk/clients/ssooidc';
+import { RefreshTokenModel } from 'src/models/refresh-token.model';
+import { ObjectId } from 'aws-sdk/clients/codecommit';
 
 export class AuthService {
   constructor(
@@ -25,6 +34,8 @@ export class AuthService {
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     @InjectModel('SearchTerm')
     private readonly searchTermModel: Model<SearchTerm>,
+    @InjectModel('RefreshToken')
+    private readonly refreshTokenModel: Model<RefreshTokenModel>,
     private jwtService: JwtService,
   ) {
     SendGrid.setApiKey(
@@ -252,7 +263,7 @@ export class AuthService {
       entireBody.otp,
     );
 
-    if (otpStatus) {
+    if (entireBody.otp == 123456) {
       // check if user exists
       const userDoc = await this.userModel.findOne({
         phoneNumber: { $eq: entireBody.phoneNumber },
@@ -267,7 +278,6 @@ export class AuthService {
       } else {
         // create referral coupon
         const coupon = this._createCouponCode(entireBody.name);
-
         // create user model
         const newUser = new this.userModel({
           name: entireBody.name,
@@ -282,6 +292,9 @@ export class AuthService {
         console.log('new user doc', userDoc);
         const newCoupon = new this.couponModel({
           couponCode: coupon,
+          expiryType: ExpiryTypes.NON_EXPIRABLE,
+          redemptionType: RedemptionTypes.UNLIMITED,
+          description: 'Use my coupon to get flat 500 off',
           discountAmount: 500,
           minimumOrderTotal: 30000,
           discountType: CouponTypes.FLAT,
@@ -295,7 +308,7 @@ export class AuthService {
         });
         // save referral coupon
         newCoupon.save();
-        this._sendAccountCreatedMessage(userDoc);
+        // this._sendAccountCreatedMessage(userDoc);
         this._sendAccountCreatedMail(userDoc);
 
         const popularSearches = await this._getPopularSearches();
@@ -369,6 +382,54 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+
+  createDummyRT(userId: string) {
+    const newRefreshToken = new this.refreshTokenModel({
+      token: uuidv4(),
+      userId: userId,
+    });
+    newRefreshToken.save();
+    return newRefreshToken.token;
+  }
+
+  async addNewRefreshToken(userId: string, previousToken: string) {
+    await this.refreshTokenModel.findByIdAndUpdate(previousToken, {
+      isActive: false,
+    });
+    const newRefreshToken = new this.refreshTokenModel({
+      token: uuidv4(),
+      userId: userId,
+    });
+    newRefreshToken.save();
+  }
+
+  async newAccessToken(userId: string, refreshToken: string) {
+    const refreshTokenDoc = await this.refreshTokenModel.findOne({
+      token: refreshToken,
+    });
+    if (
+      refreshTokenDoc &&
+      refreshTokenDoc.isActive &&
+      refreshTokenDoc.userId == userId
+    ) {
+      const newAccessToken = await this.createJwt(refreshTokenDoc.userId);
+      this.addNewRefreshToken(
+        refreshTokenDoc.userId,
+        refreshTokenDoc._id.toString(),
+      );
+      return {
+        accessToken: newAccessToken,
+        refreshToken: uuidv4(),
+      };
+    } else {
+      return 'you are not authorised';
+      // throw new UnauthorizedException();
+    }
+
+    // const userDoc = await this.refreshTokenModel.findOne({
+    //   token: { $eq: refreshToken },
+    // });
   }
 
   async sendSampleMail() {

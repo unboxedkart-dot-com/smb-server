@@ -1,22 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { createHmac } from 'crypto';
+import { Model } from 'mongoose';
+import * as Razorpay from 'razorpay';
+import { CouponsService } from 'src/coupons/coupons.service';
+import { CartItem } from 'src/models/cart-item.model';
+import { Coupon } from 'src/models/coupon.model';
+import {
+  DeliveryTypes,
+  PaymentMethods,
+  PaymentTypes,
+} from 'src/models/order.model';
 import { OrderSummary } from 'src/models/order_summary.model';
 import { Product } from 'src/models/product.model';
 import { User } from 'src/models/user.model';
-import { Model } from 'mongoose';
-import { CartItem } from 'src/models/cart-item.model';
-import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
-import { Coupon } from 'src/models/coupon.model';
-import { DeliveryTypes } from 'src/models/order.model';
-import { AddAddressDto } from 'src/addresses/dto';
-import { UpdateProductCountDto } from './dto/update-count.dto';
-import * as Razorpay from 'razorpay';
-import * as CryptoJS from 'crypto-js';
-import { createHmac } from 'crypto';
-
-import { VerifyPaymentDto } from './dto/verify-payment.dto';
+import { OrdersService } from 'src/orders/orders.service';
 import { AddDeliveryAddressDto } from './dto/add-address.dto';
 import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
+import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';
+import { UpdateProductCountDto } from './dto/update-count.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
 
 var instance = new Razorpay({
   key_id: 'rzp_live_Yf6SskMc0yCBdS',
@@ -31,31 +34,70 @@ export class OrderSummaryService {
     @InjectModel('OrderSummary')
     private readonly orderSummaryModel: Model<OrderSummary>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Payment') private readonly paymentModel: Model<User>,
     @InjectModel('Product') private readonly productModel: Model<Product>,
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
+    @Inject(forwardRef(() => OrdersService))
+    private readonly ordersService: OrdersService,
+    private readonly couponService: CouponsService,
   ) {}
 
   async getPayableAmount(userId: string) {
-    const userDoc = await this.userModel.findById(
-      userId,
-      // {
-      // orderSummary: 1,
-      // _id: 0,
-      // }
-    );
+    console.log('getting payable amount');
+    const userDoc = await this.userModel.findById(userId);
     const orderTotal = await this._calculateAmount(
       userDoc.orderSummary.orderItems,
     );
-    const coupon = await this.couponModel.findOne({
-      couponCode: userDoc.orderSummary.couponCode,
-    });
+
     let payableAmount = orderTotal;
-    if (coupon) {
-      payableAmount = orderTotal - coupon.discountAmount;
+    if (userDoc.orderSummary.couponCode != null) {
+      const couponCode = userDoc.orderSummary.couponCode;
+      const couponResults = await this.couponService.validateCoupon(
+        userId,
+        couponCode,
+      );
+      if (couponResults['isValid']) {
+        console.log('coupon is valid');
+        payableAmount =
+          orderTotal - couponResults['couponDetails']['discountAmount'];
+        console.log('coupon is valid', payableAmount);
+      }
     }
-    const paymentOrderId = await this.createPaymentOrder(payableAmount);
+    const orderNumber = this._generateOrderNumber();
+    const paymentOrderId = await this.createPaymentOrder(100, orderNumber);
+    const partialPaymentOrderId = await this.createPaymentOrder(
+      200,
+      orderNumber,
+    );
     await this.userModel.findByIdAndUpdate(userId, {
+      'orderSummary.orderNumber': orderNumber,
+      'orderSummary.paymentAmount': payableAmount,
       'orderSummary.paymentOrderId': paymentOrderId['id'],
+      'orderSummary.partialPaymentOrderId': partialPaymentOrderId['id'],
+      'orderSummary.partialPaymentAmount': 2000,
+    });
+
+    return {
+      payableAmount: payableAmount,
+      paymentOrderId: paymentOrderId['id'],
+      partialPaymentOrderId: partialPaymentOrderId['id'],
+      partialPaymentAmount: 3,
+      name: userDoc.name,
+      email: userDoc.emailId,
+      phoneNumber: userDoc.phoneNumber,
+    };
+  }
+
+  async getPartialPaymentAmount(userId: string) {
+    const userDoc = await this.userModel.findById(userId);
+    let payableAmount = 2000;
+    const orderNumber = this._generateOrderNumber();
+    const paymentOrderId = await this.createPaymentOrder(
+      payableAmount,
+      orderNumber,
+    );
+    await this.userModel.findByIdAndUpdate(userId, {
+      'orderSummary.partialPaymentOrderId': paymentOrderId['id'],
     });
     return {
       payableAmount: payableAmount,
@@ -66,46 +108,163 @@ export class OrderSummaryService {
     };
   }
 
-  async createPaymentOrder(payableAmount: number) {
+  async createPaymentOrder(payableAmount: number, orderNumber: string) {
     const order = await instance.orders.create({
-      amount: 100,
+      amount: payableAmount,
       // amount: payableAmount * 100,
       currency: 'INR',
-      receipt: 'receipt#1',
+      receipt: orderNumber,
     });
     return order;
   }
 
-  async verifyPaymentSignature(
-    userId: string,
-    entireBody: VerifyPaymentDto,
-    // paymentSignature: string,
-    // paymentId: string,
-  ) {
+  async addPaymentMethod(userId: string, paymentMethod: string) {
+    console.log('adding payment method', paymentMethod, userId);
+    // const userDoc
+    // const orderNumber = this._generateOrderNumber();
+    const updatedDoc = await this.userModel.findByIdAndUpdate(userId, {
+      // 'orderSummary' : {}
+      // phoneNumber : 7557575754
+      'orderSummary.paymentMethod':
+        paymentMethod == 'cod'
+          ? PaymentMethods.CASH_ON_DELIVERY
+          : PaymentMethods.PAY_AT_STORE,
+      'orderSummary.paymentType': PaymentTypes.NULL,
+      // 'orderSummary.orderNumber': orderNumber,
+    });
+    console.log('updated Doc', updatedDoc);
+    // const orderNumber = this._generateOrderNumber();
+    const order = await this.ordersService.createOrder(userId);
+    console.log('order postpaid', order);
+    return {
+      status: 'success',
+      message: 'payment is verified',
+      orderNumber: updatedDoc.orderSummary.orderNumber,
+    };
+  }
+
+  async verifyPaymentSignature(userId: string, entireBody: VerifyPaymentDto) {
     console.log('entrie body', entireBody);
+    console.log('verifying full ', entireBody);
     const userDoc = await this.userModel.findById(userId);
     const paymentOrderId = userDoc.orderSummary.paymentOrderId;
     console.log('payment order id', paymentOrderId);
-    // var hmac = crypto.createHmac('sha256', razorpaykeys.key_secret);
     const generatedSignature = createHmac('sha256', 'GUt36OWEcQtKk1gZhmK0o5nM');
     const encodedSignature = generatedSignature
       .update(paymentOrderId + '|' + entireBody.paymentId + '')
       .digest('hex');
-    // const generatedSignature = CryptoJS.HmacSHA256(
-    //   paymentOrderId + '|' + entireBody.paymentId,
-    //   'GUt36OWEcQtKk1gZhmK0o5nM',
-    // );
-    // var encodedSignature = CryptoJS.enc.Base64.stringify(generatedSignature);
     console.log('generated sig', generatedSignature);
     console.log('encoded', encodedSignature);
     console.log('given sig', entireBody.paymentSignature);
     if (encodedSignature == entireBody.paymentSignature) {
-      this.userModel.findByIdAndUpdate(userId, {
-        'orderSummary.paymentId': entireBody.paymentId,
+      console.log('full verifed');
+
+      // const orderNumber = this._generateOrderNumber();
+
+      console.log(entireBody, paymentOrderId);
+
+      const newPayment = new this.paymentModel({
+        userId: userId,
+        orderNumber: userDoc.orderSummary.orderNumber,
+        gateway: 'razorpay',
+        status: 'verified',
+        paymentOrderId: entireBody.orderId,
+        paymentId: entireBody.paymentId,
+        paymentType: 'pas-d',
+        paymentMethod: 'razorpay',
+        amount: userDoc.orderSummary.paymentAmount,
       });
+      newPayment.save();
+
+      await this.userModel.findByIdAndUpdate(userId, {
+        // 'orderSummary.orderNumber': orderNumber,
+        'orderSummary.paymentMethod': PaymentMethods.PREPAID,
+        'orderSummary.paymentType': PaymentTypes.FULL,
+        'orderSummary.paymentId': entireBody.paymentId,
+        // 'orderSummary.paymentOrderId': paymentOrderId,
+      });
+
+      await this.ordersService.createOrder(userDoc._id.toString());
+      // return orderNumber;
+
       return {
         status: 'success',
         message: 'payment is verified',
+        orderNumber: userDoc.orderSummary.orderNumber,
+      };
+    } else {
+      return {
+        status: 'failed',
+        message: 'payment is not verified',
+      };
+    }
+  }
+
+  async verifyPartialPaymentSignature(
+    userId: string,
+    entireBody: VerifyPaymentDto,
+  ) {
+    console.log('verifying partial ', entireBody);
+    const userDoc = await this.userModel.findById(userId);
+    const paymentOrderId = userDoc.orderSummary.partialPaymentOrderId;
+    console.log('payment order id', paymentOrderId);
+    const generatedSignature = createHmac('sha256', 'GUt36OWEcQtKk1gZhmK0o5nM');
+    const encodedSignature = generatedSignature
+      .update(paymentOrderId + '|' + entireBody.paymentId + '')
+      .digest('hex');
+    console.log('generated sig', generatedSignature);
+    console.log('encoded', encodedSignature);
+    console.log('given sig', entireBody.paymentSignature);
+    if (encodedSignature == entireBody.paymentSignature) {
+      const orderNumber = this._generateOrderNumber();
+      console.log('partial verifed');
+
+      console.log('order summary done');
+
+      // const orderNumber = this._generateOrderNumber();
+
+      const newPayment = new this.paymentModel({
+        userId: userId,
+        orderNumber: userDoc.orderSummary.orderNumber,
+        gateway: 'razorpay',
+        status: 'verified',
+        paymentOrderId: entireBody.orderId,
+        paymentId: entireBody.paymentId,
+        paymentType: 'pas-d',
+        paymentMethod: 'razorpay',
+        amount: userDoc.orderSummary.partialPaymentAmount,
+      });
+      newPayment.save();
+
+      console.log('new payment done');
+
+      await this.userModel.findByIdAndUpdate(userId, {
+        // 'orderSummary.orderNumber': orderNumber,
+        'orderSummary.paymentMethod':
+          userDoc.orderSummary.deliveryType == 'STORE PICKUP'
+            ? PaymentMethods.PAY_AT_STORE_DUE
+            : PaymentMethods.CASH_ON_DELIVERY_DUE,
+        'orderSummary.paymentType': PaymentTypes.PARTIAL,
+        'orderSummary.partialPaymentId': entireBody.paymentId,
+        // 'orderSummary.partialPaymentOrderId': paymentOrderId,
+      });
+
+      // await this.userModel.findByIdAndUpdate(userId, {
+      //   // 'orderSummary.orderNumber': orderNumber,
+      //   'orderSummary.paymentMethod': PaymentMethods.PREPAID,
+      //   'orderSummary.paymentType': PaymentTypes.FULL,
+      //   'orderSummary.paymentId': entireBody.paymentId,
+      //   // 'orderSummary.paymentOrderId': paymentOrderId,
+      // });
+
+      await this.ordersService.createOrder(userDoc._id.toString());
+
+      console.log('new order done');
+      // return orderNumber;
+      return {
+        status: 'success',
+        message: 'payment is verified',
+        orderNumber: userDoc.orderSummary.orderNumber,
       };
     } else {
       return {
@@ -179,15 +338,21 @@ export class OrderSummaryService {
     });
     console.log('new', newOrderSummary);
     await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.orderItems': entireBody.orderItems,
+      // 'orderSummary.orderItems': entireBody.orderItems,
+      orderSummary: {
+        orderItems: entireBody.orderItems,
+      },
     });
+
     newOrderSummary.save();
   }
 
   async addDeliveryAddress(userId: string, entireBody: AddDeliveryAddressDto) {
     console.log('adding delivery address');
     const currentDate = new Date();
-    const deliveryDate = new Date(currentDate.getTime() + 1000 * 60 * 60 * 24 * 5);
+    const deliveryDate = new Date(
+      currentDate.getTime() + 1000 * 60 * 60 * 24 * 5,
+    );
     var month = deliveryDate.getMonth() + 1; //months from 1-12
     var day = deliveryDate.getDate();
     var year = deliveryDate.getFullYear();
@@ -263,12 +428,25 @@ export class OrderSummaryService {
   }
 
   async addCouponDetails(userId: string, couponCode: String) {
-    const couponDetails = await this.couponModel.find({
+    const user = await this.userModel.findById(userId);
+    const orderSummary = user.orderSummary;
+    const cartValue = await this._calculateCartValue(orderSummary.orderItems);
+    const coupon = await this.couponModel.findOne({
       couponCode: couponCode,
     });
-    await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.couponCode': couponCode,
-    });
+
+    if (coupon) {
+      if (
+        coupon.isActive &&
+        cartValue >= coupon.minimumOrderTotal &&
+        coupon.couponDetails.userId != userId
+      ) {
+        console.log('cart total', cartValue);
+        await this.userModel.findByIdAndUpdate(userId, {
+          'orderSummary.couponCode': couponCode,
+        });
+      }
+    }
   }
 
   async updateCount(userId: string, entireBody: UpdateProductCountDto) {
@@ -277,6 +455,34 @@ export class OrderSummaryService {
       ['orderSummary.orderItems.' + index + '.productCount']:
         entireBody.updatedCount,
     });
+
+    await this.orderSummaryModel.findOneAndUpdate(
+      { userId: userId, isActive: true },
+      {
+        ['orderSummary.orderItems.' + index + '.productCount']:
+          entireBody.updatedCount,
+      },
+    );
     console.log('updated doc', doc);
+  }
+
+  _generateOrderNumber() {
+    const orderCode = 'OD';
+    const randomNumber = Math.floor(
+      10000000000000 + Math.random() * 90000000000000,
+    );
+    const orderNumber = orderCode + randomNumber.toString();
+    return orderNumber;
+  }
+
+  async _calculateCartValue(orderItems: any) {
+    let cartValue = 0;
+    for (const item of orderItems) {
+      const product = await this.productModel.findById(item.productId);
+      const price = item.productCount * product.pricing.sellingPrice;
+      cartValue += price;
+    }
+    console.log('cartvalue', cartValue);
+    return cartValue;
   }
 }

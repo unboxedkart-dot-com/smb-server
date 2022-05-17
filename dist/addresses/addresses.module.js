@@ -12,7 +12,7 @@ const addresses_service_1 = require("./addresses.service");
 const addresses_controller_1 = require("./addresses.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const address_model_1 = require("../models/address.model");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 let AddressesModule = class AddressesModule {
 };
 AddressesModule = __decorate([

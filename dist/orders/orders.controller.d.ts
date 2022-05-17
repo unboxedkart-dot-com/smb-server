@@ -1,8 +1,10 @@
 /// <reference types="multer" />
+/// <reference types="mongoose/types/pipelinestage" />
+/// <reference types="mongoose/types/error" />
+/// <reference types="mongoose" />
 import { AuthService } from 'src/auth/auth.service';
 import { S3Service } from 'src/s3/s3.service';
 import { CancelOrderDto } from './dto/cancel-order.dto';
-import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 export declare class OrdersController {
     private readonly ordersService;
@@ -13,24 +15,11 @@ export declare class OrdersController {
     handleGetReferrals(request: any): Promise<import("../models/referral_order").ReferralOrder[]>;
     handleDeleteAllOrder(): Promise<void>;
     createDummyOrder(): Promise<void>;
-    handleCreateOrder(request: any, entireBody: CreateOrderDto): Promise<{
-        orderNumber: string;
-        orderDate: number;
-        selectedPickUpDate: number;
-        deliveryDate: string;
-        pickUpDateInString: string;
-        pickUpTimeInString: string;
-        paymentType: import("../models/order.model").paymentTypes;
-        deliveryType: String;
-        selectedAddress: any;
-        selectedStore: any;
-        orderItems: {
-            orderItemsCount: number;
-            orderItems: any[];
-            orderTotal: number;
-        };
-    }>;
+    handleCreateOrder(request: any): Promise<string>;
     handleGetOrdersItems(request: any): Promise<import("../models/orderItem.model").OrderItem[]>;
+    handleGetOrder(id: string, request: any): Promise<import("mongoose").Document<unknown, any, import("../models/order.model").Order> & import("../models/order.model").Order & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
     handleGetOrderItem(request: any, orderId: string): Promise<{
         status: string;
         message: string;
@@ -66,4 +55,5 @@ export declare class OrdersController {
     }>;
     handleCancelOrder(request: any, entireBody: CancelOrderDto): Promise<void>;
     handleUploadInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
+    _generateOrderNumber(): string;
 }

@@ -374,20 +374,15 @@ let ProductsService = class ProductsService {
     }
     async getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode) {
         console.log('selected storage code', storageCode);
-        const product = await this.productModel.findOne({
+        const product = await this.productModel.find({
             productCode: productCode,
             'moreDetails.colorCode': colorCode,
             conditionCode: conditionCode,
-            'moreDetails.storageCode': storageCode == undefined || 'null' ? { $ne: null } : storageCode,
-            'moreDetails.processorCode': processorCode == undefined || 'null' ? { $ne: null } : processorCode,
-            'moreDetails.ramCode': ramCode == undefined || 'null' ? { $ne: null } : { $eq: ramCode },
+            'moreDetails.storageCode': storageCode === undefined || 'null' ? { $ne: null } : storageCode,
+            'moreDetails.processorCode': processorCode === undefined || 'null' ? { $ne: null } : processorCode,
+            'moreDetails.ramCode': ramCode === undefined || 'null' ? { $ne: null } : { $eq: ramCode },
         });
-        if (product != null) {
-            return product._id.toString();
-        }
-        else {
-            return null;
-        }
+        return product.length;
     }
     async getSimilarProducts(productId) {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {

@@ -28,6 +28,8 @@ const user_module_1 = require("./user/user.module");
 const product_details_module_1 = require("./product-details/product-details.module");
 const variants_module_1 = require("./variants/variants.module");
 const s3_module_1 = require("./s3/s3.module");
+const carousel_items_module_1 = require("./carousel-items/carousel-items.module");
+const app_version_module_1 = require("./app-version/app-version.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -53,6 +55,8 @@ AppModule = __decorate([
             product_details_module_1.ProductDetailsModule,
             variants_module_1.VariantsModule,
             s3_module_1.S3Module,
+            carousel_items_module_1.CarouselItemsModule,
+            app_version_module_1.AppVersionModule,
         ],
     })
 ], AppModule);

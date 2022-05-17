@@ -17,8 +17,9 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let CartService = class CartService {
-    constructor(cartItemModel, userModel, productModel) {
+    constructor(cartItemModel, savedToLaterModel, userModel, productModel) {
         this.cartItemModel = cartItemModel;
+        this.savedToLaterModel = savedToLaterModel;
         this.userModel = userModel;
         this.productModel = productModel;
     }
@@ -55,6 +56,35 @@ let CartService = class CartService {
         }
         return cartItemsData;
     }
+    async getSavedLaterProducts(userId) {
+        const productsData = [];
+        const userDoc = await this.userModel.findById(userId);
+        const savedLaterProducts = userDoc.savedToLaterProducts;
+        if (savedLaterProducts.length > 0) {
+            for (const item of savedLaterProducts) {
+                const product = await this.productModel.findById(item.productId);
+                console.log('single product', product);
+                const newCartItem = {
+                    productId: item.productId,
+                    productCount: item.productCount,
+                    productDetails: {
+                        title: product.title,
+                        imageUrl: product.imageUrls.coverImage,
+                        color: product.moreDetails.color,
+                        brand: product.brand,
+                        category: product.category,
+                        condition: product.condition,
+                    },
+                    pricingDetails: {
+                        sellingPrice: product.pricing.sellingPrice,
+                        price: product.pricing.price,
+                    },
+                };
+                productsData.push(newCartItem);
+            }
+        }
+        return productsData;
+    }
     async addCartItem(userId, productId) {
         const product = await this.productModel.findById(productId);
         if (product) {
@@ -63,6 +93,21 @@ let CartService = class CartService {
                 userId: userId,
             });
             if (!cartItem) {
+                this._handleAddCartItem(userId, productId);
+            }
+            else {
+                return 'already exists';
+            }
+        }
+    }
+    async addSavedToLater(userId, productId) {
+        const product = await this.productModel.findById(productId);
+        if (product) {
+            const product = await this.savedToLaterModel.findOne({
+                productId: productId,
+                userId: userId,
+            });
+            if (!product) {
                 this._handleAddCartItem(userId, productId);
             }
             else {
@@ -89,6 +134,17 @@ let CartService = class CartService {
             },
         });
     }
+    async removeProductFromSaveLater(userId, productId) {
+        await this.savedToLaterModel.findOneAndDelete({
+            userId: userId,
+            productId: productId,
+        });
+        await this.userModel.updateOne({ _id: userId }, {
+            $pull: {
+                savedToLaterProducts: { productId: productId },
+            },
+        });
+    }
     async _handleAddCartItem(userId, productId) {
         const newCartItem = new this.cartItemModel({
             userId: userId,
@@ -99,13 +155,25 @@ let CartService = class CartService {
             $push: { cartItemIds: productId, cartItems: newCartItem },
         });
     }
+    async _handleAddSaveLater(userId, productId) {
+        const newSaveLaterProduct = new this.savedToLaterModel({
+            userId: userId,
+            productId: productId,
+        });
+        await newSaveLaterProduct.save();
+        await this.userModel.updateOne({ _id: userId }, {
+            $push: { savedToLaterProducts: newSaveLaterProduct },
+        });
+    }
 };
 CartService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('CartItem')),
-    __param(1, (0, mongoose_1.InjectModel)('User')),
-    __param(2, (0, mongoose_1.InjectModel)('Product')),
+    __param(1, (0, mongoose_1.InjectModel)('SavedToLater')),
+    __param(2, (0, mongoose_1.InjectModel)('User')),
+    __param(3, (0, mongoose_1.InjectModel)('Product')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])
 ], CartService);

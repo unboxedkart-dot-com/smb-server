@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderSummaryController = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const add_address_dto_1 = require("./dto/add-address.dto");
 const add_selected_store_dto_1 = require("./dto/add-selected-store.dto");
 const create_order_summary_dto_1 = require("./dto/create-order-summary.dto");
@@ -62,9 +62,26 @@ let OrderSummaryController = class OrderSummaryController {
         const response = await this.orderSummaryService.getPayableAmount(userId);
         return response;
     }
+    async handleGetPartialPaymentAmount(request) {
+        const userId = request.user.userId;
+        const response = await this.orderSummaryService.getPartialPaymentAmount(userId);
+        return response;
+    }
+    async handleUpdatePaymentMethod(request, paymentMethod) {
+        const userId = request.user.userId;
+        const response = await this.orderSummaryService.addPaymentMethod(userId, paymentMethod);
+        return response;
+    }
     async handleVerifyPayment(request, entireBody) {
         const userId = request.user.userId;
         const response = await this.orderSummaryService.verifyPaymentSignature(userId, entireBody);
+        console.log('response verify', response);
+        return response;
+    }
+    async handleVerifyPartialPayment(request, entireBody) {
+        const userId = request.user.userId;
+        const response = await this.orderSummaryService.verifyPartialPaymentSignature(userId, entireBody);
+        console.log('response partial verify', response);
         return response;
     }
 };
@@ -123,6 +140,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleGetPayableAmount", null);
 __decorate([
+    (0, common_1.Get)('partial-payment'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrderSummaryController.prototype, "handleGetPartialPaymentAmount", null);
+__decorate([
+    (0, common_1.Patch)('update/payment-method'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)('paymentMethod')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrderSummaryController.prototype, "handleUpdatePaymentMethod", null);
+__decorate([
     (0, common_1.Post)('verify-payment'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -130,6 +162,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, verify_payment_dto_1.VerifyPaymentDto]),
     __metadata("design:returntype", Promise)
 ], OrderSummaryController.prototype, "handleVerifyPayment", null);
+__decorate([
+    (0, common_1.Post)('verify-partial-payment'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, verify_payment_dto_1.VerifyPaymentDto]),
+    __metadata("design:returntype", Promise)
+], OrderSummaryController.prototype, "handleVerifyPartialPayment", null);
 OrderSummaryController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('order-summary'),

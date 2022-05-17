@@ -450,22 +450,24 @@ export class ProductsService {
     ramCode: string,
   ) {
     console.log('selected storage code', storageCode);
-    const product = await this.productModel.findOne({
+    const product = await this.productModel.find({
       productCode: productCode,
       'moreDetails.colorCode': colorCode,
       conditionCode: conditionCode,
+
       'moreDetails.storageCode':
-        storageCode == undefined || 'null' ? { $ne: null } : storageCode,
+        storageCode === undefined || 'null' ? { $ne: null } : storageCode,
       'moreDetails.processorCode':
-        processorCode == undefined || 'null' ? { $ne: null } : processorCode,
+        processorCode === undefined || 'null' ? { $ne: null } : processorCode,
       'moreDetails.ramCode':
-        ramCode == undefined || 'null' ? { $ne: null } : { $eq: ramCode },
+        ramCode === undefined || 'null' ? { $ne: null } : { $eq: ramCode },
     });
-    if (product != null) {
-      return product._id.toString();
-    } else {
-      return null;
-    }
+    // if (product != null) {
+    //   return product._id.toString();
+    // } else {
+    //   return null;
+    // }
+    return product.length;
   }
 
   async getSimilarProducts(productId: string) {

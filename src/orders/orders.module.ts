@@ -3,7 +3,7 @@ import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OrderSchema } from 'src/models/order.model';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
+import { JwtStrategy } from 'src/auth/jwt-strategies/jwt.strategy';
 import { ProductSchema } from 'src/models/product.model';
 import { CouponSchema } from 'src/models/coupon.model';
 import { OrderItemSchema } from 'src/models/orderItem.model';
@@ -15,12 +15,16 @@ import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { S3Module } from 'src/s3/s3.module';
 import { S3Service } from 'src/s3/s3.service';
+import { OrderSummarySchema } from 'src/models/order_summary.model';
+import { PaymentSchema } from 'src/models/payment.model';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      { name: 'OrderSummary', schema: OrderSummarySchema },
       { name: 'Order', schema: OrderSchema },
       { name: 'Product', schema: ProductSchema },
+      { name: 'Payment', schema: PaymentSchema },
       { name: 'Coupon', schema: CouponSchema },
       { name: 'OrderItem', schema: OrderItemSchema },
       { name: 'User', schema: UserSchema },
@@ -33,5 +37,6 @@ import { S3Service } from 'src/s3/s3.service';
   ],
   controllers: [OrdersController],
   providers: [OrdersService, JwtStrategy, S3Service],
+  exports: [OrdersService],
 })
 export class OrdersModule {}

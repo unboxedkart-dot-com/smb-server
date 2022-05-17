@@ -17,6 +17,8 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
     deliveryTimeStamp: { type: Date, required: false },
     shippingDetails: {
         shipDate: { type: String, required: false },
+        expectedDeliveryDate: { type: Date, required: false },
+        expectedDeliveryDateInString: { type: String, required: false },
         deliveryDate: { type: String, required: false },
         deliveryDateInString: { type: String, required: false },
         deliveryAddress: { type: address_model_1.AddressSchema, required: false },
@@ -32,10 +34,14 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         pickUpDateInString: { type: String, required: false },
     },
     paymentDetails: {
-        paymentDate: { type: String, required: false },
-        paymentType: { type: String, required: false },
-        paymentId: { type: String, required: false },
+        paymentType: { type: String, required: true },
+        paymentMethod: { type: String, required: true },
+        partialPaymentId: { type: String, required: false },
         isPaid: { type: Boolean, required: true, default: false },
+        amountPaid: { type: Number, required: true, default: 0 },
+        amountDue: { type: Number, required: true },
+        paymentDate: { type: String, required: false },
+        paymentId: { type: String, required: false },
     },
     pricingDetails: {
         billTotal: { type: Number, required: true },

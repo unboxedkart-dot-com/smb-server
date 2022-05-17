@@ -26,7 +26,7 @@ exports.CouponSchema = new mongoose_1.default.Schema({
     discountType: { type: String, required: true },
     redemptionType: { type: String, required: true },
     expiryType: { type: String, required: true },
-    expiryTime: { type: Date, required: true, default: Date.now() },
+    expiryTime: { type: Date, required: false },
     redemptionLimit: { type: Number, required: false },
     isPersonalCoupon: { type: Boolean, required: true, default: false },
     isActive: { type: Boolean, required: true, default: true },

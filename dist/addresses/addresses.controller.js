@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddressesController = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const addresses_service_1 = require("./addresses.service");
 const dto_1 = require("./dto");
 let AddressesController = class AddressesController {
@@ -38,6 +38,7 @@ let AddressesController = class AddressesController {
         return result;
     }
     async handleDeleteAddress(id) {
+        console.log('address to delet', id);
         const result = await this.addressesService.deleteAddress(id);
         return result;
     }
@@ -66,8 +67,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AddressesController.prototype, "handleUpdateAddress", null);
 __decorate([
-    (0, common_1.Delete)(),
-    __param(0, (0, common_1.Body)('id')),
+    (0, common_1.Delete)('/delete'),
+    __param(0, (0, common_1.Query)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

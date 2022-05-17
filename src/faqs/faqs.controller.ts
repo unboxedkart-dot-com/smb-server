@@ -10,7 +10,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { FaqsService } from './faqs.service';
 

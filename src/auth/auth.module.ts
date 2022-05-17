@@ -3,13 +3,16 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/models/user.model';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from '././jwt-strategies/jwt.strategy';
 import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { HttpModule } from '@nestjs/axios';
 import { CouponSchema } from 'src/models/coupon.model';
 import { SearchTermSchema } from 'src/models/search_term';
+import { JwtRefreshStrategy } from './jwt-strategies/jwt-refresh.strategy';
+import { RefreshTokenSchema } from 'src/models/refresh-token.model';
+import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -17,6 +20,7 @@ import { SearchTermSchema } from 'src/models/search_term';
       { name: 'User', schema: UserSchema },
       { name: 'Coupon', schema: CouponSchema },
       { name: 'SearchTerm', schema: SearchTermSchema },
+      { name: 'RefreshToken', schema: RefreshTokenSchema },
     ]),
     PassportModule,
     HttpModule,
@@ -29,7 +33,7 @@ import { SearchTermSchema } from 'src/models/search_term';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports : [AuthService]
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, JwtAuthGuard],
+  exports: [AuthService],
 })
 export class AuthModule {}

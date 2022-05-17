@@ -14,15 +14,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchController = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const add_search_term_dto_1 = require("./dto/add-search-term.dto");
 const search_service_1 = require("./search.service");
 let SearchController = class SearchController {
     constructor(searchService) {
         this.searchService = searchService;
     }
-    async handleGetSearchedProducts(title, category, brand, condition, pageNumber) {
-        const products = await this.searchService.getSearchedProducts(title, category, brand, condition, pageNumber);
+    async handleGetSearchedProducts(title, category, brand, condition, productCode, pageNumber) {
+        console.log('query terms', pageNumber);
+        const products = await this.searchService.getSearchedProducts(title, category, brand, condition, productCode, pageNumber);
         return products;
     }
     async handleGetRecentSearches(request) {
@@ -44,6 +45,9 @@ let SearchController = class SearchController {
         const popularSearches = await this.searchService.getPopularSearches();
         return popularSearches;
     }
+    async handleGetNewSearch(brandCode, categoryCode, conditionCode, sellerCode, productCode, title, pageNo) {
+        return await this.searchService.getNewSearch(title, categoryCode, brandCode, conditionCode, productCode, sellerCode, pageNo);
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -51,9 +55,10 @@ __decorate([
     __param(1, (0, common_1.Query)('category')),
     __param(2, (0, common_1.Query)('brand')),
     __param(3, (0, common_1.Query)('condition')),
-    __param(4, (0, common_1.Query)('p')),
+    __param(4, (0, common_1.Query)('productCode')),
+    __param(5, (0, common_1.Query)('p')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], SearchController.prototype, "handleGetSearchedProducts", null);
 __decorate([
@@ -88,6 +93,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SearchController.prototype, "handleGetPopularSearches", null);
+__decorate([
+    (0, common_1.Get)('/new-search'),
+    __param(0, (0, common_1.Query)('brandCode')),
+    __param(1, (0, common_1.Query)('categoryCode')),
+    __param(2, (0, common_1.Query)('conditionCode')),
+    __param(3, (0, common_1.Query)('sellerCode')),
+    __param(4, (0, common_1.Query)('productCode')),
+    __param(5, (0, common_1.Query)('title')),
+    __param(6, (0, common_1.Query)('p')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], SearchController.prototype, "handleGetNewSearch", null);
 SearchController = __decorate([
     (0, common_1.Controller)('search'),
     __metadata("design:paramtypes", [search_service_1.SearchService])

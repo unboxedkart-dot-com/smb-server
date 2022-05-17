@@ -19,6 +19,8 @@ import { UserModule } from './user/user.module';
 import { ProductDetailsModule } from './product-details/product-details.module';
 import { VariantsModule } from './variants/variants.module';
 import { S3Module } from './s3/s3.module';
+import { CarouselItemsModule } from './carousel-items/carousel-items.module';
+import { AppVersionModule } from './app-version/app-version.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { S3Module } from './s3/s3.module';
     ProductDetailsModule,
     VariantsModule,
     S3Module,
+    CarouselItemsModule,
+    AppVersionModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

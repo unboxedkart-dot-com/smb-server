@@ -3,7 +3,7 @@ import { FaqsService } from './faqs.service';
 import { FaqsController } from './faqs.controller';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
 import { FaqSchema } from 'src/models/faq.model';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { ProductSchema } from 'src/models/product.model';
 import { AuthModule } from 'src/auth/auth.module';
 

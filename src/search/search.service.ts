@@ -15,40 +15,112 @@ export class SearchService {
 
   // nullValues = [null, 'null', undefined];
 
+  async getNewSearch(
+    title: string,
+    category: string,
+    brand: string,
+    condition: string,
+    productCode: string,
+    sellerCode: string,
+    pageNumber: string,
+  ) {
+    console.log(
+      'new search',
+      title,
+      category,
+      brand,
+      condition,
+      productCode,
+      sellerCode,
+      pageNumber,
+    );
+    const products = await this.productModel.find({
+      conditionCode:
+        condition === undefined || 'null' ? { $ne: null } : condition,
+      categoryCode: category === undefined || 'null' ? { $ne: null } : category,
+      brandCode: brand === undefined || 'null' ? { $ne: null } : brand,
+      productCode:
+        productCode === undefined || 'null' ? { $ne: null } : productCode,
+      // brandCode : brand
+    });
+    return products.length;
+  }
+
   async getSearchedProducts(
     title: string,
     category: string,
     brand: string,
     condition: string,
+    productCode: string,
     pageNumber: string,
   ) {
-    if (!title) {
+    console.log('dd', productCode);
+    var itemsToSkip: number = 0;
+    if (pageNumber && parseInt(pageNumber) > 0) {
+      itemsToSkip = 10 * parseInt(pageNumber) - 10;
+    }
+    console.log('ss', itemsToSkip);
+    if (productCode) {
+      console.log('has product code');
+      const products = await this._getProductsByProductCode(
+        productCode,
+        itemsToSkip,
+      );
+      return products;
+    } else if (!title) {
       if (category && brand) {
         const products = await this._getProductsByCategoryAndBrand(
           category,
           brand,
+          itemsToSkip,
         );
         return products;
       } else if (category && condition) {
         const products = await this._getProductsByConditionAndCategory(
           condition,
           category,
+          itemsToSkip,
         );
         return products;
       } else if (brand && condition) {
         const products = await this._getProductsByBrandAndCondition(
           brand,
           condition,
+          itemsToSkip,
         );
         return products;
       }
     } else {
-      const products = await this._getProductsByTitle(title, pageNumber);
+      const products = await this._getProductsByTitle(
+        title,
+        pageNumber,
+        itemsToSkip,
+      );
       return products;
     }
   }
 
-  async _getProductsByTitle(title: string, pageNumber: string) {
+  async _getProductsByProductCode(productCode: string, itemsToSkip: number) {
+    // var itemsToSkip: number = 0;
+    // if (pageNumber && parseInt(pageNumber) > 0) {
+    //   itemsToSkip = 10 * parseInt(pageNumber) - 10;
+    // }
+    console.log('gettin gby products code');
+    const products = await this.productModel
+      .find({
+        productCode: productCode,
+      })
+      .limit(10)
+      .skip(itemsToSkip)
+      .exec();
+    return products as Product[];
+  }
+
+  async _getProductsByTitle(
+    title: string,
+    pageNumber: string,
+    itemsToSkip: number,
+  ) {
     var itemsToSkip: number = 0;
     if (pageNumber && parseInt(pageNumber) > 0) {
       itemsToSkip = 10 * parseInt(pageNumber) - 10;
@@ -102,22 +174,35 @@ export class SearchService {
     return popularSearches;
   }
 
-  async _getProductsByCategoryAndBrand(category: string, brand: string) {
+  async _getProductsByCategoryAndBrand(
+    category: string,
+    brand: string,
+    itemsToSkip: number,
+  ) {
     const products = await this.productModel
       .find({
         categoryCode: { $eq: category },
         brandCode: { $eq: brand },
       })
+      .skip(itemsToSkip)
+      .limit(10)
+      .skip(itemsToSkip)
       .exec();
     return products as Product[];
   }
 
-  async _getProductsByBrandAndCondition(brand: string, condition: string) {
+  async _getProductsByBrandAndCondition(
+    brand: string,
+    condition: string,
+    itemsToSkip: number,
+  ) {
     const products = await this.productModel
       .find({
         brandCode: { $eq: brand },
         conditionCode: { $eq: condition },
       })
+      .limit(10)
+      .skip(itemsToSkip)
       .exec();
     return products as Product[];
   }
@@ -125,12 +210,15 @@ export class SearchService {
   async _getProductsByConditionAndCategory(
     condition: string,
     category: string,
+    itemsToSkip: number,
   ) {
     const products = await this.productModel
       .find({
         categoryCode: { $eq: category },
         conditionCode: { $eq: condition },
       })
+      .limit(10)
+      .skip(itemsToSkip)
       .exec();
     return products as Product[];
   }

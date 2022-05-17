@@ -20,7 +20,7 @@ export declare class ProductsController {
     getProduct(q: string): Promise<mongoose.Document<unknown, any, Product> & Product & {
         _id: mongoose.Types.ObjectId;
     }>;
-    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<string>;
+    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<number>;
     handleDeleteProducts(): Promise<string>;
     handleUpdateInventoryCount(count: number, request: any, productId: string): Promise<{
         statusCode: number;

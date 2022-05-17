@@ -18,9 +18,10 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const coupon_model_1 = require("../models/coupon.model");
 let CouponsService = class CouponsService {
-    constructor(couponModel, userModel) {
+    constructor(couponModel, userModel, productModel) {
         this.couponModel = couponModel;
         this.userModel = userModel;
+        this.productModel = productModel;
     }
     async getAllCoupons() {
         const coupons = await this.couponModel.find({ isPersonalCoupon: false });
@@ -67,22 +68,35 @@ let CouponsService = class CouponsService {
             personalCouponCode: userDetails.couponCode,
         });
     }
-    async validateCoupon(userId, couponCode, cartTotal) {
+    async _calculateCartValue(orderItems) {
+        let cartValue = 0;
+        for (const item of orderItems) {
+            const product = await this.productModel.findById(item.productId);
+            const price = item.productCount * product.pricing.sellingPrice;
+            cartValue += price;
+        }
+        console.log('cartvalue', cartValue);
+        return cartValue;
+    }
+    async validateCoupon(userId, couponCode) {
+        const userDoc = await this.userModel.findById(userId);
+        const cartValue = await this._calculateCartValue(userDoc.orderSummary.orderItems);
+        console.log('orderSummary', userDoc.orderSummary.orderItems);
         const coupon = await this.couponModel.findOne({
             couponCode: couponCode,
         });
         if (coupon) {
             console.log('ppp', coupon);
             if (coupon.isActive &&
-                cartTotal > coupon.minimumOrderTotal &&
+                cartValue >= coupon.minimumOrderTotal &&
                 coupon.couponDetails.userId != userId) {
-                console.log('cart total', cartTotal);
+                console.log('cart total', cartValue);
                 return {
                     isValid: true,
                     couponDetails: {
                         couponCode: coupon.couponCode,
-                        couponDescription: 'Use this coupon to get 100 off',
-                        discountAmount: 500,
+                        couponDescription: coupon.description,
+                        discountAmount: coupon.discountAmount,
                     },
                 };
             }
@@ -119,7 +133,9 @@ CouponsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_2.InjectModel)('Coupon')),
     __param(1, (0, mongoose_2.InjectModel)('User')),
+    __param(2, (0, mongoose_2.InjectModel)('Product')),
     __metadata("design:paramtypes", [mongoose_1.Model,
+        mongoose_1.Model,
         mongoose_1.Model])
 ], CouponsService);
 exports.CouponsService = CouponsService;

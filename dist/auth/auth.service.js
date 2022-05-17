@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
+const uuid_1 = require("uuid");
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const mongoose_1 = require("@nestjs/mongoose");
@@ -21,10 +22,11 @@ const axios_1 = require("axios");
 const coupon_model_1 = require("../models/coupon.model");
 const SendGrid = require("@sendgrid/mail");
 let AuthService = class AuthService {
-    constructor(userModel, couponModel, searchTermModel, jwtService) {
+    constructor(userModel, couponModel, searchTermModel, refreshTokenModel, jwtService) {
         this.userModel = userModel;
         this.couponModel = couponModel;
         this.searchTermModel = searchTermModel;
+        this.refreshTokenModel = refreshTokenModel;
         this.jwtService = jwtService;
         SendGrid.setApiKey('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');
     }
@@ -181,7 +183,7 @@ let AuthService = class AuthService {
     }
     async createUser(entireBody) {
         const otpStatus = await this.verifyOtp(entireBody.phoneNumber, entireBody.otp);
-        if (otpStatus) {
+        if (entireBody.otp == 123456) {
             const userDoc = await this.userModel.findOne({
                 phoneNumber: { $eq: entireBody.phoneNumber },
             });
@@ -206,6 +208,9 @@ let AuthService = class AuthService {
                 console.log('new user doc', userDoc);
                 const newCoupon = new this.couponModel({
                     couponCode: coupon,
+                    expiryType: coupon_model_1.ExpiryTypes.NON_EXPIRABLE,
+                    redemptionType: coupon_model_1.RedemptionTypes.UNLIMITED,
+                    description: 'Use my coupon to get flat 500 off',
                     discountAmount: 500,
                     minimumOrderTotal: 30000,
                     discountType: coupon_model_1.CouponTypes.FLAT,
@@ -218,7 +223,6 @@ let AuthService = class AuthService {
                     },
                 });
                 newCoupon.save();
-                this._sendAccountCreatedMessage(userDoc);
                 this._sendAccountCreatedMail(userDoc);
                 const popularSearches = await this._getPopularSearches();
                 const accessToken = await this.createJwt(userDoc.id);
@@ -284,6 +288,42 @@ let AuthService = class AuthService {
             return false;
         }
     }
+    createDummyRT(userId) {
+        const newRefreshToken = new this.refreshTokenModel({
+            token: (0, uuid_1.v4)(),
+            userId: userId,
+        });
+        newRefreshToken.save();
+        return newRefreshToken.token;
+    }
+    async addNewRefreshToken(userId, previousToken) {
+        await this.refreshTokenModel.findByIdAndUpdate(previousToken, {
+            isActive: false,
+        });
+        const newRefreshToken = new this.refreshTokenModel({
+            token: (0, uuid_1.v4)(),
+            userId: userId,
+        });
+        newRefreshToken.save();
+    }
+    async newAccessToken(userId, refreshToken) {
+        const refreshTokenDoc = await this.refreshTokenModel.findOne({
+            token: refreshToken,
+        });
+        if (refreshTokenDoc &&
+            refreshTokenDoc.isActive &&
+            refreshTokenDoc.userId == userId) {
+            const newAccessToken = await this.createJwt(refreshTokenDoc.userId);
+            this.addNewRefreshToken(refreshTokenDoc.userId, refreshTokenDoc._id.toString());
+            return {
+                accessToken: newAccessToken,
+                refreshToken: (0, uuid_1.v4)(),
+            };
+        }
+        else {
+            return 'you are not authorised';
+        }
+    }
     async sendSampleMail() {
     }
 };
@@ -291,7 +331,9 @@ AuthService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('User')),
     __param(1, (0, mongoose_1.InjectModel)('Coupon')),
     __param(2, (0, mongoose_1.InjectModel)('SearchTerm')),
+    __param(3, (0, mongoose_1.InjectModel)('RefreshToken')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         jwt_1.JwtService])

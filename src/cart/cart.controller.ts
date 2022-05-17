@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { CartService } from './cart.service';
 import { AddCartItemDto } from './dto/add-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
@@ -26,6 +26,13 @@ export class CartController {
     return result;
   }
 
+  @Get('/save-later')
+  async handleGetSaveLaterProducts(@Req() request: any) {
+    const userId = request.user.userId;
+    const result = await this.cartService.getSavedLaterProducts(userId);
+    return result;
+  }
+
   @Post('add')
   async handleAddCartItem(
     @Body() entireBody: AddCartItemDto,
@@ -33,6 +40,21 @@ export class CartController {
   ) {
     const userId = request.user.userId;
     const result = await this.cartService.addCartItem(
+      userId,
+      entireBody.productId,
+      // entireBody.productCount,
+    );
+    return result;
+  }
+
+
+  @Post('/save-later/add')
+  async handleAddProductToSaveLater(
+    @Body() entireBody: AddCartItemDto,
+    @Req() request: any,
+  ) {
+    const userId = request.user.userId;
+    const result = await this.cartService.addSavedToLater(
       userId,
       entireBody.productId,
       // entireBody.productCount,
@@ -61,6 +83,17 @@ export class CartController {
   ) {
     const userId = request.user.userId;
     const result = await this.cartService.deleteCartItem(userId, productId);
+    return result;
+  }
+
+
+  @Delete('/save-later/delete/:id')
+  async handleRemoveProductFromSaveLater(
+    @Req() request: any,
+    @Param('id') productId: string,
+  ) {
+    const userId = request.user.userId;
+    const result = await this.cartService.removeProductFromSaveLater(userId, productId);
     return result;
   }
 }

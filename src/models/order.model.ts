@@ -7,13 +7,16 @@ export enum OrderStatuses {
   READY_FOR_PICKUP = 'READY FOR PICKUP',
   OUT_FOR_DELIVERY = 'OUT FOR DELIVERY',
   DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
-export enum paymentTypes {
-  PAY_AT_STORE = 'PAY AT STORE',
-  CASH_ON_DELIVERY = 'CASH ON DELIVERY',
-  PREPAID = 'PREPAID',
+export enum PaymentTypes {
+  FULL = 'FULL',
+  PARTIAL = 'PARTIAL',
+  NULL = 'NULL',
+  // PAY_AT_STORE = 'PAY AT STORE',
+  // CASH_ON_DELIVERY = 'CASH ON DELIVERY',
+  // PREPAID = 'PREPAID',
 }
 
 export enum DeliveryTypes {
@@ -21,17 +24,35 @@ export enum DeliveryTypes {
   HOME_DELIVERY = 'HOME DELIVERY',
 }
 
+export enum PaymentMethods {
+  PAY_AT_STORE = 'PAY AT STORE',
+  PAY_AT_STORE_DUE = 'PAT AT STORE DUE',
+  CASH_ON_DELIVERY = 'CASH ON DELIVERY',
+  CASH_ON_DELIVERY_DUE = 'CASH ON DELIVERY DUE',
+  PREPAID = 'PREPAID',
+}
+
 export const OrderSchema = new mongoose.Schema({
   paymentDetails: {
     paymentType: { type: String, required: true },
-    paymentDate: { type: String, required: false },
-    paymentId: { type: String, required: false },
+    paymentMethod: { type: String, required: true },
+    // paymentDate: { type: String, required: false },
+    paymentIds: { type: Array, required: false },
+    partialPaymentId: { type: String, required: false },
     isPaid: { type: Boolean, required: true, default: false },
+
+    amountPaid: { type: Number, required: true, default: 0 },
+    amountDue: { type: Number, required: true },
+  },
+  pricingDetails: {
     billTotal: { type: Number, required: true },
     couponCode: { type: String, required: false },
     couponDiscount: { type: Number, required: false },
     payableTotal: { type: Number, required: true },
   },
+  deliveryType: { type: String, required: true },
+  shippingDetails: {},
+  pickUpDetails: {},
   orderNumber: { type: String, required: true },
   orderDate: { type: String, required: true, default: Date.now() },
   updatedDate: { type: String, required: false },
@@ -63,12 +84,6 @@ export const OrderSchema = new mongoose.Schema({
       },
     },
   ],
-  // reviewDetails: {
-  //   isReviewed: { type: Boolean, required: true, default: false },
-  //   rating: { type: Number, required: false },
-  //   reviewTitle: { type: String, required: false },
-  //   reviewContent: { type: String, required: false },
-  // },
 });
 
 export interface Order {
@@ -76,19 +91,31 @@ export interface Order {
   orderNumber: string;
   orderDate: Date;
   updatedDate: Date;
+  deliveryType: string;
+  shippingDetails: any;
+  pickUpDetails: any;
   userDetails: {
     name: string;
     phoneNumber: number;
     emailId: string;
   };
   paymentDetails: {
-    paymentDate: string;
-    paymentId: string;
+    paymentType: string;
+    paymentMethod: string;
+    partialPaymentId: string;
+    amountPaid: number;
+    amountDue: number;
+
+    // paymentDate: string;
+    paymentIds: string[];
     isPaid: boolean;
+  };
+  pricingDetails: {
     billTotal: string;
     payableTotal: string;
+    couponCode: string;
+    couponDiscount: number;
   };
-
   orderStatus: string;
   orderItems: [
     {
@@ -115,7 +142,7 @@ export interface Order {
 //   shipDate: { type: String, required: false },
 //   deliveryDate: { type: String, required: false },
 //   deliveryAddress: { type: Map, required: false },
-//   isDelivered: { type: String, required: true },
+//   isDelivered: string;,
 // },
 
 // shippingDetails: {

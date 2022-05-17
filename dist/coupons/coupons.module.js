@@ -13,8 +13,9 @@ const coupons_controller_1 = require("./coupons.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const coupon_model_1 = require("../models/coupon.model");
 const user_model_1 = require("../models/user.model");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const auth_module_1 = require("../auth/auth.module");
+const product_model_1 = require("../models/product.model");
 let CouponsModule = class CouponsModule {
 };
 CouponsModule = __decorate([
@@ -23,11 +24,13 @@ CouponsModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'Product', schema: product_model_1.ProductSchema },
             ]),
             auth_module_1.AuthModule,
         ],
         controllers: [coupons_controller_1.CouponsController],
         providers: [coupons_service_1.CouponsService, jwt_auth_guard_1.JwtAuthGuard],
+        exports: [coupons_service_1.CouponsService]
     })
 ], CouponsModule);
 exports.CouponsModule = CouponsModule;

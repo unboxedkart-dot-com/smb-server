@@ -12,7 +12,7 @@ const orders_service_1 = require("./orders.service");
 const orders_controller_1 = require("./orders.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const order_model_1 = require("../models/order.model");
-const jwt_strategy_1 = require("../auth/jwt.strategy");
+const jwt_strategy_1 = require("../auth/jwt-strategies/jwt.strategy");
 const product_model_1 = require("../models/product.model");
 const coupon_model_1 = require("../models/coupon.model");
 const orderItem_model_1 = require("../models/orderItem.model");
@@ -23,14 +23,18 @@ const item_purchased_user_model_1 = require("../models/item-purchased-user.model
 const auth_module_1 = require("../auth/auth.module");
 const s3_module_1 = require("../s3/s3.module");
 const s3_service_1 = require("../s3/s3.service");
+const order_summary_model_1 = require("../models/order_summary.model");
+const payment_model_1 = require("../models/payment.model");
 let OrdersModule = class OrdersModule {
 };
 OrdersModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([
+                { name: 'OrderSummary', schema: order_summary_model_1.OrderSummarySchema },
                 { name: 'Order', schema: order_model_1.OrderSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
+                { name: 'Payment', schema: payment_model_1.PaymentSchema },
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'OrderItem', schema: orderItem_model_1.OrderItemSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
@@ -43,6 +47,7 @@ OrdersModule = __decorate([
         ],
         controllers: [orders_controller_1.OrdersController],
         providers: [orders_service_1.OrdersService, jwt_strategy_1.JwtStrategy, s3_service_1.S3Service],
+        exports: [orders_service_1.OrdersService],
     })
 ], OrdersModule);
 exports.OrdersModule = OrdersModule;

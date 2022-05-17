@@ -27,7 +27,7 @@ export declare class ProductsService {
         count: number;
     }): Promise<void>;
     getProducts(): Promise<Product[]>;
-    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<string>;
+    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<number>;
     getSimilarProducts(productId: string): Promise<(import("mongoose").Document<unknown, any, Product> & Product & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;

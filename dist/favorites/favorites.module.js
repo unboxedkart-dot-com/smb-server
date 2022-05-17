@@ -14,7 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const favorite_model_1 = require("../models/favorite.model");
 const user_model_1 = require("../models/user.model");
 const product_model_1 = require("../models/product.model");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 let FavoritesModule = class FavoritesModule {
 };
 FavoritesModule = __decorate([

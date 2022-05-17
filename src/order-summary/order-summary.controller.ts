@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AddAddressDto } from 'src/addresses/dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
 import { AddDeliveryAddressDto } from './dto/add-address.dto';
 import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
@@ -56,7 +56,10 @@ export class OrderSummaryController {
   }
 
   @Patch('update/coupon')
-  async handleAddCoupon(@Req() request: any, @Body('couponCode') couponCode : string) {
+  async handleAddCoupon(
+    @Req() request: any,
+    @Body('couponCode') couponCode: string,
+  ) {
     const userId = request.user.userId;
     const result = await this.orderSummaryService.addCouponDetails(
       userId,
@@ -109,6 +112,27 @@ export class OrderSummaryController {
     const response = await this.orderSummaryService.getPayableAmount(userId);
     return response;
   }
+  @Get('partial-payment')
+  async handleGetPartialPaymentAmount(@Req() request: any) {
+    const userId = request.user.userId;
+    const response = await this.orderSummaryService.getPartialPaymentAmount(
+      userId,
+    );
+    return response;
+  }
+
+  @Patch('update/payment-method')
+  async handleUpdatePaymentMethod(
+    @Req() request: any,
+    @Body('paymentMethod') paymentMethod: string,
+  ) {
+    const userId = request.user.userId;
+    const response = await this.orderSummaryService.addPaymentMethod(
+      userId,
+      paymentMethod,
+    );
+    return response;
+  }
 
   @Post('verify-payment')
   async handleVerifyPayment(
@@ -120,6 +144,22 @@ export class OrderSummaryController {
       userId,
       entireBody,
     );
+    console.log('response verify', response);
+    return response;
+  }
+
+  @Post('verify-partial-payment')
+  async handleVerifyPartialPayment(
+    @Req() request: any,
+    @Body() entireBody: VerifyPaymentDto,
+  ) {
+    const userId = request.user.userId;
+    const response =
+      await this.orderSummaryService.verifyPartialPaymentSignature(
+        userId,
+        entireBody,
+      );
+    console.log('response partial verify', response);
     return response;
   }
 }

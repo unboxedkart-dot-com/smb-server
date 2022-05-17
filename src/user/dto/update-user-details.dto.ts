@@ -3,7 +3,6 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class UpdateUserDetailsDto {
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   name: string;
 
   //   @IsString()
@@ -11,6 +10,6 @@ export class UpdateUserDetailsDto {
   //   emailId: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   gender: string;
 }

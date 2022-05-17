@@ -5,10 +5,11 @@ import {
   Get,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { Address } from 'src/models/address.model';
 import { AddressesService } from './addresses.service';
 import { AddAddressDto, UpdateAddressDto } from './dto';
@@ -52,8 +53,9 @@ export class AddressesController {
     return result;
   }
 
-  @Delete()
-  async handleDeleteAddress(@Body('id') id: string) {
+  @Delete('/delete')
+  async handleDeleteAddress(@Query('id') id: string) {
+    console.log('address to delet', id);
     const result = await this.addressesService.deleteAddress(id);
     return result;
   }

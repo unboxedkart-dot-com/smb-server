@@ -16,10 +16,9 @@ exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const auth_service_1 = require("../auth/auth.service");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const s3_service_1 = require("../s3/s3.service");
 const cancel_order_dto_1 = require("./dto/cancel-order.dto");
-const create_order_dto_1 = require("./dto/create-order.dto");
 const orders_service_1 = require("./orders.service");
 let OrdersController = class OrdersController {
     constructor(ordersService, authService, s3Service) {
@@ -52,15 +51,21 @@ let OrdersController = class OrdersController {
         const payment = await this.ordersService.createPaymentOrder();
         return payment;
     }
-    async handleCreateOrder(request, entireBody) {
+    async handleCreateOrder(request) {
         const userId = request.user.userId;
-        const orders = await this.ordersService.createOrder(entireBody, userId);
-        return orders;
+        const orderNumber = this._generateOrderNumber();
+        return await this.ordersService.createOrder(userId);
     }
     async handleGetOrdersItems(request) {
         const userId = request.user.userId;
         const orders = await this.ordersService.getOrderItems(userId);
         return orders;
+    }
+    async handleGetOrder(id, request) {
+        const userId = request.user.userId;
+        const order = await this.ordersService.getOrder(userId, id);
+        console.log("order is", order);
+        return order;
     }
     async handleGetOrderItem(request, orderId) {
         console.log('getting single order item', orderId);
@@ -149,6 +154,12 @@ let OrdersController = class OrdersController {
         const response = this.s3Service.uploadFile(file);
         return response;
     }
+    _generateOrderNumber() {
+        const orderCode = 'OD';
+        const randomNumber = Math.floor(10000000000000 + Math.random() * 90000000000000);
+        const orderNumber = orderCode + randomNumber.toString();
+        return orderNumber;
+    }
 };
 __decorate([
     (0, common_1.Get)('/all-orders'),
@@ -180,18 +191,27 @@ __decorate([
 __decorate([
     (0, common_1.Post)('create'),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_order_dto_1.CreateOrderDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleCreateOrder", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleGetOrdersItems", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('/order'),
+    __param(0, (0, common_1.Query)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleGetOrder", null);
 __decorate([
     (0, common_1.Get)('/order-item'),
     __param(0, (0, common_1.Req)()),

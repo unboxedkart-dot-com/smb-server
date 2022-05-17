@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CouponsController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../auth/auth.service");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const coupons_service_1 = require("./coupons.service");
 const create_coupon_dto_1 = require("./dto/create-coupon.dto");
 let CouponsController = class CouponsController {
@@ -39,7 +39,7 @@ let CouponsController = class CouponsController {
     }
     async handleValidateCoupon(couponCode, cartTotal, request) {
         const userId = request.user.userId;
-        const response = await this.couponsService.validateCoupon(userId, couponCode, cartTotal);
+        const response = await this.couponsService.validateCoupon(userId, couponCode);
         return response;
     }
     async handleGetAllCoupons(request) {

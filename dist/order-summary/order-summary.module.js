@@ -14,8 +14,11 @@ const user_model_1 = require("../models/user.model");
 const product_model_1 = require("../models/product.model");
 const coupon_model_1 = require("../models/coupon.model");
 const order_summary_model_1 = require("../models/order_summary.model");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const order_summary_service_1 = require("./order-summary.service");
+const orders_module_1 = require("../orders/orders.module");
+const payment_model_1 = require("../models/payment.model");
+const coupons_module_1 = require("../coupons/coupons.module");
 let OrderSummaryModule = class OrderSummaryModule {
 };
 OrderSummaryModule = __decorate([
@@ -26,7 +29,10 @@ OrderSummaryModule = __decorate([
                 { name: 'OrderSummary', schema: order_summary_model_1.OrderSummarySchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
+                { name: 'Payment', schema: payment_model_1.PaymentSchema },
             ]),
+            orders_module_1.OrdersModule,
+            coupons_module_1.CouponsModule
         ],
         controllers: [order_summary_controller_1.OrderSummaryController],
         providers: [order_summary_service_1.OrderSummaryService, jwt_auth_guard_1.JwtAuthGuard],

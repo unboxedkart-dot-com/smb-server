@@ -1,16 +1,21 @@
+/// <reference types="mongoose/types/pipelinestage" />
+/// <reference types="mongoose/types/error" />
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
-import { Order, paymentTypes } from 'src/models/order.model';
+import { Order } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
+import { OrderSummary } from 'src/models/order_summary.model';
+import { Payment } from 'src/models/payment.model';
 import { Product } from 'src/models/product.model';
 import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
 import { CancelOrderDto } from './dto/cancel-order.dto';
-import { CreateOrderDto } from './dto/create-order.dto';
 export declare class OrdersService {
     private readonly orderModel;
+    private readonly paymentModel;
+    private readonly orderSummaryModel;
     private readonly productModel;
     private readonly couponModel;
     private readonly orderItemModel;
@@ -18,27 +23,11 @@ export declare class OrdersService {
     private readonly reviewModel;
     private readonly itemPurchasedUsersModel;
     private readonly referralModel;
-    constructor(orderModel: Model<Order>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
+    constructor(orderModel: Model<Order>, paymentModel: Model<Payment>, orderSummaryModel: Model<OrderSummary>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
     getAllOrders(status: string): Promise<OrderItem[]>;
     deleteAll(): Promise<void>;
     getReferrals(userId: string): Promise<ReferralOrder[]>;
-    createOrder(entireBody: CreateOrderDto, userId: string): Promise<{
-        orderNumber: string;
-        orderDate: number;
-        selectedPickUpDate: number;
-        deliveryDate: string;
-        pickUpDateInString: string;
-        pickUpTimeInString: string;
-        paymentType: paymentTypes;
-        deliveryType: String;
-        selectedAddress: any;
-        selectedStore: any;
-        orderItems: {
-            orderItemsCount: number;
-            orderItems: any[];
-            orderTotal: number;
-        };
-    }>;
+    createOrder(userId: string): Promise<string>;
     acceptOrder(userId: string, orderItemId: string): Promise<void>;
     orderReadyForPickUp(userId: string, orderItemId: string): Promise<void>;
     orderShipped(userId: string, orderItemId: string): Promise<void>;
@@ -46,6 +35,9 @@ export declare class OrdersService {
     orderDelivered(userId: string, orderItemId: string): Promise<void>;
     cancelOrder(userId: string, entireBody: CancelOrderDto): Promise<void>;
     getOrderItems(userId: string): Promise<OrderItem[]>;
+    getOrder(userId: string, orderNumber: string): Promise<import("mongoose").Document<unknown, any, Order> & Order & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
     getOrderItem(userId: string, orderItemId: string): Promise<{
         status: string;
         message: string;
@@ -69,7 +61,6 @@ export declare class OrdersService {
             reviewData?: undefined;
         };
     }>;
-    _generateOrderNumber(): string;
     _getCouponDiscount(userId: string, userName: string, orderNumber: string, couponCode: string, orderTotal: number): Promise<number>;
     _validateCouponCode(couponCode: string, orderTotal: number): Promise<{
         couponDiscount: number;
@@ -94,30 +85,30 @@ export declare class OrdersService {
             category: string;
         };
     }>;
-    _handleSaveIndividualOrders(userDoc: any, params: IndividualOrderItem): Promise<void>;
+    _handleSaveIndividualOrders(order: Order): Promise<void>;
     createPaymentOrder(): Promise<void>;
     validatePaymentSignature(): Promise<void>;
+    sendNotification(data: any): void;
     _handleSendOrderPlacedMessage(userDoc: any, orderItems: any): Promise<void>;
     _handleSendOrderPlacedMail(userDoc: any, orderItems: any): Promise<void>;
     _handleSendReferralOrderPlaceMessage(name: string, phoneNumber: number): Promise<void>;
     _handleSendReferralOrderPlaceMail(userName: any, emailId: string): Promise<void>;
+    referralOrderNotification(referrerName: any, referrerId: any, referreName: any): Promise<void>;
     _handleSendOrderConfirmedMessage(order: any): Promise<void>;
     _handleSendOrderConfirmedMail(order: any): Promise<void>;
-    sendNotification(data: any): void;
+    _handleOrderConfirmationNotification(order: any): Promise<void>;
     _handleSendOutForPickUpMail(order: any): Promise<void>;
     _handleSendOutForPickUpMessage(order: any): Promise<void>;
-    _handleOrderConfirmationNotification(order: any): Promise<void>;
+    _handleSendOrderReadyForPickUpNotification(order: any): Promise<void>;
     _handleSendOrderShippedMessage(order: any): Promise<void>;
     _handleSendOrderShippedMail(order: any): Promise<void>;
-    _handleSendOrderReadyForPickUpNotification(order: any): Promise<void>;
-    _handleSendOrderDeliveredNotification(order: any): Promise<void>;
     _handleSendOrderShippedNotification(order: any): Promise<void>;
-    referralOrderNotification(referrerName: any, referrerId: any, referreName: any): Promise<void>;
     _handleSendOutForDeliveryMessage(order: any): Promise<void>;
     _handleSendOutForDeliveryMail(order: any): Promise<void>;
     _handleSendOutForDeliveryNotification(order: any): Promise<void>;
     _handleSendOrderDeliveredMessage(order: any): Promise<void>;
     _handleSendOrderDeliveredMail(order: any): Promise<void>;
+    _handleSendOrderDeliveredNotification(order: any): Promise<void>;
     getSalesOverview(startDate: string): Promise<{
         sales: [];
         orders: [];
@@ -126,6 +117,9 @@ export declare class OrdersService {
 }
 export interface IndividualOrderItem {
     paymentType: String;
+    paymentMethod: string;
+    partialPaymentId: string;
+    paymentId: string;
     deliveryType: String;
     itemsCount: number;
     orderData: any;

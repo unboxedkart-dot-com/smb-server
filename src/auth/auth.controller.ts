@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Query,
   Req,
@@ -12,7 +13,8 @@ import { User } from 'src/models/user.model';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from './jwt-strategies/jwt-refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -74,5 +76,20 @@ export class AuthController {
     return result;
   }
 
+  @UseGuards(JwtRefreshAuthGuard)
+  @Patch('new-access-token')
+  handleGetNewAccessToken(
+    @Query('refreshToken') refreshToken: string,
+    @Req() request: any,
+  ) {
+    const userId = request.user.userId;
+    return this.authService.newAccessToken(userId, refreshToken);
+  }
 
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('dummy')
+  DummyRT(@Req() request: any) {
+    const userId = request.user.userId;
+    return this.authService.createDummyRT(userId);
+  }
 }

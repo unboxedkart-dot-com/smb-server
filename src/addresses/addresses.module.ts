@@ -4,7 +4,7 @@ import { AddressesController } from './addresses.controller';
 import { MongooseModule, Schema } from '@nestjs/mongoose';
 import { AddressSchema } from 'src/models/address.model';
 import { UserSchema } from 'src/models/user.model';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 
 @Module({
   imports: [

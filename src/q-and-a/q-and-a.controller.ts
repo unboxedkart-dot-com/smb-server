@@ -15,7 +15,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { CreateAnswerDto } from './dto/create_answer.dto';
 import { CreateQuestionDto } from './dto/create_question.dto';
 import { QAndAService } from './q-and-a.service';

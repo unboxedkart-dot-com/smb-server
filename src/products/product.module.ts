@@ -7,7 +7,7 @@ import { ReviewSchema } from 'src/models/review.model';
 import { QuestionAndAnswerSchema } from 'src/models/q_and_a.model';
 import { ProductSpecsSchema } from 'src/models/product-specs';
 import { AuthModule } from 'src/auth/auth.module';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { ProductDataSchema } from 'src/models/product_data.model';
 import { ProductImagesSchema } from 'src/models/product_images.model';
 

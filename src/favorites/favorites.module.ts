@@ -5,7 +5,7 @@ import { MongooseModule, Schema } from '@nestjs/mongoose';
 import { FavoriteSchema } from 'src/models/favorite.model';
 import { UserSchema } from 'src/models/user.model';
 import { ProductSchema } from 'src/models/product.model';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 
 @Module({
   imports: [

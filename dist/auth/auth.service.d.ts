@@ -5,12 +5,14 @@ import { User } from 'src/models/user.model';
 import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { Coupon } from 'src/models/coupon.model';
+import { RefreshTokenModel } from 'src/models/refresh-token.model';
 export declare class AuthService {
     private readonly userModel;
     private readonly couponModel;
     private readonly searchTermModel;
+    private readonly refreshTokenModel;
     private jwtService;
-    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, jwtService: JwtService);
+    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
     sendOtp(phoneNumber: number): Promise<{
         status: string;
         message: string;
@@ -62,5 +64,11 @@ export declare class AuthService {
     _sendAccountCreatedMessage(userDoc: any): Promise<void>;
     createJwt(id: string): Promise<string>;
     CheckIfAdmin(userId: string): Promise<boolean>;
+    createDummyRT(userId: string): string;
+    addNewRefreshToken(userId: string, previousToken: string): Promise<void>;
+    newAccessToken(userId: string, refreshToken: string): Promise<"you are not authorised" | {
+        accessToken: string;
+        refreshToken: any;
+    }>;
     sendSampleMail(): Promise<void>;
 }

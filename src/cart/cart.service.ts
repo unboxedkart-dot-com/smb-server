@@ -6,11 +6,14 @@ import { Model } from 'mongoose';
 import { User } from 'src/models/user.model';
 import mongoose from 'mongoose';
 import { CartItem } from 'src/models/cart-item.model';
+import { SavedToLater } from 'src/models/save_to_later.model';
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectModel('CartItem') private readonly cartItemModel: Model<CartItem>,
+    @InjectModel('SavedToLater')
+    private readonly savedToLaterModel: Model<SavedToLater>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Product') private readonly productModel: Model<Product>,
   ) {}
@@ -52,6 +55,43 @@ export class CartService {
     return cartItemsData as CartItem[];
   }
 
+
+
+  async getSavedLaterProducts(userId: string) {
+    const productsData = [];
+    //finding user doc
+    const userDoc = await this.userModel.findById(userId);
+    const savedLaterProducts = userDoc.savedToLaterProducts;
+    // iterating over cart items
+    if (savedLaterProducts.length > 0) {
+      for (const item of savedLaterProducts) {
+        const product = await this.productModel.findById(item.productId);
+        console.log('single product', product);
+        const newCartItem = {
+          productId: item.productId,
+          productCount: item.productCount,
+          productDetails: {
+            title: product.title,
+            imageUrl: product.imageUrls.coverImage,
+            color: product.moreDetails.color,
+            brand: product.brand,
+            category: product.category,
+            condition: product.condition,
+          },
+          pricingDetails: {
+            sellingPrice: product.pricing.sellingPrice,
+            price: product.pricing.price,
+          },
+        };
+        // adding product data and count to  cart items
+        productsData.push(newCartItem);
+      }
+    }
+    return productsData as SavedToLater[];
+  }
+
+
+
   async addCartItem(userId: string, productId: string) {
     const product = await this.productModel.findById(productId);
     if (product) {
@@ -60,6 +100,22 @@ export class CartService {
         userId: userId,
       });
       if (!cartItem) {
+        this._handleAddCartItem(userId, productId);
+      } else {
+        return 'already exists';
+      }
+    }
+  }
+
+
+  async addSavedToLater(userId: string, productId: string) {
+    const product = await this.productModel.findById(productId);
+    if (product) {
+      const product = await this.savedToLaterModel.findOne({
+        productId: productId,
+        userId: userId,
+      });
+      if (!product) {
         this._handleAddCartItem(userId, productId);
       } else {
         return 'already exists';
@@ -107,6 +163,23 @@ export class CartService {
     // }
   }
 
+  async removeProductFromSaveLater(userId: string, productId: string) {
+    //deleting cart item from cart items collection
+    await this.savedToLaterModel.findOneAndDelete({
+      userId: userId,
+      productId: productId,
+    });
+    // deleting cart items from user collection
+    await this.userModel.updateOne(
+      { _id: userId },
+      {
+        $pull: {
+          savedToLaterProducts: { productId: productId },
+        },
+      },
+    );
+  }
+
   async _handleAddCartItem(
     userId: string,
     productId: string,
@@ -124,6 +197,27 @@ export class CartService {
       { _id: userId },
       {
         $push: { cartItemIds: productId, cartItems: newCartItem },
+      },
+    );
+  }
+
+  async _handleAddSaveLater(
+    userId: string,
+    productId: string,
+    // productCount: number,
+  ) {
+    const newSaveLaterProduct = new this.savedToLaterModel({
+      userId: userId,
+      productId: productId,
+      // productCount: productCount,
+    });
+    // adding a cart item in database
+    await newSaveLaterProduct.save();
+    // updating cart item id & cart item details in user database
+    await this.userModel.updateOne(
+      { _id: userId },
+      {
+        $push: { savedToLaterProducts: newSaveLaterProduct },
       },
     );
   }

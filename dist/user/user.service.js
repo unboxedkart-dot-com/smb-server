@@ -30,11 +30,12 @@ let UserService = class UserService {
             answeredQuestionIds: 1,
         });
         return {
-            'purchasedItemIds': user.purchasedItemIds,
-            'answeredQuestionIds': user.answeredQuestionIds
+            purchasedItemIds: user.purchasedItemIds,
+            answeredQuestionIds: user.answeredQuestionIds,
         };
     }
     async updateUserDetails(userId, entireBody) {
+        console.log('updating details', entireBody);
         await this.userModel.findByIdAndUpdate(userId, {
             name: entireBody.name,
             gender: entireBody.gender,

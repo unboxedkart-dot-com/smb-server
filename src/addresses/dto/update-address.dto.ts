@@ -14,6 +14,7 @@ export class UpdateAddressDto {
   phoneNumber: number;
 
   @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   alternatePhoneNumber: number;
 

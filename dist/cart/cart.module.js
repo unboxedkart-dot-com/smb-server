@@ -10,11 +10,12 @@ exports.CartModule = void 0;
 const common_1 = require("@nestjs/common");
 const cart_service_1 = require("./cart.service");
 const cart_controller_1 = require("./cart.controller");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const user_model_1 = require("../models/user.model");
 const product_model_1 = require("../models/product.model");
 const cart_item_model_1 = require("../models/cart-item.model");
 const mongoose_1 = require("@nestjs/mongoose");
+const save_to_later_model_1 = require("../models/save_to_later.model");
 let CartModule = class CartModule {
 };
 CartModule = __decorate([
@@ -22,6 +23,7 @@ CartModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([
                 { name: 'CartItem', schema: cart_item_model_1.CartItemSchema },
+                { name: 'SavedToLater', schema: save_to_later_model_1.SavedToLaterSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
             ]),

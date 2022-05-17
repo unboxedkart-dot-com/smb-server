@@ -16,8 +16,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { stringMap } from 'aws-sdk/clients/backup';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { S3Service } from 'src/s3/s3.service';
 import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -71,20 +72,27 @@ export class OrdersController {
   }
 
   @Post('create')
-  async handleCreateOrder(
-    @Req() request: any,
-    @Body() entireBody: CreateOrderDto,
-  ) {
+  async handleCreateOrder(@Req() request: any) {
     const userId = request.user.userId;
-    const orders = await this.ordersService.createOrder(entireBody, userId);
-    return orders;
+    const orderNumber = this._generateOrderNumber();
+    return await this.ordersService.createOrder(userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async handleGetOrdersItems(@Req() request: any) {
     const userId = request.user.userId;
     const orders = await this.ordersService.getOrderItems(userId);
     return orders;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/order')
+  async handleGetOrder(@Query('id') id: string, @Req() request: any) {
+    const userId = request.user.userId;
+    const order = await this.ordersService.getOrder(userId, id);
+    console.log("order is", order);
+    return order;
   }
 
   @Get('/order-item')
@@ -239,5 +247,14 @@ export class OrdersController {
     const response = this.s3Service.uploadFile(file);
     return response;
     // const userId: string = request.user.userId;
+  }
+
+  _generateOrderNumber() {
+    const orderCode = 'OD';
+    const randomNumber = Math.floor(
+      10000000000000 + Math.random() * 90000000000000,
+    );
+    const orderNumber = orderCode + randomNumber.toString();
+    return orderNumber;
   }
 }

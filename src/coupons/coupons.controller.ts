@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { CouponsService } from './coupons.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 
@@ -58,7 +58,6 @@ export class CouponsController {
     const response = await this.couponsService.validateCoupon(
       userId,
       couponCode,
-      cartTotal,
     );
     return response;
   }

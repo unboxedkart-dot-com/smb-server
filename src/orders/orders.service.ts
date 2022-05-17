@@ -6,8 +6,15 @@ import { Model } from 'mongoose';
 import { AuthService } from 'src/auth/auth.service';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
-import { Order, OrderStatuses, paymentTypes } from 'src/models/order.model';
+import {
+  Order,
+  OrderStatuses,
+  PaymentMethods,
+  PaymentTypes,
+} from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
+import { OrderSummary } from 'src/models/order_summary.model';
+import { Payment } from 'src/models/payment.model';
 import { Product } from 'src/models/product.model';
 import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
@@ -15,15 +22,13 @@ import { User } from 'src/models/user.model';
 import { CancelOrderDto } from './dto/cancel-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 
-// var instance = new Razorpay({
-//   key_id: process.env.PAYMENT_KEY_ID,
-//   key_secret: process.env.PAYMENT_KEY_SECRET,
-// });
-
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel('Order') private readonly orderModel: Model<Order>,
+    @InjectModel('Payment') private readonly paymentModel: Model<Payment>,
+    @InjectModel('OrderSummary')
+    private readonly orderSummaryModel: Model<OrderSummary>,
     @InjectModel('Product') private readonly productModel: Model<Product>,
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     @InjectModel('OrderItem') private readonly orderItemModel: Model<OrderItem>,
@@ -50,6 +55,7 @@ export class OrdersService {
   async deleteAll() {
     await this.orderItemModel.deleteMany();
     await this.orderModel.deleteMany();
+    await this.orderSummaryModel.deleteMany();
   }
 
   async getReferrals(userId: string) {
@@ -59,112 +65,139 @@ export class OrdersService {
     return referrals as ReferralOrder[];
   }
 
-  async createOrder(entireBody: CreateOrderDto, userId: string) {
-    //get order summary
-    console.log('given userid', userId);
-    console.log('userid', userId);
-    const userDoc = await this.userModel.findById(userId);
-    console.log(userDoc);
-    console.log('id is', userDoc.phoneNumber);
+  async createOrder(userId: string) {
+    var payableAmount;
+    var couponDiscount = 0;
+    let amountPaid = 0;
+    let amountDue;
 
+    //get order summary
+    const userDoc = await this.userModel.findById(userId);
     const orderSummary = userDoc.orderSummary;
-    //generating a unique ordernumber
-    const orderNumber = this._generateOrderNumber();
+    const deliveryType = orderSummary.deliveryType;
+    const paymentType = orderSummary.paymentType;
+    const paymentMethod = orderSummary.paymentMethod;
+
     //generating new order details
-    console.log('user doc', userDoc);
     const orderItemDetails = await this._generateOrderItemDetails(
       orderSummary.orderItems,
     );
 
-    console.log('orderitemdetails', orderItemDetails.orderTotal);
+    payableAmount = orderItemDetails.orderTotal;
 
-    var payableAmount = orderItemDetails.orderTotal;
-    var couponDiscount = 0;
+    console.log('payable amount 1', payableAmount);
 
     //validating coupon and coupon discount
     if (orderSummary.couponCode != null) {
       couponDiscount = await this._getCouponDiscount(
         userDoc._id.toString(),
         userDoc.name,
-        orderNumber,
+        orderSummary.orderNumber,
         orderSummary.couponCode,
         orderItemDetails.orderTotal,
       );
-      console.log('paybale amount', payableAmount);
-      console.log('c amount', payableAmount);
       payableAmount = payableAmount - couponDiscount;
+      console.log('payable amount 2', payableAmount);
     }
-    console.log('paybale amount', payableAmount);
+
+    amountDue = payableAmount;
+    console.log('amount due', amountDue);
+
+    console.log('coupon validated', payableAmount);
+
+    //validating payment
+    if (paymentType == PaymentTypes.PARTIAL) {
+      console.log('partial payment executing');
+      let transactionData: any;
+      if (paymentMethod == PaymentMethods.PAY_AT_STORE_DUE) {
+        transactionData = await this.paymentModel.findOne({
+          paymentId: orderSummary.partialPaymentId,
+        });
+      } else if (paymentMethod == PaymentMethods.CASH_ON_DELIVERY_DUE) {
+        transactionData = await this.paymentModel.findOne({
+          paymentId: orderSummary.partialPaymentId,
+        });
+      }
+      const amount = transactionData.amount;
+      amountPaid = amount;
+      amountDue = payableAmount - amountPaid;
+    } else if (paymentType == PaymentTypes.FULL) {
+      console.log('full payment executing');
+      let transactionData: any;
+      if (paymentMethod == PaymentMethods.PREPAID) {
+        transactionData = await this.paymentModel.findOne({
+          paymentId: orderSummary.paymentId,
+        });
+        const amount = transactionData.amount;
+        amountPaid = amount;
+        amountDue = payableAmount - amountPaid;
+      } else if (
+        paymentMethod == PaymentMethods.CASH_ON_DELIVERY ||
+        paymentMethod == PaymentMethods.PAY_AT_STORE
+      ) {
+        amountPaid = 0;
+        amountDue = payableAmount;
+      }
+    }
+
+    console.log('adding a new order');
+
     const newOrder = new this.orderModel({
       userId: userId,
+
       userDetails: {
         name: userDoc.name,
         emailId: userDoc.emailId,
         phoneNumber: userDoc.phoneNumber,
       },
-      orderNumber: orderNumber,
-      deliveryType: 0,
-      paymentDetails: {
-        paymentType: entireBody.paymentType,
-        paymentId: userDoc.orderSummary.paymentId,
+
+      orderNumber: orderSummary.orderNumber,
+
+      deliveryType: userDoc.orderSummary.deliveryType,
+
+      shippingDetails:
+        deliveryType == 'HOME DELIVERY' ? orderSummary.shippingDetails : null,
+      pickUpDetails:
+        deliveryType == 'STORE PICKUP' ? orderSummary.pickUpDetails : null,
+      pricingDetails: {
         billTotal: orderItemDetails.orderTotal,
         payableTotal: payableAmount,
         couponCode: orderSummary.couponCode,
         couponDiscount: couponDiscount,
       },
-      // deliveryAddress: entireBody.deliveryAddress,
+      paymentDetails: {
+        paymentType: paymentType,
+        paymentMethod: paymentMethod,
+        partialPaymentId:
+          paymentType == 'PARTIAL' ? orderSummary.partialPaymentId : null,
+
+        $push: { 'paymentDetails.paymentIds': orderSummary.paymentId },
+
+        isPaid: amountDue == 0 ?? false,
+
+        amountPaid: amountPaid,
+        amountDue: amountDue,
+      },
       itemsCount: orderItemDetails.orderItemsCount,
       orderItems: orderItemDetails.orderItems,
     });
 
     newOrder.save();
-    // if(orderSummary.couponCode!=null){
 
-    // }
+    // await this.orderSummaryModel.findOneAndUpdate(
+    //   {
+    //     userId: userId,
+    //     isActive: true,
+    //   },
+    //   {
+    //     isActive: false,
+    //   },
+    // );
+
+    await this._handleSaveIndividualOrders(newOrder);
     this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
     this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
-    //saving order individually in db
-    await this._handleSaveIndividualOrders(userDoc, {
-      paymentType: entireBody.paymentType,
-      deliveryType: orderSummary.deliveryType,
-      // storeLocation: orderSummary.pickUpDetails.storeLocation,
-      itemsCount: orderItemDetails.orderItemsCount,
-      orderData: orderItemDetails.orderItems,
-      orderNumber: orderNumber,
-      shippingDetails: {
-        shipDate: orderSummary.shippingDetails.shipDate,
-        deliveryAddress: orderSummary.shippingDetails.deliveryAddress,
-        deliveryDate: orderSummary.shippingDetails.deliveryDate,
-        deliveryDateInString: orderSummary.shippingDetails.deliveryDateInString,
-      },
-      pickUpDetails: {
-        pickUpDate: orderSummary.pickUpDetails.pickUpDate,
-        storeLocation: orderSummary.pickUpDetails.storeLocation,
-        pickUpTimeStart: orderSummary.pickUpDetails.pickUpTimeStart,
-        pickUpTimeEnd: orderSummary.pickUpDetails.pickUpTimeEnd,
-        pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
-        pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
-      },
-      couponCode: orderSummary.couponCode,
-      couponDiscount: couponDiscount,
-    });
-
-    // await this.userModel.findByIdAndUpdate(userId, { $pull: { cartItems : } });
-    // return newOrder;
-    return {
-      orderNumber: orderNumber,
-      orderDate: Date.now(),
-      selectedPickUpDate: Date.now(),
-      deliveryDate: orderSummary.shippingDetails.deliveryDateInString,
-      pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
-      pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
-      paymentType: paymentTypes.PAY_AT_STORE,
-      deliveryType: orderSummary.deliveryType,
-      selectedAddress: orderSummary.shippingDetails.deliveryAddress,
-      selectedStore: orderSummary.pickUpDetails.storeLocation,
-      orderItems: orderItemDetails,
-    };
-    // await this.acceptOrder(orderItemDetails.orderItems[0].)
+    return orderSummary.orderNumber;
   }
 
   async acceptOrder(userId: string, orderItemId: string) {
@@ -276,6 +309,15 @@ export class OrdersService {
     console.log('orderrrrr', orderItems);
     return orderItems as OrderItem[];
   }
+  async getOrder(userId: string, orderNumber: string) {
+    console.log('getting order', orderNumber);
+    var order = await this.orderModel.findOne({
+      orderNumber: orderNumber,
+      userId: userId,
+    });
+    console.log('pprd', order);
+    return order;
+  }
 
   async getOrderItem(userId: string, orderItemId: string) {
     var orderItem = await this.orderItemModel.findById(orderItemId);
@@ -331,15 +373,6 @@ export class OrdersService {
     }
   }
 
-  _generateOrderNumber() {
-    const orderCode = 'OD';
-    const randomNumber = Math.floor(
-      10000000000000 + Math.random() * 90000000000000,
-    );
-    const orderNumber = orderCode + randomNumber.toString();
-    return orderNumber;
-  }
-
   async _getCouponDiscount(
     userId: string,
     userName: string,
@@ -392,7 +425,10 @@ export class OrdersService {
         );
         console.log('coupon', coupon);
         return coupon.discountAmount;
-      } else if (coupon.redemptionType == 'LIMITED') {
+      } else if (
+        coupon.redemptionType == 'LIMITED' &&
+        coupon.redemptionLimit > 0
+      ) {
         console.log('decremnting coupon');
         const updatedCoupon = await this.couponModel.findByIdAndUpdate(
           coupon._id,
@@ -401,6 +437,9 @@ export class OrdersService {
           },
         );
         console.log('coupon udated', updatedCoupon);
+        return coupon.discountAmount;
+      } else {
+        return coupon.discountAmount;
       }
     }
     return 0;
@@ -465,63 +504,58 @@ export class OrdersService {
     return newOrderItem;
   }
 
-  async _handleSaveIndividualOrders(userDoc: any, params: IndividualOrderItem) {
-    for (const order of params.orderData) {
-      console.log(params.couponCode);
-      const payableAmount =
-        params.couponDiscount != null
-          ? parseInt(
-              (order.total - params.couponDiscount / params.itemsCount).toFixed(
-                0,
-              ),
-            )
-          : order.total;
+  async _handleSaveIndividualOrders(order: Order) {
+    // const paymentType = order.paymentDetails.paymentType;
+    // const paymentMethod = order.paymentDetails.paymentMethod;
+    const paymentId = order.paymentDetails.paymentIds[0];
+    // const partialPaymentId = order.paymentDetails.partialPaymentId;
+    const itemsCount = order.orderItems.length;
+    let amountPaid = order.paymentDetails.amountPaid;
+    let amountDue = order.paymentDetails.amountDue;
+    for (const orderItem of order.orderItems) {
+      const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
+      let payableAmount = orderItem.total - couponDiscount;
+      amountPaid = amountPaid / itemsCount;
+      amountDue = orderItem.total - couponDiscount - amountPaid;
+
       const newOrderItem = new this.orderItemModel({
-        userId: userDoc._id,
-        orderNumber: params.orderNumber,
-        shippingDetails: {
-          deliveryAddress: params.shippingDetails.deliveryAddress,
-          deliveryDate: params.shippingDetails.deliveryDate,
-          deliveryDateInString: params.shippingDetails.deliveryDateInString,
-        },
+        userId: order.userId,
+        orderNumber: order.orderNumber,
+        shippingDetails: order.shippingDetails,
         userDetails: {
-          emailId: userDoc.emailId,
-          phoneNumber: userDoc.phoneNumber,
-          userName: userDoc.name,
+          emailId: order.userDetails.emailId,
+          phoneNumber: order.userDetails.phoneNumber,
+          userName: order.userDetails.name,
         },
-        pickUpDetails: {
-          pickUpDate: params.pickUpDetails.pickUpDate,
-          pickUpTimeStart: params.pickUpDetails.pickUpTimeStart,
-          pickUpTimeEnd: params.pickUpDetails.pickUpTimeEnd,
-          pickUpTimeInString: params.pickUpDetails.pickUpTimeInString,
-          pickUpDateInString: params.pickUpDetails.pickUpDateInString,
-          storeLocation: params.pickUpDetails.storeLocation,
-        },
+        pickUpDetails: order.pickUpDetails,
         paymentDetails: {
-          paymentType: params.paymentType,
+          paymentType: order.paymentDetails.paymentType,
+          paymentMethod: order.paymentDetails.paymentMethod,
+          paymentId: paymentId,
+          partialPaymentId: order.paymentDetails.partialPaymentId,
+          amountPaid: amountPaid,
+          amountDue: amountDue,
+          isPaid: amountDue == 0 ?? false,
         },
-        deliveryType: params.deliveryType,
+        deliveryType: order.deliveryType,
         pricingDetails: {
-          billTotal: order.total,
+          billTotal: orderItem.total,
           payableTotal: payableAmount,
-          couponCode: params.couponCode,
-          couponDiscount: params.couponDiscount,
+          couponCode: order.pricingDetails.couponCode,
+          couponDiscount: order.pricingDetails.couponDiscount,
         },
-        productDetails: {
-          imageUrl: order.productDetails.imageUrl,
-          title: order.productDetails.title,
-          color: order.productDetails.color,
-          condition: order.productDetails.condition,
-          brand: order.productDetails.brand,
-          category: order.productDetails.category,
-        },
+        productDetails: orderItem.productDetails,
         orderDetails: {
-          productId: order.productId,
-          pricePerItem: order.pricePerItem,
-          productCount: order.productCount,
+          productId: orderItem.productId,
+          pricePerItem: orderItem.pricePerItem,
+          productCount: orderItem.productCount,
         },
       });
       newOrderItem.save();
+      // await this.userModel.findByIdAndUpdate(order.userId, {p
+      //   $pull: { cartItems: orderItem.productId },
+      //   orderSummary: {},
+      // });
     }
   }
 
@@ -541,6 +575,39 @@ export class OrdersService {
   async validatePaymentSignature() {
     // const generated_signature = hmac_sha256("order_JHMGkySLiXlFMY" + "|" + razorpay_payment_id, secret);
   }
+
+  sendNotification(data: any) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: `Basic NzRjZDliNTUtY2Q5ZC00MjExLTk4MWEtZDZlMjg5MDYyYzBm`,
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers,
+    };
+
+    var https = require('https');
+    var req = https.request(options, function (res) {
+      res.on('data', function (data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function (e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  }
+
+  //order placed messages
 
   async _handleSendOrderPlacedMessage(userDoc: any, orderItems: any) {
     console.log('sending order message');
@@ -648,6 +715,8 @@ export class OrdersService {
     // }
   }
 
+  //referral order notifications
+
   async _handleSendReferralOrderPlaceMessage(
     name: string,
     phoneNumber: number,
@@ -679,6 +748,26 @@ export class OrdersService {
       .catch((e) => console.log('email error', e));
     return transport;
   }
+
+  async referralOrderNotification(referrerName, referrerId, referreName) {
+    const title = `Hey ${referrerName}, Congratulations !`;
+    const content = `Congratulations. Your friend (${referreName}) has ordered a product from unboxedkart using your referral coupon code. Referral bonus will be credited to your bank account after the product is successfully delivered. Please, add your bank details, if not added.T&Cs Apply.`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [referrerId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
+  // order confirmed messages
 
   async _handleSendOrderConfirmedMessage(order: any) {
     if (order.deliveryType == 'STORE PICKUP') {
@@ -744,36 +833,26 @@ export class OrdersService {
     }
   }
 
-  sendNotification(data: any) {
-    var headers = {
-      'Content-Type': 'application/json; charset=utf-8',
-      Authorization: `Basic NzRjZDliNTUtY2Q5ZC00MjExLTk4MWEtZDZlMjg5MDYyYzBm`,
+  async _handleOrderConfirmationNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order is confirmed`;
+    const content = `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
     };
-
-    var options = {
-      host: 'onesignal.com',
-      port: 443,
-      path: '/api/v1/notifications',
-      method: 'POST',
-      headers: headers,
-    };
-
-    var https = require('https');
-    var req = https.request(options, function (res) {
-      res.on('data', function (data) {
-        console.log('Response:');
-        console.log(JSON.parse(data));
-      });
-    });
-
-    req.on('error', function (e) {
-      console.log('ERROR:');
-      console.log(e);
-    });
-
-    req.write(JSON.stringify(data));
-    req.end();
+    const response = this.sendNotification(message);
+    console.log('response', response);
   }
+
+  // out for pickup messages
 
   async _handleSendOutForPickUpMail(order: any) {
     const msg = {
@@ -815,11 +894,9 @@ export class OrdersService {
     await axios.post(url, postBody);
   }
 
-  // async handleOrderPlacedNotification(){}
-
-  async _handleOrderConfirmationNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order is confirmed`;
-    const content = `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`;
+  async _handleSendOrderReadyForPickUpNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order is ready for pickup`;
+    const content = `Your order for ${order.productDetails.title} is ready for pickup. Click here to get directions to our store.`;
     //without template
     var message = {
       app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
@@ -830,45 +907,12 @@ export class OrdersService {
       headings: {
         en: title,
       },
-      include_external_user_ids: [
-        order.userId.substring(0, 20),
-        // '796733d5-3865-46cb-bf4c-c6986d861e92',
-        // '8180d163-e411-44d2-bd70-c0610495aff9',
-      ],
+      include_external_user_ids: [order.userId.substring(0, 20)],
     };
-    // var message = {
-    //   app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-    //   // contents: {
-    //   //   en: `Hey ${order.userDetails.userName}, Your order is confirmed...\n
-    //   //   Your order for ${order.orderDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`,
-    //   // },
-    //   channel_for_external_user_ids: 'push',
-    //   // included_segments: ['Subscribed Users'],
-    //   contents: {
-    //     en: `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`,
-    //   },
-    //   headings: {
-    //     en: `Hey ${order.userDetails.userName}, Your order is confirmed....`,
-    //   },
-    //   // subtitle: { en: 'your order will be delivered by' },
-    //   // template_id: '8ff9a58b-1181-4d21-ad79-b2f8b4ea1b23',
-    //   // tags : [
-
-    //   // ],
-    //   // name: 'sunil',
-    //   // order: 'iphone 12 pro',
-
-    //   // tags: { name: 'sunil', order: 'iphone 12 pro' },
-    //   // [{ "name": 'sunil' }, { "order": 'iphone 12 pro' }],
-    //   include_external_user_ids: [
-    //     order.userId.substring(0, 20),
-    //     // '796733d5-3865-46cb-bf4c-c6986d861e92',
-    //     // '8180d163-e411-44d2-bd70-c0610495aff9',
-    //   ],
-    // };
     const response = this.sendNotification(message);
-    console.log('response', response);
   }
+
+  // order shipped messages
 
   async _handleSendOrderShippedMessage(order: any) {
     const url = process.env.SMS_FLOW_URL;
@@ -902,42 +946,6 @@ export class OrdersService {
     return transport;
   }
 
-  async _handleSendOrderReadyForPickUpNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order is ready for pickup`;
-    const content = `Your order for ${order.productDetails.title} is ready for pickup. Click here to get directions to our store.`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
-
-  async _handleSendOrderDeliveredNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order has been delivered`;
-    const content = `Your order for ${order.productDetails.title} has been delivered. Click here to rate your purchase`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
-
   async _handleSendOrderShippedNotification(order: any) {
     const title = `Hey ${order.userDetails.userName}, Your order has been shipped`;
     const content = `Your order for ${order.productDetails.title} with has been shipped & will be delivered to you by ${order.shippingDetails.deliveryDateInString}.`;
@@ -956,23 +964,7 @@ export class OrdersService {
     const response = this.sendNotification(message);
   }
 
-  async referralOrderNotification(referrerName, referrerId, referreName) {
-    const title = `Hey ${referrerName}, Congratulations !`;
-    const content = `Congratulations. Your friend (${referreName}) has ordered a product from unboxedkart using your referral coupon code. Referral bonus will be credited to your bank account after the product is successfully delivered. Please, add your bank details, if not added.T&Cs Apply.`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [referrerId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
+  // out for delivery messages
 
   async _handleSendOutForDeliveryMessage(order: any) {
     console.log('order details', order);
@@ -1026,6 +1018,8 @@ export class OrdersService {
     console.log('response', response);
   }
 
+  // order delivered messages
+
   async _handleSendOrderDeliveredMessage(order: any) {
     console.log('order details', order);
     const url = process.env.SMS_FLOW_URL;
@@ -1057,6 +1051,24 @@ export class OrdersService {
     return transport;
   }
 
+  async _handleSendOrderDeliveredNotification(order: any) {
+    const title = `Hey ${order.userDetails.userName}, Your order has been delivered`;
+    const content = `Your order for ${order.productDetails.title} has been delivered. Click here to rate your purchase`;
+    //without template
+    var message = {
+      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
+      channel_for_external_user_ids: 'push',
+      contents: {
+        en: content,
+      },
+      headings: {
+        en: title,
+      },
+      include_external_user_ids: [order.userId.substring(0, 20)],
+    };
+    const response = this.sendNotification(message);
+  }
+
   async getSalesOverview(startDate: string) {
     const sales = await this.orderItemModel.find({
       orderStatus: 'DELIVERED',
@@ -1071,13 +1083,15 @@ export class OrdersService {
     };
   }
 
-  async uploadInvoice(file : any){
-    
-  }
+  async uploadInvoice(file: any) {}
 }
 
 export interface IndividualOrderItem {
   paymentType: String;
+  paymentMethod: string;
+  partialPaymentId: string;
+  paymentId: string;
+
   deliveryType: String;
   itemsCount: number;
   orderData: any;
@@ -1139,3 +1153,65 @@ export interface IndividualOrderItem {
 // );
 
 //creating order object
+
+// if (paymentType == PaymentTypes.PARTIAL) {
+//   let transactionData: any;
+//   if (paymentMethod == PaymentMethods.PAY_AT_STORE_DUE) {
+//     transactionData = await this.paymentModel.findOne({
+//       paymentId: partialPaymentId,
+//     });
+//   } else if (paymentMethod == PaymentMethods.CASH_ON_DELIVERY_DUE) {
+//     transactionData = await this.paymentModel.findOne({
+//       paymentId: partialPaymentId,
+//     });
+//   }
+//   const amount = transactionData.amount;
+//   amountPaid = amount;
+//   amountDue = payableAmount - amountPaid;
+// } else if (paymentType == PaymentTypes.FULL) {
+//   let transactionData: any;
+//   if (paymentMethod == PaymentMethods.PREPAID) {
+//     transactionData = await this.paymentModel.findOne({
+//       paymentId: partialPaymentId,
+//     });
+//     const amount = transactionData.amount;
+//     amountPaid = amount;
+//     amountDue = payableAmount - amountPaid;
+//   } else if (
+//     paymentMethod == PaymentMethods.CASH_ON_DELIVERY ||
+//     paymentMethod == PaymentMethods.PAY_AT_STORE
+//   ) {
+//     amountPaid = 0;
+//     amountDue = payableAmount;
+//   }
+// }
+
+//saving order individually in db
+
+// await this._handleSaveIndividualOrders(userDoc, {
+// orderNumber: orderNumber,
+// deliveryType: orderSummary.deliveryType,
+// paymentType: paymentType,
+
+// itemsCount: orderItemDetails.orderItemsCount,
+// orderData: orderItemDetails.orderItems,
+
+// shippingDetails: orderSummary.shippingDetails,
+// pickUpDetails : orderSummary.pickUpDetails,
+// couponCode: orderSummary.couponCode,
+// couponDiscount: couponDiscount,
+// });
+
+// let orderItemIds = [];
+
+// orderNumber: orderNumber,
+// orderDate: Date.now(),
+// selectedPickUpDate: Date.now(),
+// deliveryDate: orderSummary.shippingDetails.deliveryDateInString,
+// pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
+// pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
+// paymentType: paymentTypes.PAY_AT_STORE,
+// deliveryType: orderSummary.deliveryType,
+// selectedAddress: orderSummary.shippingDetails.deliveryAddress,
+// selectedStore: orderSummary.pickUpDetails.storeLocation,
+// orderItems: orderItemDetails,
