@@ -263,7 +263,7 @@ export class AuthService {
       entireBody.otp,
     );
 
-    if (entireBody.otp == 123456) {
+    if (otpStatus) {
       // check if user exists
       const userDoc = await this.userModel.findOne({
         phoneNumber: { $eq: entireBody.phoneNumber },

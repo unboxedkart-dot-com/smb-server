@@ -6,7 +6,7 @@ import { SearchService } from './search.service';
 export declare class SearchController {
     private readonly searchService;
     constructor(searchService: SearchService);
-    handleGetSearchedProducts(title: string, category: string, brand: string, condition: string, productCode: string, pageNumber: string): Promise<import("../models/product.model").Product[]>;
+    handleGetSearchedProducts(title: string, category: string, brand: string, condition: string, productCode: string, pageNumber: string): Promise<any[]>;
     handleGetRecentSearches(request: any): Promise<[{
         searchTerm: string;
         timestamp: Date;

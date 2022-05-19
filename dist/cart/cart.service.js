@@ -101,19 +101,7 @@ let CartService = class CartService {
         }
     }
     async addSavedToLater(userId, productId) {
-        const product = await this.productModel.findById(productId);
-        if (product) {
-            const product = await this.savedToLaterModel.findOne({
-                productId: productId,
-                userId: userId,
-            });
-            if (!product) {
-                this._handleAddCartItem(userId, productId);
-            }
-            else {
-                return 'already exists';
-            }
-        }
+        this._handleAddSaveLater(userId, productId);
     }
     async updateCartItem(userId, productId, productCount) {
         console.log('count', productCount);

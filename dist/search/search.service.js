@@ -74,18 +74,30 @@ let SearchService = class SearchService {
         return products;
     }
     async _getProductsByTitle(title, pageNumber, itemsToSkip) {
+        console.log('title', title);
+        console.log('joining tables');
         var itemsToSkip = 0;
         if (pageNumber && parseInt(pageNumber) > 0) {
             itemsToSkip = 10 * parseInt(pageNumber) - 10;
         }
         const searchTerm = title.replace(/\s/g, '');
-        const products = await this.productModel
-            .find({
-            searchCases: searchTerm,
-        })
-            .limit(10)
-            .skip(itemsToSkip)
-            .exec();
+        const products = await this.productModel.aggregate([
+            {
+                $match: {
+                    productCode: 'apple-iphone-x',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'reviewsdatas',
+                    localField: 'productCode',
+                    foreignField: 'productCode',
+                    as: 'reviews',
+                },
+            },
+        ]);
+        console.log('joined product', products);
+        return products;
         return products;
     }
     async getRecentSearches(userId) {

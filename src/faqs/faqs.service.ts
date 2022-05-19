@@ -28,6 +28,12 @@ export class FaqsService {
     return newFaq;
   }
 
+  // async createMoreFaqs() {
+  //   this.faqModel.insertMany(
+
+  //   )
+  // }
+
   async updateFaq() {}
 
   async deleteFaq() {}

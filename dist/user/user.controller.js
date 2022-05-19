@@ -16,6 +16,7 @@ exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const update_user_details_dto_1 = require("./dto/update-user-details.dto");
+const update_user_payment_details_dto_1 = require("./dto/update-user-payment-details.dto");
 const user_service_1 = require("./user.service");
 let UserController = class UserController {
     constructor(userService) {
@@ -34,6 +35,18 @@ let UserController = class UserController {
     async handleGetUserData(request) {
         const userId = request.user.userId;
         const response = await this.userService.getUserData(userId);
+        return response;
+    }
+    async handleUpdatePaymentDetails(request, entireBody) {
+        console.log('updating payment details');
+        const userId = request.user.userId;
+        const response = await this.userService.updatePaymentDetails(userId, entireBody);
+        return response;
+    }
+    async handleGetPaymentDetails(request) {
+        const userId = request.user.userId;
+        const response = await this.userService.getPaymentDetails(userId);
+        console.log('payment details', response);
         return response;
     }
 };
@@ -59,6 +72,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "handleGetUserData", null);
+__decorate([
+    (0, common_1.Patch)('/payment-details'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_user_payment_details_dto_1.UpdateUserPaymentDetailsDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "handleUpdatePaymentDetails", null);
+__decorate([
+    (0, common_1.Get)('/payment-details'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "handleGetPaymentDetails", null);
 UserController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('user-details'),

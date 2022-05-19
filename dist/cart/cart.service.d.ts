@@ -12,7 +12,7 @@ export declare class CartService {
     getCartItems(userId: string): Promise<CartItem[]>;
     getSavedLaterProducts(userId: string): Promise<SavedToLater[]>;
     addCartItem(userId: string, productId: string): Promise<string>;
-    addSavedToLater(userId: string, productId: string): Promise<string>;
+    addSavedToLater(userId: string, productId: string): Promise<void>;
     updateCartItem(userId: string, productId: string, productCount: number): Promise<void>;
     deleteCartItem(userId: string, productId: string): Promise<void>;
     removeProductFromSaveLater(userId: string, productId: string): Promise<void>;

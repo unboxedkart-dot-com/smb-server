@@ -80,7 +80,7 @@ export class ReviewsService {
       console.log('new review', newReview);
       await newReview.save();
       console.log('apprive');
-      await this.approveReview('123', newReview._id.toString());
+      // await this.approveReview('123', newReview._id.toString());
     }
   }
 
@@ -99,8 +99,8 @@ export class ReviewsService {
         // imageUrl: entireBody.imageUrl,
       },
     );
-    await this.approveReview('123', entireBody.reviewId);
-    console.log('updated review', review);
+    // await this.approveReview('123', entireBody.reviewId);
+    // console.log('updated review', review);
   }
 
   async deleteReview(userId: string, reviewId: string) {

@@ -26,9 +26,9 @@ var DeliveryTypes;
 var PaymentMethods;
 (function (PaymentMethods) {
     PaymentMethods["PAY_AT_STORE"] = "PAY AT STORE";
-    PaymentMethods["PAY_AT_STORE_DUE"] = "PAT AT STORE DUE";
+    PaymentMethods["PAY_AT_STORE_DUE"] = "PAY AT STORE - DUE";
     PaymentMethods["CASH_ON_DELIVERY"] = "CASH ON DELIVERY";
-    PaymentMethods["CASH_ON_DELIVERY_DUE"] = "CASH ON DELIVERY DUE";
+    PaymentMethods["CASH_ON_DELIVERY_DUE"] = "CASH ON DELIVERY - DUE";
     PaymentMethods["PREPAID"] = "PREPAID";
 })(PaymentMethods = exports.PaymentMethods || (exports.PaymentMethods = {}));
 exports.OrderSchema = new mongoose_1.default.Schema({

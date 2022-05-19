@@ -38,6 +38,7 @@ let CartController = class CartController {
         return result;
     }
     async handleAddProductToSaveLater(entireBody, request) {
+        console.log('adding product to savelayer');
         const userId = request.user.userId;
         const result = await this.cartService.addSavedToLater(userId, entireBody.productId);
         return result;

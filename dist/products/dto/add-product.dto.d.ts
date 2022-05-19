@@ -17,4 +17,9 @@ export declare class CreateProductDto {
     ramCode: string;
     isFeatured: boolean;
     isBestSeller: boolean;
+    warrantyDescription: string;
+    boxContains: string;
+    warrantyExpiryDate: string;
+    isUnderWarranty: boolean;
+    warrantyLeft: number;
 }

@@ -17,8 +17,9 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let UserService = class UserService {
-    constructor(userModel) {
+    constructor(userModel, userPaymentDetailsModel) {
         this.userModel = userModel;
+        this.userPaymentDetailsModel = userPaymentDetailsModel;
     }
     async getUserDetails(userId) {
         const user = await this.userModel.findById(userId);
@@ -41,11 +42,44 @@ let UserService = class UserService {
             gender: entireBody.gender,
         });
     }
+    async getPaymentDetails(userId) {
+        const userPaymentDetails = await this.userPaymentDetailsModel.findOne({
+            userId: userId,
+        });
+        return userPaymentDetails;
+    }
+    async updatePaymentDetails(userId, entireBody) {
+        console.log('updating details', entireBody);
+        const paymentDetails = await this.userPaymentDetailsModel.findOne({
+            userId: userId,
+        });
+        console.log('paymentdetails', paymentDetails);
+        if (paymentDetails) {
+            console.log('old');
+            await this.userPaymentDetailsModel.findOneAndUpdate({
+                userId: userId,
+            }, {
+                upiId: entireBody.upiId,
+                upiName: entireBody.upiName,
+            });
+        }
+        else {
+            console.log('new');
+            const newPayment = new this.userPaymentDetailsModel({
+                userId: userId,
+                upiName: entireBody.upiName,
+                upiId: entireBody.upiId,
+            });
+            newPayment.save();
+        }
+    }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('User')),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)('UserPaymentDetails')),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

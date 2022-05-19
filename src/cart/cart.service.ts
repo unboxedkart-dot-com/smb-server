@@ -55,8 +55,6 @@ export class CartService {
     return cartItemsData as CartItem[];
   }
 
-
-
   async getSavedLaterProducts(userId: string) {
     const productsData = [];
     //finding user doc
@@ -90,8 +88,6 @@ export class CartService {
     return productsData as SavedToLater[];
   }
 
-
-
   async addCartItem(userId: string, productId: string) {
     const product = await this.productModel.findById(productId);
     if (product) {
@@ -107,20 +103,21 @@ export class CartService {
     }
   }
 
-
   async addSavedToLater(userId: string, productId: string) {
-    const product = await this.productModel.findById(productId);
-    if (product) {
-      const product = await this.savedToLaterModel.findOne({
-        productId: productId,
-        userId: userId,
-      });
-      if (!product) {
-        this._handleAddCartItem(userId, productId);
-      } else {
-        return 'already exists';
-      }
-    }
+    // const product = await this.productModel.findById(productId);
+
+    this._handleAddSaveLater(userId, productId);
+    // if (product) {
+    //   const product = await this.savedToLaterModel.findOne({
+    //     productId: productId,
+    //     userId: userId,
+    //   });
+    //   if (!product) {
+
+    //   } else {
+    //     return 'already exists';
+    //   }
+    // }
   }
 
   async updateCartItem(

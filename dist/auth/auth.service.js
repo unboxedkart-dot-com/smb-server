@@ -183,7 +183,7 @@ let AuthService = class AuthService {
     }
     async createUser(entireBody) {
         const otpStatus = await this.verifyOtp(entireBody.phoneNumber, entireBody.otp);
-        if (entireBody.otp == 123456) {
+        if (otpStatus) {
             const userDoc = await this.userModel.findOne({
                 phoneNumber: { $eq: entireBody.phoneNumber },
             });

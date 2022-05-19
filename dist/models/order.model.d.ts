@@ -19,9 +19,9 @@ export declare enum DeliveryTypes {
 }
 export declare enum PaymentMethods {
     PAY_AT_STORE = "PAY AT STORE",
-    PAY_AT_STORE_DUE = "PAT AT STORE DUE",
+    PAY_AT_STORE_DUE = "PAY AT STORE - DUE",
     CASH_ON_DELIVERY = "CASH ON DELIVERY",
-    CASH_ON_DELIVERY_DUE = "CASH ON DELIVERY DUE",
+    CASH_ON_DELIVERY_DUE = "CASH ON DELIVERY - DUE",
     PREPAID = "PREPAID"
 }
 export declare const OrderSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any>, any, any>;

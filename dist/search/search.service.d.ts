@@ -10,9 +10,9 @@ export declare class SearchService {
     private readonly searchTermModel;
     constructor(productModel: Model<Product>, userModel: Model<User>, searchTermModel: Model<SearchTerm>);
     getNewSearch(title: string, category: string, brand: string, condition: string, productCode: string, sellerCode: string, pageNumber: string): Promise<number>;
-    getSearchedProducts(title: string, category: string, brand: string, condition: string, productCode: string, pageNumber: string): Promise<Product[]>;
+    getSearchedProducts(title: string, category: string, brand: string, condition: string, productCode: string, pageNumber: string): Promise<any[]>;
     _getProductsByProductCode(productCode: string, itemsToSkip: number): Promise<Product[]>;
-    _getProductsByTitle(title: string, pageNumber: string, itemsToSkip: number): Promise<Product[]>;
+    _getProductsByTitle(title: string, pageNumber: string, itemsToSkip: number): Promise<any[]>;
     getRecentSearches(userId: any): Promise<[{
         searchTerm: string;
         timestamp: Date;

@@ -32,4 +32,12 @@ export interface Product {
         storage: string;
         storageCode: string;
     };
+    rating: number;
+    boxContains: string;
+    warrantyDetails: {
+        isUnderWarranty: boolean;
+        expiryDate: string;
+        warrantyLeft: number;
+        description: string;
+    };
 }

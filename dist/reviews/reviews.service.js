@@ -83,7 +83,6 @@ let ReviewsService = class ReviewsService {
             console.log('new review', newReview);
             await newReview.save();
             console.log('apprive');
-            await this.approveReview('123', newReview._id.toString());
         }
     }
     async updateReview(userId, entireBody) {
@@ -94,8 +93,6 @@ let ReviewsService = class ReviewsService {
             reviewContent: entireBody.reviewContent,
             isApproved: false,
         });
-        await this.approveReview('123', entireBody.reviewId);
-        console.log('updated review', review);
     }
     async deleteReview(userId, reviewId) {
         await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });

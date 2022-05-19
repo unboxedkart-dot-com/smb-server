@@ -117,4 +117,24 @@ export class CreateProductDto {
   @IsBoolean()
   @IsOptional()
   isBestSeller: boolean;
+
+  @IsString()
+  @IsOptional()
+  warrantyDescription: string;
+
+  @IsString()
+  @IsOptional()
+  boxContains: string;
+
+  @IsString()
+  @IsOptional()
+  warrantyExpiryDate: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isUnderWarranty: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  warrantyLeft: number;
 }

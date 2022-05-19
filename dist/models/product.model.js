@@ -32,6 +32,18 @@ exports.ProductSchema = new mongoose_1.default.Schema({
         colorCode: { type: String, required: true },
         storage: { type: String, required: true },
         storageCode: { type: String, required: true },
+        ram: { type: String, required: true },
+        ramCode: { type: String, required: true },
+        processor: { type: String, required: true },
+        processorCode: { type: String, required: true },
     },
+    warrantyDetails: {
+        isUnderWarranty: { type: Boolean, required: false, default: false },
+        expiryDate: { type: String, required: false },
+        warrantyLeft: { type: Number, required: false },
+        description: { type: String, required: false },
+    },
+    boxContains: { type: String, required: false },
+    rating: { type: Number, required: false, default: 0 },
 });
 //# sourceMappingURL=product.model.js.map

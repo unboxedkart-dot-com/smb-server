@@ -47,12 +47,12 @@ export class CartController {
     return result;
   }
 
-
   @Post('/save-later/add')
   async handleAddProductToSaveLater(
     @Body() entireBody: AddCartItemDto,
     @Req() request: any,
   ) {
+    console.log('adding product to savelayer');
     const userId = request.user.userId;
     const result = await this.cartService.addSavedToLater(
       userId,
@@ -86,14 +86,16 @@ export class CartController {
     return result;
   }
 
-
   @Delete('/save-later/delete/:id')
   async handleRemoveProductFromSaveLater(
     @Req() request: any,
     @Param('id') productId: string,
   ) {
     const userId = request.user.userId;
-    const result = await this.cartService.removeProductFromSaveLater(userId, productId);
+    const result = await this.cartService.removeProductFromSaveLater(
+      userId,
+      productId,
+    );
     return result;
   }
 }

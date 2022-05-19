@@ -4,6 +4,7 @@ exports.ReviewsDataSchema = void 0;
 const mongoose_1 = require("mongoose");
 exports.ReviewsDataSchema = new mongoose_1.default.Schema({
     productId: { type: String, required: false },
+    productCode: { type: String, required: true },
     oneStarCount: { type: Number, required: false },
     twoStarCount: { type: Number, required: false },
     threeStarCount: { type: Number, required: false },

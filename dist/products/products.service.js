@@ -306,6 +306,13 @@ let ProductsService = class ProductsService {
                 storage: entireBody.storage,
                 storageCode: entireBody.storageCode,
             },
+            warrantyDetails: {
+                isUnderWarranty: entireBody.isUnderWarranty,
+                expiryDate: entireBody.warrantyExpiryDate,
+                warrantyLeft: entireBody.warrantyLeft,
+                description: entireBody.warrantyDescription,
+            },
+            boxContains: entireBody.boxContains,
         });
         console.log('new product', newProduct);
         await newProduct.save();

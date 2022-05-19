@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 export const ReviewsDataSchema = new mongoose.Schema({
   productId: { type: String, required: false },
+  productCode: { type: String, required: true },
   oneStarCount: { type: Number, required: false },
   twoStarCount: { type: Number, required: false },
   threeStarCount: { type: Number, required: false },
@@ -13,6 +14,7 @@ export const ReviewsDataSchema = new mongoose.Schema({
 
 export interface ReviewsData {
   productId: string;
+  productCode: string;
   averageRating: number;
   fiveStarCount: number;
   fourStarCount: number;

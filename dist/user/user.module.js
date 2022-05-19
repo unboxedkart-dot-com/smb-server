@@ -13,11 +13,17 @@ const user_controller_1 = require("./user.controller");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const mongoose_1 = require("@nestjs/mongoose");
 const user_model_1 = require("../models/user.model");
+const user_payment_details_model_1 = require("../models/user_payment_details.model");
 let UserModule = class UserModule {
 };
 UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: user_model_1.UserSchema }])],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([
+                { name: 'User', schema: user_model_1.UserSchema },
+                { name: 'UserPaymentDetails', schema: user_payment_details_model_1.UserPaymentDetailsSchema },
+            ]),
+        ],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService, jwt_auth_guard_1.JwtAuthGuard],
     })
