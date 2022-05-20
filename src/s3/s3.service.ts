@@ -47,4 +47,7 @@ export class S3Service
             console.log(e);
         }
     }
+
+
+    
 }

@@ -108,7 +108,8 @@ let OrdersService = class OrdersService {
                 amountDue = payableAmount;
             }
         }
-        console.log('adding a new order');
+        console.log('adding a new order sss', orderSummary);
+        console.log('adding a new payment sss', orderSummary.paymentId);
         const newOrder = new this.orderModel({
             userId: userId,
             userDetails: {
@@ -130,8 +131,8 @@ let OrdersService = class OrdersService {
                 paymentType: paymentType,
                 paymentMethod: paymentMethod,
                 partialPaymentId: paymentType == 'PARTIAL' ? orderSummary.partialPaymentId : null,
-                $push: { 'paymentDetails.paymentIds': orderSummary.paymentId },
                 isPaid: (_a = amountDue == 0) !== null && _a !== void 0 ? _a : false,
+                paymentIds: [orderSummary.paymentId],
                 amountPaid: amountPaid,
                 amountDue: amountDue,
             },
@@ -197,10 +198,12 @@ let OrdersService = class OrdersService {
         }
     }
     async getOrderItems(userId) {
-        console.log('order user id', userId);
-        const orderItems = await this.orderItemModel.find({
+        console.log('order user id in reverse order', userId);
+        const orderItems = await this.orderItemModel
+            .find({
             userId: userId,
-        });
+        })
+            .sort({ orderDate: 1 });
         console.log('orderrrrr', orderItems);
         return orderItems;
     }
@@ -350,25 +353,28 @@ let OrdersService = class OrdersService {
     }
     async _handleSaveIndividualOrders(order) {
         var _a;
+        console.log('executing new individual order');
         const paymentId = order.paymentDetails.paymentIds[0];
         const itemsCount = order.orderItems.length;
-        let amountPaid = order.paymentDetails.amountPaid;
+        console.log('items count', itemsCount);
+        const deliveryType = order.deliveryType;
+        let amountPaid = order.paymentDetails.amountPaid / itemsCount;
         let amountDue = order.paymentDetails.amountDue;
+        const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
         for (const orderItem of order.orderItems) {
-            const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
             let payableAmount = orderItem.total - couponDiscount;
-            amountPaid = amountPaid / itemsCount;
             amountDue = orderItem.total - couponDiscount - amountPaid;
             const newOrderItem = new this.orderItemModel({
                 userId: order.userId,
                 orderNumber: order.orderNumber,
-                shippingDetails: order.shippingDetails,
+                orderDate: order.orderDate,
+                shippingDetails: deliveryType != 'STORE PICKUP' ? order.shippingDetails : null,
                 userDetails: {
                     emailId: order.userDetails.emailId,
                     phoneNumber: order.userDetails.phoneNumber,
                     userName: order.userDetails.name,
                 },
-                pickUpDetails: order.pickUpDetails,
+                pickUpDetails: deliveryType == 'STORE PICKUP' ? order.pickUpDetails : null,
                 paymentDetails: {
                     paymentType: order.paymentDetails.paymentType,
                     paymentMethod: order.paymentDetails.paymentMethod,
@@ -803,6 +809,10 @@ let OrdersService = class OrdersService {
         };
     }
     async uploadInvoice(file) { }
+    async sendInvoiceCopy(userId, orderId) {
+        const user = await this.userModel.findById(userId);
+        const emailId = user.emailId;
+    }
 };
 OrdersService = __decorate([
     (0, common_1.Injectable)(),

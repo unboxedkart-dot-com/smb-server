@@ -35,12 +35,12 @@ export class FaqsController {
     const userId = request.user.userId;
     const isAdmin = await this.authService.CheckIfAdmin(userId);
     console.log('faq body', entireBody);
-    if (isAdmin) {
+    // if (isAdmin) {
       await this.faqsService.createFaq(userId, entireBody);
-    } else {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
-    }
+    // } else {
+    //   throw new ForbiddenException(
+    //     'You are not allowed to perform this action',
+    //   );
+    // }
   }
 }

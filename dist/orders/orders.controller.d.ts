@@ -55,5 +55,6 @@ export declare class OrdersController {
     }>;
     handleCancelOrder(request: any, entireBody: CancelOrderDto): Promise<void>;
     handleUploadInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
+    handleSendInvoiceCopy(request: any, orderId: string): Promise<void>;
     _generateOrderNumber(): string;
 }

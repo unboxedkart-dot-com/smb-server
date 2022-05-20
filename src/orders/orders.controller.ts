@@ -91,7 +91,7 @@ export class OrdersController {
   async handleGetOrder(@Query('id') id: string, @Req() request: any) {
     const userId = request.user.userId;
     const order = await this.ordersService.getOrder(userId, id);
-    console.log("order is", order);
+    console.log('order is', order);
     return order;
   }
 
@@ -247,6 +247,15 @@ export class OrdersController {
     const response = this.s3Service.uploadFile(file);
     return response;
     // const userId: string = request.user.userId;
+  }
+
+  @Get()
+  async handleSendInvoiceCopy(
+    @Req() request: any,
+    @Query('id') orderId: string,
+  ) {
+    const userId: string = request.user.userId;
+    await this.ordersService.sendInvoiceCopy(userId, orderId);
   }
 
   _generateOrderNumber() {

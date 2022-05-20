@@ -81,24 +81,51 @@ let CouponsService = class CouponsService {
     async validateCoupon(userId, couponCode) {
         const userDoc = await this.userModel.findById(userId);
         const cartValue = await this._calculateCartValue(userDoc.orderSummary.orderItems);
-        console.log('orderSummary', userDoc.orderSummary.orderItems);
         const coupon = await this.couponModel.findOne({
             couponCode: couponCode,
         });
+        console.log('validating coupon');
         if (coupon) {
             console.log('ppp', coupon);
-            if (coupon.isActive &&
-                cartValue >= coupon.minimumOrderTotal &&
-                coupon.couponDetails.userId != userId) {
-                console.log('cart total', cartValue);
-                return {
-                    isValid: true,
-                    couponDetails: {
-                        couponCode: coupon.couponCode,
-                        couponDescription: coupon.description,
-                        discountAmount: coupon.discountAmount,
-                    },
-                };
+            if (coupon.isActive && cartValue >= coupon.minimumOrderTotal) {
+                if (coupon.isPersonalCoupon && coupon.couponDetails.userId != userId) {
+                    return {
+                        isValid: true,
+                        couponDetails: {
+                            couponCode: coupon.couponCode,
+                            couponDescription: coupon.description,
+                            discountAmount: coupon.discountAmount,
+                        },
+                    };
+                }
+                else if (coupon.redemptionType == 'LIMITED' &&
+                    coupon.redemptionLimit > 0) {
+                    return {
+                        isValid: true,
+                        couponDetails: {
+                            couponCode: coupon.couponCode,
+                            couponDescription: coupon.description,
+                            discountAmount: coupon.discountAmount,
+                        },
+                    };
+                }
+                else if (coupon.expiryType == 'LIMITED TIME' &&
+                    Date.now() < coupon.expiryTime.getTime()) {
+                    return {
+                        isValid: true,
+                        couponDetails: {
+                            couponCode: coupon.couponCode,
+                            couponDescription: coupon.description,
+                            discountAmount: coupon.discountAmount,
+                        },
+                    };
+                }
+                else {
+                    return {
+                        isValid: false,
+                        errorText: 'Entered coupon is not valid for your account',
+                    };
+                }
             }
             else {
                 return {

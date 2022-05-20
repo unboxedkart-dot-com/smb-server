@@ -64,7 +64,7 @@ let OrdersController = class OrdersController {
     async handleGetOrder(id, request) {
         const userId = request.user.userId;
         const order = await this.ordersService.getOrder(userId, id);
-        console.log("order is", order);
+        console.log('order is', order);
         return order;
     }
     async handleGetOrderItem(request, orderId) {
@@ -153,6 +153,10 @@ let OrdersController = class OrdersController {
         console.log('uploading invoice', file, typeof file);
         const response = this.s3Service.uploadFile(file);
         return response;
+    }
+    async handleSendInvoiceCopy(request, orderId) {
+        const userId = request.user.userId;
+        await this.ordersService.sendInvoiceCopy(userId, orderId);
     }
     _generateOrderNumber() {
         const orderCode = 'OD';
@@ -294,6 +298,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleUploadInvoice", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "handleSendInvoiceCopy", null);
 OrdersController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),

@@ -114,6 +114,7 @@ export declare class OrdersService {
         orders: [];
     }>;
     uploadInvoice(file: any): Promise<void>;
+    sendInvoiceCopy(userId: string, orderId: string): Promise<void>;
 }
 export interface IndividualOrderItem {
     paymentType: String;

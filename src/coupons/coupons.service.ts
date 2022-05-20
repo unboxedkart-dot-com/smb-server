@@ -6,6 +6,7 @@ import { CreateOrderDto } from 'src/orders/dto/create-order.dto';
 import { User } from 'src/models/user.model';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { Product } from 'src/models/product.model';
+import e from 'express';
 
 @Injectable()
 export class CouponsService {
@@ -83,28 +84,55 @@ export class CouponsService {
     const cartValue = await this._calculateCartValue(
       userDoc.orderSummary.orderItems,
     );
-    console.log('orderSummary', userDoc.orderSummary.orderItems);
+    // console.log('orderSummary', userDoc.orderSummary.orderItems);
     const coupon = await this.couponModel.findOne({
       couponCode: couponCode,
     });
 
+    console.log('validating coupon');
+
     if (coupon) {
       console.log('ppp', coupon);
-
-      if (
-        coupon.isActive &&
-        cartValue >= coupon.minimumOrderTotal &&
-        coupon.couponDetails.userId != userId
-      ) {
-        console.log('cart total', cartValue);
-        return {
-          isValid: true,
-          couponDetails: {
-            couponCode: coupon.couponCode,
-            couponDescription: coupon.description,
-            discountAmount: coupon.discountAmount,
-          },
-        };
+      if (coupon.isActive && cartValue >= coupon.minimumOrderTotal) {
+        if (coupon.isPersonalCoupon && coupon.couponDetails.userId != userId) {
+          return {
+            isValid: true,
+            couponDetails: {
+              couponCode: coupon.couponCode,
+              couponDescription: coupon.description,
+              discountAmount: coupon.discountAmount,
+            },
+          };
+        } else if (
+          coupon.redemptionType == 'LIMITED' &&
+          coupon.redemptionLimit > 0
+        ) {
+          return {
+            isValid: true,
+            couponDetails: {
+              couponCode: coupon.couponCode,
+              couponDescription: coupon.description,
+              discountAmount: coupon.discountAmount,
+            },
+          };
+        } else if (
+          coupon.expiryType == 'LIMITED TIME' &&
+          Date.now() < coupon.expiryTime.getTime()
+        ) {
+          return {
+            isValid: true,
+            couponDetails: {
+              couponCode: coupon.couponCode,
+              couponDescription: coupon.description,
+              discountAmount: coupon.discountAmount,
+            },
+          };
+        } else {
+          return {
+            isValid: false,
+            errorText: 'Entered coupon is not valid for your account',
+          };
+        }
       } else {
         return {
           isValid: false,
@@ -140,3 +168,73 @@ export class CouponsService {
     };
   }
 }
+
+// else if (coupon.redemptionType == 'LIMITED') {
+//   if (coupon.redemptionLimit > 0) {
+//     return {
+//       isValid: true,
+//       couponDetails: {
+//         couponCode: coupon.couponCode,
+//         couponDescription: coupon.description,
+//         discountAmount: coupon.discountAmount,
+//       },
+//     };
+//   }
+// } else if (coupon.expiryType == 'LIMITED TIME') {
+//   if (Date.now() < coupon.expiryTime.getTime()) {
+//     return {
+//       isValid: true,
+//       couponDetails: {
+//         couponCode: coupon.couponCode,
+//         couponDescription: coupon.description,
+//         discountAmount: coupon.discountAmount,
+//       },
+//     };
+//   }
+// }else{
+//   return {
+//     isValid: false,
+//     errorText: 'Entered coupon is not valid for your account',
+//   };
+// }
+
+// else {
+//   if (coupon.redemptionType == 'LIMITED') {
+//     if (coupon.redemptionLimit > 0) {
+//       return {
+//         isValid: true,
+//         couponDetails: {
+//           couponCode: coupon.couponCode,
+//           couponDescription: coupon.description,
+//           discountAmount: coupon.discountAmount,
+//         },
+//       };
+//     }
+//   } else if (coupon.expiryType == 'LIMITED TIME') {
+//     if (Date.now() < coupon.expiryTime.getTime()) {
+//       return {
+//         isValid: true,
+//         couponDetails: {
+//           couponCode: coupon.couponCode,
+//           couponDescription: coupon.description,
+//           discountAmount: coupon.discountAmount,
+//         },
+//       };
+//     }
+//   } else {
+//     return {
+//       isValid: false,
+//       errorText: 'Entered coupon is not valid for your account',
+//     };
+//   }
+// }
+
+// console.log('cart total', cartValue);
+// return {
+//   isValid: true,
+//   couponDetails: {
+//     couponCode: coupon.couponCode,
+//     couponDescription: coupon.description,
+//     discountAmount: coupon.discountAmount,
+//   },
+// };

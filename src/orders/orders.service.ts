@@ -140,47 +140,50 @@ export class OrdersService {
       }
     }
 
-    console.log('adding a new order');
+    console.log('adding a new order sss', orderSummary);
+    console.log('adding a new payment sss', orderSummary.paymentId);
 
-    const newOrder = new this.orderModel({
-      userId: userId,
+    const newOrder = new this.orderModel(
+      {
+        userId: userId,
 
-      userDetails: {
-        name: userDoc.name,
-        emailId: userDoc.emailId,
-        phoneNumber: userDoc.phoneNumber,
+        userDetails: {
+          name: userDoc.name,
+          emailId: userDoc.emailId,
+          phoneNumber: userDoc.phoneNumber,
+        },
+
+        orderNumber: orderSummary.orderNumber,
+
+        deliveryType: userDoc.orderSummary.deliveryType,
+
+        shippingDetails:
+          deliveryType == 'HOME DELIVERY' ? orderSummary.shippingDetails : null,
+        pickUpDetails:
+          deliveryType == 'STORE PICKUP' ? orderSummary.pickUpDetails : null,
+        pricingDetails: {
+          billTotal: orderItemDetails.orderTotal,
+          payableTotal: payableAmount,
+          couponCode: orderSummary.couponCode,
+          couponDiscount: couponDiscount,
+        },
+
+        paymentDetails: {
+          paymentType: paymentType,
+          paymentMethod: paymentMethod,
+          partialPaymentId:
+            paymentType == 'PARTIAL' ? orderSummary.partialPaymentId : null,
+          isPaid: amountDue == 0 ?? false,
+          paymentIds: [orderSummary.paymentId],
+
+          amountPaid: amountPaid,
+          amountDue: amountDue,
+        },
+        itemsCount: orderItemDetails.orderItemsCount,
+        orderItems: orderItemDetails.orderItems,
       },
-
-      orderNumber: orderSummary.orderNumber,
-
-      deliveryType: userDoc.orderSummary.deliveryType,
-
-      shippingDetails:
-        deliveryType == 'HOME DELIVERY' ? orderSummary.shippingDetails : null,
-      pickUpDetails:
-        deliveryType == 'STORE PICKUP' ? orderSummary.pickUpDetails : null,
-      pricingDetails: {
-        billTotal: orderItemDetails.orderTotal,
-        payableTotal: payableAmount,
-        couponCode: orderSummary.couponCode,
-        couponDiscount: couponDiscount,
-      },
-      paymentDetails: {
-        paymentType: paymentType,
-        paymentMethod: paymentMethod,
-        partialPaymentId:
-          paymentType == 'PARTIAL' ? orderSummary.partialPaymentId : null,
-
-        $push: { 'paymentDetails.paymentIds': orderSummary.paymentId },
-
-        isPaid: amountDue == 0 ?? false,
-
-        amountPaid: amountPaid,
-        amountDue: amountDue,
-      },
-      itemsCount: orderItemDetails.orderItemsCount,
-      orderItems: orderItemDetails.orderItems,
-    });
+      // { $push: { 'paymentDetails.paymentIds': orderSummary.paymentId } },
+    );
 
     newOrder.save();
 
@@ -302,10 +305,12 @@ export class OrdersService {
   }
 
   async getOrderItems(userId: string) {
-    console.log('order user id', userId);
-    const orderItems = await this.orderItemModel.find({
-      userId: userId,
-    });
+    console.log('order user id in reverse order', userId);
+    const orderItems = await this.orderItemModel
+      .find({
+        userId: userId,
+      })
+      .sort({ orderDate: 1 });
     console.log('orderrrrr', orderItems);
     return orderItems as OrderItem[];
   }
@@ -505,29 +510,37 @@ export class OrdersService {
   }
 
   async _handleSaveIndividualOrders(order: Order) {
+    console.log('executing new individual order');
     // const paymentType = order.paymentDetails.paymentType;
     // const paymentMethod = order.paymentDetails.paymentMethod;
     const paymentId = order.paymentDetails.paymentIds[0];
     // const partialPaymentId = order.paymentDetails.partialPaymentId;
     const itemsCount = order.orderItems.length;
-    let amountPaid = order.paymentDetails.amountPaid;
+    console.log('items count', itemsCount);
+    const deliveryType = order.deliveryType;
+    let amountPaid = order.paymentDetails.amountPaid / itemsCount;
     let amountDue = order.paymentDetails.amountDue;
+    const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
     for (const orderItem of order.orderItems) {
-      const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
       let payableAmount = orderItem.total - couponDiscount;
-      amountPaid = amountPaid / itemsCount;
+      // console.log('new amount paid', amountPaid);
+      // amountPaid = amountPaid / itemsCount;
+      // console.log('new amount paid', amountPaid);
+      // console.log('new amount paid', amountPaid);
       amountDue = orderItem.total - couponDiscount - amountPaid;
-
       const newOrderItem = new this.orderItemModel({
         userId: order.userId,
         orderNumber: order.orderNumber,
-        shippingDetails: order.shippingDetails,
+        orderDate: order.orderDate,
+        shippingDetails:
+          deliveryType != 'STORE PICKUP' ? order.shippingDetails : null,
         userDetails: {
           emailId: order.userDetails.emailId,
           phoneNumber: order.userDetails.phoneNumber,
           userName: order.userDetails.name,
         },
-        pickUpDetails: order.pickUpDetails,
+        pickUpDetails:
+          deliveryType == 'STORE PICKUP' ? order.pickUpDetails : null,
         paymentDetails: {
           paymentType: order.paymentDetails.paymentType,
           paymentMethod: order.paymentDetails.paymentMethod,
@@ -1084,6 +1097,13 @@ export class OrdersService {
   }
 
   async uploadInvoice(file: any) {}
+
+  async sendInvoiceCopy(userId: string, orderId: string) {
+    const user = await this.userModel.findById(userId);
+    const emailId = user.emailId;
+
+    
+  }
 }
 
 export interface IndividualOrderItem {

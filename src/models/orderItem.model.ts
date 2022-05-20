@@ -15,7 +15,7 @@ export const OrderItemSchema = new mongoose.Schema({
   deliveryTimeStamp: { type: Date, required: false },
   shippingDetails: {
     shipDate: { type: String, required: false },
-    expectedDeliveryDate: { type: Date, required: false },
+    expectedDeliveryDate: { type: Date, required: false},
     expectedDeliveryDateInString: { type: String, required: false },
     deliveryDate: { type: String, required: false },
     deliveryDateInString: { type: String, required: false },
@@ -48,7 +48,7 @@ export const OrderItemSchema = new mongoose.Schema({
     couponDiscount: { type: Number, required: false },
   },
   orderNumber: { type: String, required: true },
-  orderDate: { type: Date, required: true, default: Date.now() },
+  orderDate: { type: String, required: true, default: Date.now() },
   updatedDate: { type: Date, required: false },
   orderStatus: { type: String, required: true, default: OrderStatuses.ORDERED },
   productDetails: {
