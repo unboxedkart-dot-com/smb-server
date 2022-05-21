@@ -25,15 +25,16 @@ export const ProductSchema = new mongoose.Schema({
   searchCases: { type: [String], required: true },
   isBestSeller: { type: Boolean, required: false, default: false },
   isFeatured: { type: Boolean, required: false, default: false },
+  isCertified: { type: Boolean, required: false, default: false },
   moreDetails: {
     color: { type: String, required: true },
     colorCode: { type: String, required: true },
-    storage: { type: String, required: true },
-    storageCode: { type: String, required: true },
-    ram: { type: String, required: true },
-    ramCode: { type: String, required: true },
-    processor: { type: String, required: true },
-    processorCode: { type: String, required: true },
+    storage: { type: String, required: false },
+    storageCode: { type: String, required: false },
+    ram: { type: String, required: false },
+    ramCode: { type: String, required: false },
+    processor: { type: String, required: false },
+    processorCode: { type: String, required: false },
   },
   warrantyDetails: {
     isUnderWarranty: { type: Boolean, required: false, default: false },
@@ -71,6 +72,7 @@ export interface Product {
   searchCases: [string];
   isBestSeller: boolean;
   isFeatured: boolean;
+  isCertified: boolean;
   moreDetails: {
     color: string;
     colorCode: string;

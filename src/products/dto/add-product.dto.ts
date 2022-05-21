@@ -118,12 +118,16 @@ export class CreateProductDto {
   @IsOptional()
   isBestSeller: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  isCertified: boolean;
+
   @IsString()
   @IsOptional()
   warrantyDescription: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   boxContains: string;
 
   @IsString()
@@ -136,5 +140,5 @@ export class CreateProductDto {
 
   @IsNumber()
   @IsOptional()
-  warrantyLeft: number;
+  warrantyLeftInMonths: number;
 }

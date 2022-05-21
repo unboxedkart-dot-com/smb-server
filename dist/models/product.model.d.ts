@@ -26,6 +26,7 @@ export interface Product {
     searchCases: [string];
     isBestSeller: boolean;
     isFeatured: boolean;
+    isCertified: boolean;
     moreDetails: {
         color: string;
         colorCode: string;

@@ -104,13 +104,18 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CreateProductDto.prototype, "isBestSeller", void 0);
 __decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateProductDto.prototype, "isCertified", void 0);
+__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "warrantyDescription", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "boxContains", void 0);
 __decorate([
@@ -127,6 +132,6 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
-], CreateProductDto.prototype, "warrantyLeft", void 0);
+], CreateProductDto.prototype, "warrantyLeftInMonths", void 0);
 exports.CreateProductDto = CreateProductDto;
 //# sourceMappingURL=add-product.dto.js.map

@@ -272,7 +272,8 @@ let ProductsService = class ProductsService {
         const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, productImages.count);
         const searchCases = this._handleCreateProductSearchCases(productData.category, productData.brand, productData.title, entireBody);
         const newTitle = this._handleGenerateNewTitle(productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor);
-        const aboutProduct = entireBody.aboutProduct.split('...');
+        const aboutProduct = entireBody.aboutProduct.split('///');
+        console.log('about splitting', aboutProduct);
         console.log('new title', newTitle);
         const newProduct = new this.productModel({
             productCode: entireBody.productCode,
@@ -300,6 +301,7 @@ let ProductsService = class ProductsService {
             searchCases: searchCases,
             isBestSeller: entireBody.isBestSeller,
             isFeatured: entireBody.isFeatured,
+            isCertified: entireBody.isCertified,
             moreDetails: {
                 color: entireBody.color,
                 colorCode: entireBody.colorCode,
@@ -308,8 +310,7 @@ let ProductsService = class ProductsService {
             },
             warrantyDetails: {
                 isUnderWarranty: entireBody.isUnderWarranty,
-                expiryDate: entireBody.warrantyExpiryDate,
-                warrantyLeft: entireBody.warrantyLeft,
+                warrantyLeft: entireBody.warrantyLeftInMonths,
                 description: entireBody.warrantyDescription,
             },
             boxContains: entireBody.boxContains,

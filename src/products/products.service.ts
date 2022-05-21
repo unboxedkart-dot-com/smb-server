@@ -304,7 +304,9 @@ export class ProductsService {
       entireBody.processor,
     );
 
-    const aboutProduct = entireBody.aboutProduct.split('...');
+    const aboutProduct = entireBody.aboutProduct.split('///');
+
+    console.log('about splitting', aboutProduct);
 
     console.log('new title', newTitle);
 
@@ -334,6 +336,7 @@ export class ProductsService {
       searchCases: searchCases,
       isBestSeller: entireBody.isBestSeller,
       isFeatured: entireBody.isFeatured,
+      isCertified: entireBody.isCertified,
       moreDetails: {
         color: entireBody.color,
         colorCode: entireBody.colorCode,
@@ -342,8 +345,8 @@ export class ProductsService {
       },
       warrantyDetails: {
         isUnderWarranty: entireBody.isUnderWarranty,
-        expiryDate: entireBody.warrantyExpiryDate,
-        warrantyLeft: entireBody.warrantyLeft,
+        // expiryDate: entireBody.warrantyExpiryDate,
+        warrantyLeft: entireBody.warrantyLeftInMonths,
         description: entireBody.warrantyDescription,
       },
       boxContains: entireBody.boxContains,
