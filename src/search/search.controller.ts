@@ -21,19 +21,30 @@ export class SearchController {
     @Query('category') category: string,
     @Query('brand') brand: string,
     @Query('condition') condition: string,
-    @Query('productCode') productCode: string,
+    @Query('productCode') product: string,
+    @Query('seller') seller : string,
     @Query('p') pageNumber: string,
   ) {
     console.log('query terms', pageNumber);
-    const products = await this.searchService.getSearchedProducts(
+    return await this.searchService.getNewSearch(
+      null,
       title,
       category,
       brand,
       condition,
-      productCode,
+      product,
+      seller,
       pageNumber,
     );
-    return products;
+    // const products = await this.searchService.getSearchedProducts(
+    //   title,
+    //   category,
+    //   brand,
+    //   condition,
+    //   productCode,
+    //   pageNumber,
+    // );
+    // return products;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -80,21 +91,22 @@ export class SearchController {
 
   @Get('/new-search')
   async handleGetNewSearch(
-    @Query('brandCode') brandCode: string,
-    @Query('categoryCode') categoryCode: string,
-    @Query('conditionCode') conditionCode: string,
-    @Query('sellerCode') sellerCode: string,
-    @Query('productCode') productCode: string,
+    @Query('brand') brand: string,
+    @Query('category') category: string,
+    @Query('condition') condition: string,
+    @Query('seller') seller: string,
+    @Query('product') product: string,
     @Query('title') title: string,
     @Query('p') pageNo: string,
   ) {
     return await this.searchService.getNewSearch(
+      null,
       title,
-      categoryCode,
-      brandCode,
-      conditionCode,
-      productCode,
-      sellerCode,
+      category,
+      brand,
+      condition,
+      product,
+      seller,
       pageNo,
     );
   }

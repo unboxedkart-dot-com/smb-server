@@ -8,6 +8,7 @@ import { ProductDetailsService } from './product-details.service';
 export declare class ProductDetailsController {
     private readonly productDetailsService;
     constructor(productDetailsService: ProductDetailsService);
+    handleAddMany(): Promise<void>;
     handleGetProductSpecs(productId: string): Promise<[{
         title: string;
         values: string[];
@@ -15,9 +16,13 @@ export declare class ProductDetailsController {
     handleGetProductDescription(productId: string): Promise<string[]>;
     handleSetProductSpecs(entireBody: CreateProductDetailsDto): Promise<void>;
     addSomething(): Promise<void>;
+    modifyProductData(): Promise<void>;
     addProductData(request: any, entireBody: AddProductDataDto): Promise<void>;
     getAvailableProducts(brandCode: string, categoryCode: string): Promise<(import("mongoose").Document<unknown, any, import("../models/product_data.model").ProductData> & import("../models/product_data.model").ProductData & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     handleAddProductImages(entireBody: AddProductImagesDto): Promise<void>;
+    handleGetProductVariants(productCode: string): Promise<import("mongoose").Document<unknown, any, import("../models/product_data.model").ProductData> & import("../models/product_data.model").ProductData & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
 }

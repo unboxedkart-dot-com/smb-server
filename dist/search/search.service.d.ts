@@ -9,10 +9,7 @@ export declare class SearchService {
     private readonly userModel;
     private readonly searchTermModel;
     constructor(productModel: Model<Product>, userModel: Model<User>, searchTermModel: Model<SearchTerm>);
-    getNewSearch(title: string, category: string, brand: string, condition: string, productCode: string, sellerCode: string, pageNumber: string): Promise<number>;
-    getSearchedProducts(title: string, category: string, brand: string, condition: string, productCode: string, pageNumber: string): Promise<any[]>;
-    _getProductsByProductCode(productCode: string, itemsToSkip: number): Promise<Product[]>;
-    _getProductsByTitle(title: string, pageNumber: string, itemsToSkip: number): Promise<any[]>;
+    getNewSearch(isExact: boolean, title: string, category: string, brand: string, condition: string, product: string, seller: string, pageNumber: string): Promise<Product[]>;
     getRecentSearches(userId: any): Promise<[{
         searchTerm: string;
         timestamp: Date;
@@ -22,7 +19,4 @@ export declare class SearchService {
     getPopularSearches(): Promise<(import("mongoose").Document<unknown, any, SearchTerm> & SearchTerm & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
-    _getProductsByCategoryAndBrand(category: string, brand: string, itemsToSkip: number): Promise<Product[]>;
-    _getProductsByBrandAndCondition(brand: string, condition: string, itemsToSkip: number): Promise<Product[]>;
-    _getProductsByConditionAndCategory(condition: string, category: string, itemsToSkip: number): Promise<Product[]>;
 }

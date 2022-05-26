@@ -23,7 +23,14 @@ let CarouselItemsController = class CarouselItemsController {
     create(createCarouselItemDto) {
         return this.carouselItemsService.create(createCarouselItemDto);
     }
+    deleteAll() {
+        return this.carouselItemsService.deleteAll();
+    }
+    addMany() {
+        return this.carouselItemsService.addMany();
+    }
     findOne(q) {
+        console.log('getting carousel items for', q);
         return this.carouselItemsService.carouselItems(q);
     }
     getBrandCarouselItems(brandName) {
@@ -46,6 +53,18 @@ __decorate([
     __metadata("design:paramtypes", [create_carousel_item_dto_1.CreateCarouselItemDto]),
     __metadata("design:returntype", void 0)
 ], CarouselItemsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Delete)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CarouselItemsController.prototype, "deleteAll", null);
+__decorate([
+    (0, common_1.Post)('add-many'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CarouselItemsController.prototype, "addMany", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('placement')),

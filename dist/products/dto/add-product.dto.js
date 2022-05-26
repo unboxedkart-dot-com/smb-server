@@ -133,5 +133,10 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], CreateProductDto.prototype, "warrantyLeftInMonths", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateProductDto.prototype, "connectivity", void 0);
 exports.CreateProductDto = CreateProductDto;
 //# sourceMappingURL=add-product.dto.js.map

@@ -41,10 +41,7 @@ let VariantsService = class VariantsService {
         newVariantsData.save();
     }
     async getVariantsData(productCode) {
-        const variants = await this.variantDataModel.findOne({
-            productCode: productCode,
-        });
-        return variants;
+        console.log('getting variants for', productCode);
     }
 };
 VariantsService = __decorate([

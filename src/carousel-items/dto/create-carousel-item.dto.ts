@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateCarouselItemDto {
   @IsString()
@@ -36,4 +42,21 @@ export class CreateCarouselItemDto {
   @IsString()
   @IsOptional()
   productId: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  index: number;
+
+  @IsNumber()
+  @IsOptional()
+  startingPrice: number;
+
+  @IsNumber()
+  @IsOptional()
+  endingPrice: number;
+
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  seriesCode : string;
 }

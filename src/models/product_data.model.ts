@@ -8,8 +8,10 @@ export const ProductDataSchema = new mongoose.Schema({
   modelCode: { type: String, required: true },
   category: { type: String, required: true },
   categoryCode: { type: String, required: true },
+  seriesCode: { type: String, required: false },
   brand: { type: String, required: true },
   brandCode: { type: String, required: true },
+
   storages: [
     {
       code: { type: String },
@@ -34,6 +36,24 @@ export const ProductDataSchema = new mongoose.Schema({
       title: { type: String },
     },
   ],
+  connectivity: [
+    {
+      code: { type: String },
+      title: { type: String },
+    },
+  ],
+  screenSizes: [
+    {
+      code: { type: String },
+      title: { type: String },
+    },
+  ],
+  combinations: [
+    {
+      code: { type: String },
+      title: { type: String },
+    },
+  ],
 });
 
 export interface ProductData {
@@ -41,6 +61,7 @@ export interface ProductData {
   highlights: string[];
   category: string;
   categoryCode: string;
+  seriesCode: string;
   brand: string;
   brandCode: string;
   title: string;
@@ -65,6 +86,24 @@ export interface ProductData {
     },
   ];
   storages: [
+    {
+      code: string;
+      title: string;
+    },
+  ];
+  connectivity: [
+    {
+      code: string;
+      title: string;
+    },
+  ];
+  screenSizes: [
+    {
+      code: string;
+      title: string;
+    },
+  ];
+  combinations: [
     {
       code: string;
       title: string;

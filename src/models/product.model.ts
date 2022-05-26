@@ -6,6 +6,7 @@ export const ProductSchema = new mongoose.Schema({
   aboutProduct: { type: [String], required: true },
   title: { type: String, required: true },
   modelNumber: { type: String, required: true },
+  seriesCode: { type: String, required: false },
   brand: { type: String, required: true },
   brandCode: { type: String, required: true },
   category: { type: String, required: true },
@@ -27,20 +28,30 @@ export const ProductSchema = new mongoose.Schema({
   isFeatured: { type: Boolean, required: false, default: false },
   isCertified: { type: Boolean, required: false, default: false },
   moreDetails: {
-    color: { type: String, required: true },
-    colorCode: { type: String, required: true },
-    storage: { type: String, required: false },
-    storageCode: { type: String, required: false },
-    ram: { type: String, required: false },
-    ramCode: { type: String, required: false },
-    processor: { type: String, required: false },
-    processorCode: { type: String, required: false },
+    color: { type: String, required: true, default: null },
+    colorCode: { type: String, required: true, default: null },
+    storage: { type: String, required: false, default: null },
+    storageCode: { type: String, required: false, default: null },
+    ram: { type: String, required: false, default: null },
+    ramCode: { type: String, required: false, default: null },
+    processor: { type: String, required: false, default: null },
+    processorCode: { type: String, required: false, default: null },
+    combination: { type: String, required: false, default: null },
+    combinationCode: { type: String, required: false, default: null },
+    screenSizeCode: { type: String, required: false, default: null },
+    screenSize: { type: String, required: false, default: null },
+    connectivity: { type: String, required: false, default: null },
+    connectivityCode: { type: String, required: false, default: null },
   },
   warrantyDetails: {
     isUnderWarranty: { type: Boolean, required: false, default: false },
     expiryDate: { type: String, required: false },
     warrantyLeft: { type: Number, required: false },
     description: { type: String, required: false },
+  },
+  sellerDetails: {
+    sellerId: { type: String, required: true },
+    sellerName: { type: String, required: true },
   },
   boxContains: { type: String, required: false },
   rating: { type: Number, required: false, default: 0 },
@@ -53,6 +64,7 @@ export interface Product {
   SKU: string;
   title: string;
   modelNumber: string;
+  seriesCode: string;
   brand: string;
   brandCode: string;
   category: string;
@@ -78,6 +90,16 @@ export interface Product {
     colorCode: string;
     storage: string;
     storageCode: string;
+    ram: string;
+    ramCode: string;
+    processor: string;
+    processorCode: string;
+    combination: string;
+    combinationCode: string;
+    screenSizeCode: string;
+    screenSize: string;
+    connectivity: string;
+    connectivityCode: string;
   };
   rating: number;
   boxContains: string;
@@ -86,5 +108,9 @@ export interface Product {
     expiryDate: string;
     warrantyLeft: number;
     description: string;
+  };
+  sellerDetails: {
+    sellerId: string;
+    sellerName: string;
   };
 }

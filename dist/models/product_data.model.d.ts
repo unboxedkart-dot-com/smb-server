@@ -5,6 +5,7 @@ export interface ProductData {
     highlights: string[];
     category: string;
     categoryCode: string;
+    seriesCode: string;
     brand: string;
     brandCode: string;
     title: string;
@@ -29,6 +30,24 @@ export interface ProductData {
         }
     ];
     storages: [
+        {
+            code: string;
+            title: string;
+        }
+    ];
+    connectivity: [
+        {
+            code: string;
+            title: string;
+        }
+    ];
+    screenSizes: [
+        {
+            code: string;
+            title: string;
+        }
+    ];
+    combinations: [
         {
             code: string;
             title: string;

@@ -7,6 +7,7 @@ export interface Product {
     SKU: string;
     title: string;
     modelNumber: string;
+    seriesCode: string;
     brand: string;
     brandCode: string;
     category: string;
@@ -32,6 +33,16 @@ export interface Product {
         colorCode: string;
         storage: string;
         storageCode: string;
+        ram: string;
+        ramCode: string;
+        processor: string;
+        processorCode: string;
+        combination: string;
+        combinationCode: string;
+        screenSizeCode: string;
+        screenSize: string;
+        connectivity: string;
+        connectivityCode: string;
     };
     rating: number;
     boxContains: string;
@@ -40,5 +51,9 @@ export interface Product {
         expiryDate: string;
         warrantyLeft: number;
         description: string;
+    };
+    sellerDetails: {
+        sellerId: string;
+        sellerName: string;
     };
 }

@@ -24,6 +24,12 @@ let ProductDetailsService = class ProductDetailsService {
         this.productImagesModel = productImagesModel;
         this.productDescriptionModel = productDescriptionModel;
     }
+    async getProductVariants(productCode) {
+        const variants = await this.productDataModel.findOne({
+            productCode: "samsung-galaxy-s10",
+        });
+        return variants;
+    }
     async getProductSpecs(productId) {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {
             const product = await this.productModel.findById(productId);
@@ -31,9 +37,7 @@ let ProductDetailsService = class ProductDetailsService {
                 throw new common_1.NotFoundException('could not find the product');
             }
             else {
-                const productSpecs = await this.productSpecsModel.findOne({
-                    productCode: product.productCode,
-                }, { _id: 0, productSpecs: 1 });
+                const productSpecs = await this.productSpecsModel.findOne({}, { _id: 0, productSpecs: 1 });
                 return productSpecs.productSpecs;
             }
         }
@@ -67,6 +71,71 @@ let ProductDetailsService = class ProductDetailsService {
         });
     }
     async addSomething() { }
+    async addSeriesCodeToProductData() {
+        await this.productDataModel.updateMany({ productCode: { $regex: /iphone-11/ } }, [{ $set: { seriesCode: 'iphone-11' } }]);
+        await this.productDataModel.updateMany({ productCode: { $regex: /iphone-x/ } }, [{ $set: { seriesCode: 'iphone-x' } }]);
+        await this.productDataModel.updateMany({ productCode: { $regex: /iphone-8/ } }, [{ $set: { seriesCode: 'iphone-8' } }]);
+        await this.productDataModel.updateMany({ productCode: { $regex: /iphone-7/ } }, [{ $set: { seriesCode: 'iphone-7' } }]);
+        await this.productDataModel.updateMany({ productCode: { $regex: /iphone-6/ } }, [{ $set: { seriesCode: 'iphone-6' } }]);
+    }
+    async addMoreProductData() {
+        this.productDataModel.insertMany([
+            {
+                productCode: 'samsung-galaxy-s10',
+                categoryCode: 'mobile-phone',
+                category: 'Mobile Phone',
+                brand: 'Samsung',
+                modelCode: 'galaxy-s10',
+                brandCode: 'samsung',
+                highlights: [
+                    '15.49 cm (6.1 inch) Quad HD+ Display',
+                    '16MP + 12MP | 10MP Front Camera',
+                    '3400 mAh Lithium-ion Battery',
+                    'Exynos 9 9820 Processor',
+                ],
+                title: 'Samsung Galaxy S10',
+                modelNumber: 'ABCD',
+                colors: [
+                    {
+                        code: 'canary-yellow',
+                        title: 'Canary Yellow',
+                    },
+                    {
+                        code: 'crown-silver',
+                        title: 'Crown Silver',
+                    },
+                    {
+                        code: 'majestic-black',
+                        title: 'Majestic Black',
+                    },
+                    {
+                        code: 'royal-gold',
+                        title: 'Royal Gold',
+                    },
+                ],
+                combinations: [
+                    { code: '8-gb-and-128-gb', title: '8 GB + 128 GB' },
+                    { code: '8-gb-and-512-gb', title: '8 GB + 512 GB' },
+                ],
+                storages: [
+                    {
+                        code: '128-gb',
+                        title: '128 GB',
+                    },
+                    {
+                        code: '512-gb',
+                        title: '512 GB',
+                    },
+                ],
+                rams: [
+                    {
+                        code: '8-gb',
+                        title: '8 GB',
+                    },
+                ],
+            },
+        ]);
+    }
     async addProductData(entireBody) {
         console.log('new entire body', entireBody);
         const newProductData = new this.productDataModel({

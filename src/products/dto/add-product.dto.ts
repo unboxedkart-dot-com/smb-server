@@ -141,4 +141,13 @@ export class CreateProductDto {
   @IsNumber()
   @IsOptional()
   warrantyLeftInMonths: number;
+
+  @IsOptional()
+  @IsString()
+  connectivity: string;
+
+  // @IsString()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // seriesCode: string;
 }

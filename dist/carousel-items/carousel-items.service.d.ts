@@ -7,6 +7,8 @@ import { UpdateCarouselItemDto } from './dto/update-carousel-item.dto';
 export declare class CarouselItemsService {
     private readonly carouselItemModel;
     constructor(carouselItemModel: Model<CarouselItem>);
+    deleteAll(): Promise<void>;
+    addMany(): Promise<void>;
     create(createCarouselItemDto: CreateCarouselItemDto): void;
     findAll(): string;
     findOne(category: string, brand: string, condition: string, q: string): Promise<(import("mongoose").Document<unknown, any, CarouselItem> & CarouselItem & {

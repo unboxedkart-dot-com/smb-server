@@ -13,153 +13,93 @@ export class SearchService {
     private readonly searchTermModel: Model<SearchTerm>,
   ) {}
 
-  // nullValues = [null, 'null', undefined];
-
   async getNewSearch(
+    isExact: boolean,
     title: string,
     category: string,
     brand: string,
     condition: string,
-    productCode: string,
-    sellerCode: string,
+    product: string,
+    seller: string,
     pageNumber: string,
   ) {
+    var itemsToSkip: number = 0;
+    if (pageNumber && parseInt(pageNumber) > 0) {
+      itemsToSkip = 10 * parseInt(pageNumber) - 10;
+    }
     console.log(
       'new search',
+      isExact,
       title,
       category,
       brand,
       condition,
-      productCode,
-      sellerCode,
+      product,
+      seller,
       pageNumber,
     );
-    const products = await this.productModel.find({
-      conditionCode:
-        condition === undefined || 'null' ? { $ne: null } : condition,
-      categoryCode: category === undefined || 'null' ? { $ne: null } : category,
-      brandCode: brand === undefined || 'null' ? { $ne: null } : brand,
-      productCode:
-        productCode === undefined || 'null' ? { $ne: null } : productCode,
-      // brandCode : brand
-    });
-    return products.length;
-  }
-
-  async getSearchedProducts(
-    title: string,
-    category: string,
-    brand: string,
-    condition: string,
-    productCode: string,
-    pageNumber: string,
-  ) {
-    console.log('dd', productCode);
-    var itemsToSkip: number = 0;
-    if (pageNumber && parseInt(pageNumber) > 0) {
-      itemsToSkip = 10 * parseInt(pageNumber) - 10;
-    }
-    console.log('ss', itemsToSkip);
-    if (productCode) {
-      console.log('has product code');
-      const products = await this._getProductsByProductCode(
-        productCode,
-        itemsToSkip,
-      );
-      return products;
-    } else if (!title) {
-      if (category && brand) {
-        const products = await this._getProductsByCategoryAndBrand(
-          category,
-          brand,
-          itemsToSkip,
-        );
-        return products;
-      } else if (category && condition) {
-        const products = await this._getProductsByConditionAndCategory(
-          condition,
-          category,
-          itemsToSkip,
-        );
-        return products;
-      } else if (brand && condition) {
-        const products = await this._getProductsByBrandAndCondition(
-          brand,
-          condition,
-          itemsToSkip,
-        );
-        return products;
-      }
+    // const productExp = new RegExp(`${product}`);
+    // const queryWithProductCode = {
+    //   productCode: productExp,
+    // };
+    // console.log('product query', queryWithProductCode);
+    let query = {};
+    if (title != undefined && title != 'null') {
+      const searchTerm = title.replace(/\s/g, '');
+      const titleExp = new RegExp(`${searchTerm}`);
+      console.log('title expression', searchTerm, titleExp);
+      query = {
+        searchCases: {
+          $in: [searchTerm, titleExp],
+        },
+      };
+    } else if (isExact && isExact == true) {
+      const productExp = new RegExp(`${product}`);
+      query = { productCode: productExp };
     } else {
-      const products = await this._getProductsByTitle(
-        title,
-        pageNumber,
-        itemsToSkip,
-      );
-      return products;
+      query = {
+        conditionCode:
+          condition != undefined && condition != 'null'
+            ? { $eq: condition }
+            : { $ne: null },
+        categoryCode:
+          category != undefined && category != 'null'
+            ? { $eq: category }
+            : { $exists: true },
+        brandCode:
+          brand != undefined && brand != 'null'
+            ? { $eq: brand }
+            : { $ne: null, $eq: null },
+      };
     }
-  }
-
-  async _getProductsByProductCode(productCode: string, itemsToSkip: number) {
-    // var itemsToSkip: number = 0;
-    // if (pageNumber && parseInt(pageNumber) > 0) {
-    //   itemsToSkip = 10 * parseInt(pageNumber) - 10;
-    // }
-    console.log('gettin gby products code');
+    console.log('my query', query);
+    const searchTerm = title.replace(/\s/g, '');
+    const titleExp = new RegExp(`${searchTerm}`);
+    // const products = await this.productModel.find(query);
     const products = await this.productModel
-      .find({
-        productCode: productCode,
-      })
+      .aggregate([
+        {
+          $match: query
+          // {
+          //   searchCases: {
+          //     '$in': [searchTerm, titleExp],
+          //   },
+          //   // query,
+          // },
+        },
+        {
+          $lookup: {
+            from: 'reviewsdatas',
+            localField: 'productCode',
+            foreignField: 'productCode',
+            as: 'reviews',
+          },
+        },
+      ])
       .limit(10)
       .skip(itemsToSkip)
       .exec();
-    return products as Product[];
-  }
-
-  async _getProductsByTitle(
-    title: string,
-    pageNumber: string,
-    itemsToSkip: number,
-  ) {
-    console.log('title', title);
-    console.log('joining tables');
-    var itemsToSkip: number = 0;
-    if (pageNumber && parseInt(pageNumber) > 0) {
-      itemsToSkip = 10 * parseInt(pageNumber) - 10;
-    }
-    const searchTerm = title.replace(/\s/g, '');
-
-    const products = await this.productModel.aggregate([
-      {
-        $match: {
-          productCode: 'apple-iphone-x',
-        },
-      },
-      {
-        $lookup: {
-          from: 'reviewsdatas',
-          localField: 'productCode',
-          foreignField: 'productCode',
-          as: 'reviews',
-        },
-      },
-    ]);
-    console.log('joined product', products);
-    return products;
-
-    // .find({
-    //   searchCases: searchTerm,
-    // })
-    // .limit(10)
-    // .skip(itemsToSkip).join
-
-    // const products = await this.productModel
-    // .find({
-    //   searchCases: searchTerm,
-    // })
-    // .limit(10)
-    // .skip(itemsToSkip)
-    // .exec();
+    // console.log('joined product', products);
     return products as Product[];
   }
 
@@ -200,80 +140,4 @@ export class SearchService {
       .limit(3);
     return popularSearches;
   }
-
-  async _getProductsByCategoryAndBrand(
-    category: string,
-    brand: string,
-    itemsToSkip: number,
-  ) {
-    const products = await this.productModel
-      .find({
-        categoryCode: { $eq: category },
-        brandCode: { $eq: brand },
-      })
-      .skip(itemsToSkip)
-      .limit(10)
-      .skip(itemsToSkip)
-      .exec();
-    return products as Product[];
-  }
-
-  async _getProductsByBrandAndCondition(
-    brand: string,
-    condition: string,
-    itemsToSkip: number,
-  ) {
-    const products = await this.productModel
-      .find({
-        brandCode: { $eq: brand },
-        conditionCode: { $eq: condition },
-      })
-      .limit(10)
-      .skip(itemsToSkip)
-      .exec();
-    return products as Product[];
-  }
-
-  async _getProductsByConditionAndCategory(
-    condition: string,
-    category: string,
-    itemsToSkip: number,
-  ) {
-    const products = await this.productModel
-      .find({
-        categoryCode: { $eq: category },
-        conditionCode: { $eq: condition },
-      })
-      .limit(10)
-      .skip(itemsToSkip)
-      .exec();
-    return products as Product[];
-  }
 }
-
-// async getSearchedProducts(
-//   title: string,
-//   category: string,
-//   brand: string,
-//   condition: string,
-//   pageNumber: string,
-// ) {
-//   if (title in this.nullValues) {
-//     if (!(category in this.nullValues) && !(brand in this.nullValues)) {
-//       const products = await this._getProductsByCategoryAndBrand(
-//         category,
-//         brand,
-//       );
-//       return products;
-//     } else if (!(category in this.nullValues) && !(condition in this.nullValues)) {
-//       const products = await this._getProductsByConditionAndCategory(
-//         condition,
-//         category,
-//       );
-//       return products;
-//     }
-//   } else {
-//     const products = await this._getProductsByTitle(title, pageNumber);
-//     return products;
-//   }
-// }

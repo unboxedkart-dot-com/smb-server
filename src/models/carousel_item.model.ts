@@ -12,11 +12,17 @@ export const CarouselItemSchema = new mongoose.Schema({
   brandCode: { type: String },
   categoryCode: { type: String },
   conditionCode: { type: String },
-  title: { type: String },
   productCode: { type: String },
+  title: { type: String },
   isExact: { type: Boolean, default: false },
   productId: { type: String },
+  index: { type: Number, required: true },
   isActive: { type: Boolean, default: true },
+  startingPrice: { type: Number },
+  endingPrice: { type: Number },
+  seriesCode: { type: String },
+  processorCode: { type: String },
+  screenSizeCode: { type: String },
 });
 
 export interface CarouselItem {
@@ -30,4 +36,10 @@ export interface CarouselItem {
   isExact: boolean;
   productId: string;
   isActive: boolean;
+  index: number;
+  startingPrice: number;
+  endingPrice: number;
+  seriesCode: string;
+  processorCode : string;
+  screenSizeCode : string;
 }

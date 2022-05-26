@@ -21,71 +21,47 @@ let SearchService = class SearchService {
         this.userModel = userModel;
         this.searchTermModel = searchTermModel;
     }
-    async getNewSearch(title, category, brand, condition, productCode, sellerCode, pageNumber) {
-        console.log('new search', title, category, brand, condition, productCode, sellerCode, pageNumber);
-        const products = await this.productModel.find({
-            conditionCode: condition === undefined || 'null' ? { $ne: null } : condition,
-            categoryCode: category === undefined || 'null' ? { $ne: null } : category,
-            brandCode: brand === undefined || 'null' ? { $ne: null } : brand,
-            productCode: productCode === undefined || 'null' ? { $ne: null } : productCode,
-        });
-        return products.length;
-    }
-    async getSearchedProducts(title, category, brand, condition, productCode, pageNumber) {
-        console.log('dd', productCode);
+    async getNewSearch(isExact, title, category, brand, condition, product, seller, pageNumber) {
         var itemsToSkip = 0;
         if (pageNumber && parseInt(pageNumber) > 0) {
             itemsToSkip = 10 * parseInt(pageNumber) - 10;
         }
-        console.log('ss', itemsToSkip);
-        if (productCode) {
-            console.log('has product code');
-            const products = await this._getProductsByProductCode(productCode, itemsToSkip);
-            return products;
+        console.log('new search', isExact, title, category, brand, condition, product, seller, pageNumber);
+        let query = {};
+        if (title != undefined && title != 'null') {
+            const searchTerm = title.replace(/\s/g, '');
+            const titleExp = new RegExp(`${searchTerm}`);
+            console.log('title expression', searchTerm, titleExp);
+            query = {
+                searchCases: {
+                    $in: [searchTerm, titleExp],
+                },
+            };
         }
-        else if (!title) {
-            if (category && brand) {
-                const products = await this._getProductsByCategoryAndBrand(category, brand, itemsToSkip);
-                return products;
-            }
-            else if (category && condition) {
-                const products = await this._getProductsByConditionAndCategory(condition, category, itemsToSkip);
-                return products;
-            }
-            else if (brand && condition) {
-                const products = await this._getProductsByBrandAndCondition(brand, condition, itemsToSkip);
-                return products;
-            }
+        else if (isExact && isExact == true) {
+            const productExp = new RegExp(`${product}`);
+            query = { productCode: productExp };
         }
         else {
-            const products = await this._getProductsByTitle(title, pageNumber, itemsToSkip);
-            return products;
+            query = {
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $ne: null },
+                categoryCode: category != undefined && category != 'null'
+                    ? { $eq: category }
+                    : { $exists: true },
+                brandCode: brand != undefined && brand != 'null'
+                    ? { $eq: brand }
+                    : { $ne: null, $eq: null },
+            };
         }
-    }
-    async _getProductsByProductCode(productCode, itemsToSkip) {
-        console.log('gettin gby products code');
-        const products = await this.productModel
-            .find({
-            productCode: productCode,
-        })
-            .limit(10)
-            .skip(itemsToSkip)
-            .exec();
-        return products;
-    }
-    async _getProductsByTitle(title, pageNumber, itemsToSkip) {
-        console.log('title', title);
-        console.log('joining tables');
-        var itemsToSkip = 0;
-        if (pageNumber && parseInt(pageNumber) > 0) {
-            itemsToSkip = 10 * parseInt(pageNumber) - 10;
-        }
+        console.log('my query', query);
         const searchTerm = title.replace(/\s/g, '');
-        const products = await this.productModel.aggregate([
+        const titleExp = new RegExp(`${searchTerm}`);
+        const products = await this.productModel
+            .aggregate([
             {
-                $match: {
-                    productCode: 'apple-iphone-x',
-                },
+                $match: query
             },
             {
                 $lookup: {
@@ -95,9 +71,10 @@ let SearchService = class SearchService {
                     as: 'reviews',
                 },
             },
-        ]);
-        console.log('joined product', products);
-        return products;
+        ])
+            .limit(10)
+            .skip(itemsToSkip)
+            .exec();
         return products;
     }
     async getRecentSearches(userId) {
@@ -133,40 +110,6 @@ let SearchService = class SearchService {
             .find({ isPopular: true })
             .limit(3);
         return popularSearches;
-    }
-    async _getProductsByCategoryAndBrand(category, brand, itemsToSkip) {
-        const products = await this.productModel
-            .find({
-            categoryCode: { $eq: category },
-            brandCode: { $eq: brand },
-        })
-            .skip(itemsToSkip)
-            .limit(10)
-            .skip(itemsToSkip)
-            .exec();
-        return products;
-    }
-    async _getProductsByBrandAndCondition(brand, condition, itemsToSkip) {
-        const products = await this.productModel
-            .find({
-            brandCode: { $eq: brand },
-            conditionCode: { $eq: condition },
-        })
-            .limit(10)
-            .skip(itemsToSkip)
-            .exec();
-        return products;
-    }
-    async _getProductsByConditionAndCategory(condition, category, itemsToSkip) {
-        const products = await this.productModel
-            .find({
-            categoryCode: { $eq: category },
-            conditionCode: { $eq: condition },
-        })
-            .limit(10)
-            .skip(itemsToSkip)
-            .exec();
-        return products;
     }
 };
 SearchService = __decorate([

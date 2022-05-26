@@ -32,21 +32,15 @@ let ProductsController = class ProductsController {
         };
     }
     async addManyProducts() {
-        const generatedId = await this.productsService.insertAllProdcts();
-        return {
-            data: {
-                response: generatedId,
-            },
-        };
     }
     async getProduct(q) {
         const product = await this.productsService.getProduct(q);
         return product;
     }
-    async getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode) {
-        const product = await this.productsService.getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode);
-        console.log('seelcred product', product);
-        return product;
+    async getSelectedVariant(product, condition, storage, color, processor, combination, ram, screenSize) {
+        const response = await this.productsService.getSelectedVariant(product, condition, storage, color, processor, ram, combination, screenSize);
+        console.log('getting variant product', product);
+        return response;
     }
     async handleDeleteProducts() {
         await this.productsService.deleteProducts();
@@ -116,14 +110,16 @@ __decorate([
 ], ProductsController.prototype, "getProduct", null);
 __decorate([
     (0, common_1.Get)('/variant'),
-    __param(0, (0, common_1.Query)('productCode')),
-    __param(1, (0, common_1.Query)('conditionCode')),
-    __param(2, (0, common_1.Query)('storageCode')),
-    __param(3, (0, common_1.Query)('colorCode')),
-    __param(4, (0, common_1.Query)('processorCode')),
-    __param(5, (0, common_1.Query)('ramCode')),
+    __param(0, (0, common_1.Query)('product')),
+    __param(1, (0, common_1.Query)('condition')),
+    __param(2, (0, common_1.Query)('storage')),
+    __param(3, (0, common_1.Query)('color')),
+    __param(4, (0, common_1.Query)('processor')),
+    __param(5, (0, common_1.Query)('combination')),
+    __param(6, (0, common_1.Query)('ram')),
+    __param(7, (0, common_1.Query)('screenSize')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getSelectedVariant", null);
 __decorate([

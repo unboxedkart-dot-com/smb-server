@@ -26,8 +26,19 @@ export class CarouselItemsController {
   //   return this.carouselItemsService.findAll();
   // }
 
+  @Delete()
+  deleteAll() {
+    return this.carouselItemsService.deleteAll();
+  }
+
+  @Post('add-many')
+  addMany() {
+    return this.carouselItemsService.addMany();
+  }
+
   @Get()
   findOne(@Query('placement') q: string) {
+    console.log('getting carousel items for', q);
     return this.carouselItemsService.carouselItems(q);
   }
 

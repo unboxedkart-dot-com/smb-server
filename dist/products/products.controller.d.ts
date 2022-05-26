@@ -12,15 +12,11 @@ export declare class ProductsController {
             response: void;
         };
     }>;
-    addManyProducts(): Promise<{
-        data: {
-            response: void;
-        };
-    }>;
+    addManyProducts(): Promise<void>;
     getProduct(q: string): Promise<mongoose.Document<unknown, any, Product> & Product & {
         _id: mongoose.Types.ObjectId;
     }>;
-    getSelectedVariant(productCode: string, conditionCode: string, storageCode: string, colorCode: string, processorCode: string, ramCode: string): Promise<number>;
+    getSelectedVariant(product: string, condition: string, storage: string, color: string, processor: string, combination: string, ram: string, screenSize: string): Promise<mongoose.Types.ObjectId>;
     handleDeleteProducts(): Promise<string>;
     handleUpdateInventoryCount(count: number, request: any, productId: string): Promise<{
         statusCode: number;

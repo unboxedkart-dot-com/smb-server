@@ -38,6 +38,7 @@
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
     "@types/validator": "^13.7.2",
+    "autocorrect": "^1.2.0",
     "aws-sdk": "^2.1131.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

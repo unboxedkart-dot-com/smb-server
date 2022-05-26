@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { AddProductDataDto } from './dto/add-product-data.dto';
 import { AddProductImagesDto } from './dto/add-product-images.dto';
 import { CreateProductDetailsDto } from './dto/create-product-details.dto';
@@ -8,6 +17,11 @@ import { ProductDetailsService } from './product-details.service';
 @Controller('product-details')
 export class ProductDetailsController {
   constructor(private readonly productDetailsService: ProductDetailsService) {}
+
+  @Post('add-many')
+  async handleAddMany() {
+    await this.productDetailsService.addMoreProductData();
+  }
 
   @Get('/specs/:id')
   async handleGetProductSpecs(@Param('id') productId: string) {
@@ -37,6 +51,11 @@ export class ProductDetailsController {
     const response = await this.productDetailsService.addSomething();
   }
 
+  @Patch('modify-product-data')
+  async modifyProductData() {
+    await this.productDetailsService.addSeriesCodeToProductData();
+  }
+
   @Post('/data')
   async addProductData(
     @Req() request: any,
@@ -64,6 +83,15 @@ export class ProductDetailsController {
   async handleAddProductImages(@Body() entireBody: AddProductImagesDto) {
     const response = await this.productDetailsService.addProductImages(
       entireBody,
+    );
+    return response;
+  }
+
+  @Get('/variants')
+  async handleGetProductVariants(@Query('id') productCode: string) {
+    console.log('productCode to get variants', productCode);
+    const response = await this.productDetailsService.getProductVariants(
+      productCode,
     );
     return response;
   }

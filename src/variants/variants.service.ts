@@ -3,12 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { VariantsData } from 'src/models/variants_data.model';
 import { Model } from 'mongoose';
+import { ProductData } from 'src/models/product_data.model';
 
 @Injectable()
 export class VariantsService {
   constructor(
     @InjectModel('VariantsData')
     private readonly variantDataModel: Model<VariantsData>,
+    // @InjectModel('ProductData')
+    // private readonly productDataModel: Model<ProductData>,
   ) {}
 
   async addVariantsData() {
@@ -33,9 +36,11 @@ export class VariantsService {
   }
 
   async getVariantsData(productCode: string) {
-    const variants = await this.variantDataModel.findOne({
-      productCode: productCode,
-    });
-    return variants;
+    console.log('getting variants for', productCode);
+    // const variants = await this.variantDataModel.findOne({
+    //   productCode: 'apple-iphone-x',
+    // });
+    // const variants = await this.productDta;
+    // return variants;
   }
 }

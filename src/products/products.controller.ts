@@ -45,12 +45,12 @@ export class ProductsController {
     // const isAdmin = await this.authService.CheckIfAdmin(userId);
     // console.log('isadmin', isAdmin);
     // if (isAdmin) {
-      const generatedId = await this.productsService.insertProduct(entireBody);
-      return {
-        data: {
-          response: generatedId,
-        },
-      };
+    const generatedId = await this.productsService.insertProduct(entireBody);
+    return {
+      data: {
+        response: generatedId,
+      },
+    };
     // } else {
     //   throw new ForbiddenException();
     // }
@@ -58,12 +58,12 @@ export class ProductsController {
 
   @Post('/add-many')
   async addManyProducts() {
-    const generatedId = await this.productsService.insertAllProdcts();
-    return {
-      data: {
-        response: generatedId,
-      },
-    };
+    // const generatedId = await this.productsService.insertAllProdcts();
+    // return {
+    //   data: {
+    //     response: generatedId,
+    //   },
+    // };
   }
 
   // @Get()
@@ -85,23 +85,28 @@ export class ProductsController {
 
   @Get('/variant')
   async getSelectedVariant(
-    @Query('productCode') productCode: string,
-    @Query('conditionCode') conditionCode: string,
-    @Query('storageCode') storageCode: string,
-    @Query('colorCode') colorCode: string,
-    @Query('processorCode') processorCode: string,
-    @Query('ramCode') ramCode: string,
+    @Query('product') product: string,
+    @Query('condition') condition: string,
+    @Query('storage') storage: string,
+    @Query('color') color: string,
+    @Query('processor') processor: string,
+    @Query('combination') combination: string,
+    @Query('ram') ram: string,
+    @Query('screenSize') screenSize: string,
   ) {
-    const product = await this.productsService.getSelectedVariant(
-      productCode,
-      conditionCode,
-      storageCode,
-      colorCode,
-      processorCode,
-      ramCode,
+    const response = await this.productsService.getSelectedVariant(
+      product,
+      condition,
+      storage,
+      color,
+      processor,
+      ram,
+      combination,
+      screenSize,
     );
-    console.log('seelcred product', product);
-    return product;
+    console.log('getting variant product', product);
+    // return product;
+    return response;
   }
 
   @Delete()

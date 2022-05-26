@@ -10,6 +10,7 @@ exports.ProductDataSchema = new mongoose_1.default.Schema({
     modelCode: { type: String, required: true },
     category: { type: String, required: true },
     categoryCode: { type: String, required: true },
+    seriesCode: { type: String, required: false },
     brand: { type: String, required: true },
     brandCode: { type: String, required: true },
     storages: [
@@ -31,6 +32,24 @@ exports.ProductDataSchema = new mongoose_1.default.Schema({
         },
     ],
     processors: [
+        {
+            code: { type: String },
+            title: { type: String },
+        },
+    ],
+    connectivity: [
+        {
+            code: { type: String },
+            title: { type: String },
+        },
+    ],
+    screenSizes: [
+        {
+            code: { type: String },
+            title: { type: String },
+        },
+    ],
+    combinations: [
         {
             code: { type: String },
             title: { type: String },

@@ -23,4 +23,5 @@ export declare class CreateProductDto {
     warrantyExpiryDate: string;
     isUnderWarranty: boolean;
     warrantyLeftInMonths: number;
+    connectivity: string;
 }

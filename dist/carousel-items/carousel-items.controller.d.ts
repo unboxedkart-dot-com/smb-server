@@ -7,6 +7,8 @@ export declare class CarouselItemsController {
     private readonly carouselItemsService;
     constructor(carouselItemsService: CarouselItemsService);
     create(createCarouselItemDto: CreateCarouselItemDto): void;
+    deleteAll(): Promise<void>;
+    addMany(): Promise<void>;
     findOne(q: string): Promise<(import("mongoose").Document<unknown, any, import("../models/carousel_item.model").CarouselItem> & import("../models/carousel_item.model").CarouselItem & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;

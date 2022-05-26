@@ -23,255 +23,15 @@ let ProductsService = class ProductsService {
         this.productImagesModel = productImagesModel;
         this.reviewModel = reviewModel;
     }
-    async insertAllProdcts() {
-        await this.productModel.insertMany([
-            {
-                imageUrls: {
-                    coverImage: 'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                    images: [
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-02.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-03.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-04.webp',
-                    ],
-                },
-                productCode: 'apple-iphone-x',
-                pricing: {
-                    price: 58000,
-                    sellingPrice: 22000,
-                },
-                moreDetails: {
-                    color: 'Space grey',
-                    colorCode: 'space-grey',
-                    storage: '64 GB',
-                    storageCode: '64-gb',
-                },
-                SKU: '1234567',
-                title: 'Apple iPhone X (64 GB, Space grey, Grade A)',
-                modelNumber: 'AMPXSM',
-                brand: 'Apple',
-                brandCode: 'apple',
-                category: 'Mobile Phone',
-                categoryCode: 'mobile-phone',
-                condition: 'Grade - A',
-                conditionCode: 'grade-a',
-                quantity: 3,
-                highlights: [
-                    '256 GB ROM',
-                    '14.73 cm (5.8 inch) Super Retina HD Display',
-                    '12MP + 12MP | 7MP Front Camera',
-                    'A11 Bionic Chip with 64-bit Architecture, Neural Engine, Embedded M11 Motion Coprocessor Processor',
-                ],
-                searchCases: [
-                    'ap',
-                    'app',
-                    'appl',
-                    'appe',
-                    'apple',
-                    'appleiphonex',
-                    'i',
-                    'ip',
-                    'iph',
-                    'ipho',
-                    'iphon',
-                    'iphone',
-                    'iphonex',
-                    'iphonexsmax',
-                    'iphonegold',
-                    'iphonexs',
-                    'iphonexsmaxgold256',
-                    'iphonemax',
-                ],
-            },
-            {
-                imageUrls: {
-                    coverImage: 'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                    images: [
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-02.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-03.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-04.webp',
-                    ],
-                },
-                productCode: 'apple-iphone-x',
-                pricing: {
-                    price: 65000,
-                    sellingPrice: 25000,
-                },
-                moreDetails: {
-                    color: 'Space grey',
-                    colorCode: 'space-grey',
-                    storage: '256 GB',
-                    storageCode: '256-gb',
-                },
-                SKU: '1234567',
-                title: 'Apple iPhone X (256 GB, Space grey, Grade A)',
-                modelNumber: 'AMPXSM',
-                brand: 'Apple',
-                brandCode: 'apple',
-                category: 'Mobile Phone',
-                categoryCode: 'mobile-phone',
-                condition: 'Grade - A',
-                conditionCode: 'grade-a',
-                quantity: 3,
-                highlights: [
-                    '256 GB ROM',
-                    '14.73 cm (5.8 inch) Super Retina HD Display',
-                    '12MP + 12MP | 7MP Front Camera',
-                    'A11 Bionic Chip with 64-bit Architecture, Neural Engine, Embedded M11 Motion Coprocessor Processor',
-                ],
-                searchCases: [
-                    'ap',
-                    'app',
-                    'appl',
-                    'appe',
-                    'apple',
-                    'appleiphonex',
-                    'i',
-                    'ip',
-                    'iph',
-                    'ipho',
-                    'iphon',
-                    'iphone',
-                    'iphonex',
-                    'iphonexsmax',
-                    'iphonegold',
-                    'iphonexs',
-                    'iphonexsmaxgold256',
-                    'iphonemax',
-                ],
-            },
-            {
-                imageUrls: {
-                    coverImage: 'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                    images: [
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-02.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-03.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-04.webp',
-                    ],
-                },
-                productCode: 'apple-iphone-x',
-                pricing: {
-                    price: 58000,
-                    sellingPrice: 20000,
-                },
-                moreDetails: {
-                    color: 'Space grey',
-                    colorCode: 'space-grey',
-                    storage: '64 GB',
-                    storageCode: '64-gb',
-                },
-                SKU: '1234567',
-                title: 'Apple iPhone X (64 GB, Space grey, Grade C)',
-                modelNumber: 'AMPXSM',
-                brand: 'Apple',
-                brandCode: 'apple',
-                category: 'Mobile Phone',
-                categoryCode: 'mobile-phone',
-                condition: 'Grade - C',
-                conditionCode: 'grade-c',
-                quantity: 3,
-                highlights: [
-                    '256 GB ROM',
-                    '14.73 cm (5.8 inch) Super Retina HD Display',
-                    '12MP + 12MP | 7MP Front Camera',
-                    'A11 Bionic Chip with 64-bit Architecture, Neural Engine, Embedded M11 Motion Coprocessor Processor',
-                ],
-                searchCases: [
-                    'ap',
-                    'app',
-                    'appl',
-                    'appe',
-                    'apple',
-                    'appleiphonex',
-                    'i',
-                    'ip',
-                    'iph',
-                    'ipho',
-                    'iphon',
-                    'iphone',
-                    'iphonex',
-                    'iphonexsmax',
-                    'iphonegold',
-                    'iphonexs',
-                    'iphonexsmaxgold256',
-                    'iphonemax',
-                ],
-            },
-            {
-                imageUrls: {
-                    coverImage: 'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                    images: [
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-01.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-02.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-03.webp',
-                        'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/mobile-phone/apple/iphone-x/spacegrey/apple-iphone-x-space-grey-unboxedkart-04.webp',
-                    ],
-                },
-                productCode: 'apple-iphone-x',
-                pricing: {
-                    price: 58000,
-                    sellingPrice: 22000,
-                },
-                moreDetails: {
-                    color: 'Silver',
-                    colorCode: 'silver',
-                    storage: '64 GB',
-                    storageCode: '64-gb',
-                },
-                SKU: '1234567',
-                title: 'Apple iPhone X (64 GB, Silver, Grade A)',
-                modelNumber: 'AMPXSM',
-                brand: 'Apple',
-                brandCode: 'apple',
-                category: 'Mobile Phone',
-                categoryCode: 'mobile-phone',
-                condition: 'Grade - A',
-                conditionCode: 'grade-a',
-                quantity: 3,
-                highlights: [
-                    '256 GB ROM',
-                    '14.73 cm (5.8 inch) Super Retina HD Display',
-                    '12MP + 12MP | 7MP Front Camera',
-                    'A11 Bionic Chip with 64-bit Architecture, Neural Engine, Embedded M11 Motion Coprocessor Processor',
-                ],
-                searchCases: [
-                    'ap',
-                    'app',
-                    'appl',
-                    'appe',
-                    'apple',
-                    'appleiphonex',
-                    'i',
-                    'ip',
-                    'iph',
-                    'ipho',
-                    'iphon',
-                    'iphone',
-                    'iphonex',
-                    'iphonexsmax',
-                    'iphonegold',
-                    'iphonexs',
-                    'iphonexsmaxgold256',
-                    'iphonemax',
-                ],
-            },
-        ]);
-    }
     async insertProduct(entireBody) {
         const productData = await this.productDataModel.findOne({
             productCode: entireBody.productCode,
         });
-        const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
-        const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
-        const productImages = await this.productImagesModel.findOne({
-            productCode: entireBody.productCode,
-            colorCode: entireBody.colorCode,
-        });
-        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, productImages.count);
+        const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
+        const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
+        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, 4);
         const searchCases = this._handleCreateProductSearchCases(productData.category, productData.brand, productData.title, entireBody);
-        const newTitle = this._handleGenerateNewTitle(productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor);
+        const newTitle = this._handleGenerateNewTitle(productData.categoryCode, productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor, entireBody.connectivity);
         const aboutProduct = entireBody.aboutProduct.split('///');
         console.log('about splitting', aboutProduct);
         console.log('new title', newTitle);
@@ -279,6 +39,7 @@ let ProductsService = class ProductsService {
             productCode: entireBody.productCode,
             SKU: 'ABCD',
             title: newTitle,
+            seriesCode: productData.seriesCode,
             highlights: productData.highlights,
             aboutProduct: aboutProduct,
             modelNumber: productData.modelNumber,
@@ -323,24 +84,45 @@ let ProductsService = class ProductsService {
         const aboutList = aboutProduct.split('...');
         console.log('aboutList', aboutList);
     }
-    _handleGenerateNewTitle(title, condition, color, storage, ram, processor) {
-        let newTitle = title +
-            ' (' +
-            condition +
-            ', ' +
-            color +
-            (storage != null ? `, ${storage}` : ``) +
-            (ram != null ? `, ${ram}` : ``) +
-            (processor != null ? `, ${processor}` : ``) +
-            ')';
+    _handleGenerateNewTitle(category, title, condition, color, storage, ram, processor, connectivity) {
+        let newTitle = '';
+        if (category == 'mobile-phone') {
+            newTitle =
+                title +
+                    ' (' +
+                    condition +
+                    ', ' +
+                    color +
+                    (storage != null ? `, ${storage}` : ``) +
+                    (ram != null ? `, ${ram}` : ``) +
+                    ')';
+        }
+        else if (category == 'laptop') {
+            newTitle =
+                title +
+                    ' (' +
+                    condition +
+                    ', ' +
+                    color +
+                    (storage != null ? `, ${storage}` : ``) +
+                    (ram != null ? `, ${ram}` : ``) +
+                    (processor != null ? `, ${processor}` : ``) +
+                    ')';
+        }
+        else if (category == 'watch') {
+            newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
+        }
+        else {
+            newTitle = title + ' (' + condition + ', ' + color + ')';
+        }
         return newTitle;
     }
     _handleGetProductImageUrls(imageUrl, thumbnailUrl, count) {
         const thumbnails = [];
         const images = [];
         for (let n = 1; n <= count; n++) {
-            thumbnails.push(`${thumbnailUrl}-1`);
-            images.push(`${imageUrl}-1.webp`);
+            thumbnails.push(`${thumbnailUrl}-${n}.webp`);
+            images.push(`${imageUrl}-${n}.webp`);
         }
         return {
             coverImage: `${imageUrl}-1.webp`,
@@ -380,17 +162,36 @@ let ProductsService = class ProductsService {
         const products = await this.productModel.find().exec();
         return products;
     }
-    async getSelectedVariant(productCode, conditionCode, storageCode, colorCode, processorCode, ramCode) {
-        console.log('selected storage code', storageCode);
-        const product = await this.productModel.find({
-            productCode: productCode,
-            'moreDetails.colorCode': colorCode,
-            conditionCode: conditionCode,
-            'moreDetails.storageCode': storageCode === undefined || 'null' ? { $ne: null } : storageCode,
-            'moreDetails.processorCode': processorCode === undefined || 'null' ? { $ne: null } : processorCode,
-            'moreDetails.ramCode': ramCode === undefined || 'null' ? { $ne: null } : { $eq: ramCode },
-        });
-        return product.length;
+    async getSelectedVariant(product, condition, storage, color, processor, ram, combination, screenSize) {
+        console.log('selected variant details', product, condition, storage, color, processor, ram, combination, screenSize);
+        const query = {
+            productCode: product,
+            conditionCode: condition != undefined && condition != 'null'
+                ? { $eq: condition }
+                : { $exists: true },
+            'moreDetails.storageCode': storage != undefined && storage != 'null'
+                ? { $eq: storage }
+                : { $exists: true },
+            'moreDetails.colorCode': color != undefined && color != 'null'
+                ? { $eq: color }
+                : { $exists: true },
+            'moreDetails.processorCode': processor != undefined && processor != 'null'
+                ? { $eq: processor }
+                : { $exists: true },
+            'moreDetails.ramCode': ram != undefined && ram != 'null' ? { $eq: ram } : { $exists: true },
+            'moreDetails.combinationCode': combination != undefined && combination != 'null'
+                ? { $eq: combination }
+                : { $exists: true },
+            'moreDetails.screenSizeCode': screenSize != undefined && screenSize != 'null'
+                ? { $eq: screenSize }
+                : { $exists: true },
+        };
+        console.log('variant query', query);
+        const selectedProduct = await this.productModel.findOne(query);
+        if (selectedProduct) {
+            return selectedProduct._id;
+        }
+        return null;
     }
     async getSimilarProducts(productId) {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {

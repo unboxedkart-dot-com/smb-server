@@ -16,4 +16,10 @@ export interface CarouselItem {
     isExact: boolean;
     productId: string;
     isActive: boolean;
+    index: number;
+    startingPrice: number;
+    endingPrice: number;
+    seriesCode: string;
+    processorCode: string;
+    screenSizeCode: string;
 }

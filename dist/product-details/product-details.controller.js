@@ -22,6 +22,9 @@ let ProductDetailsController = class ProductDetailsController {
     constructor(productDetailsService) {
         this.productDetailsService = productDetailsService;
     }
+    async handleAddMany() {
+        await this.productDetailsService.addMoreProductData();
+    }
     async handleGetProductSpecs(productId) {
         const productSpecs = await this.productDetailsService.getProductSpecs(productId);
         return productSpecs;
@@ -36,6 +39,9 @@ let ProductDetailsController = class ProductDetailsController {
     async addSomething() {
         const response = await this.productDetailsService.addSomething();
     }
+    async modifyProductData() {
+        await this.productDetailsService.addSeriesCodeToProductData();
+    }
     async addProductData(request, entireBody) {
         const response = await this.productDetailsService.addProductData(entireBody);
         return response;
@@ -48,7 +54,18 @@ let ProductDetailsController = class ProductDetailsController {
         const response = await this.productDetailsService.addProductImages(entireBody);
         return response;
     }
+    async handleGetProductVariants(productCode) {
+        console.log('productCode to get variants', productCode);
+        const response = await this.productDetailsService.getProductVariants(productCode);
+        return response;
+    }
 };
+__decorate([
+    (0, common_1.Post)('add-many'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleAddMany", null);
 __decorate([
     (0, common_1.Get)('/specs/:id'),
     __param(0, (0, common_1.Param)('id')),
@@ -77,6 +94,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "addSomething", null);
 __decorate([
+    (0, common_1.Patch)('modify-product-data'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "modifyProductData", null);
+__decorate([
     (0, common_1.Post)('/data'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
@@ -99,6 +122,13 @@ __decorate([
     __metadata("design:paramtypes", [add_product_images_dto_1.AddProductImagesDto]),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleAddProductImages", null);
+__decorate([
+    (0, common_1.Get)('/variants'),
+    __param(0, (0, common_1.Query)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleGetProductVariants", null);
 ProductDetailsController = __decorate([
     (0, common_1.Controller)('product-details'),
     __metadata("design:paramtypes", [product_details_service_1.ProductDetailsService])

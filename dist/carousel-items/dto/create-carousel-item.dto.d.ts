@@ -8,4 +8,8 @@ export declare class CreateCarouselItemDto {
     productCode: string;
     isExact: boolean;
     productId: string;
+    index: number;
+    startingPrice: number;
+    endingPrice: number;
+    seriesCode: string;
 }

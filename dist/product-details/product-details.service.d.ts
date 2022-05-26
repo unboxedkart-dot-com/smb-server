@@ -17,6 +17,9 @@ export declare class ProductDetailsService {
     private readonly productImagesModel;
     private readonly productDescriptionModel;
     constructor(productModel: Model<Product>, productSpecsModel: Model<ProductSpecs>, productDataModel: Model<ProductData>, productImagesModel: Model<ProductImages>, productDescriptionModel: Model<ProductDescription>);
+    getProductVariants(productCode: string): Promise<import("mongoose").Document<unknown, any, ProductData> & ProductData & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
     getProductSpecs(productId: string): Promise<[{
         title: string;
         values: string[];
@@ -25,6 +28,8 @@ export declare class ProductDetailsService {
     addProductSpecs(entireBody: AddProductSpecsDto): Promise<void>;
     addProductDescription(entireBody: AddProductDescriptionDto): Promise<void>;
     addSomething(): Promise<void>;
+    addSeriesCodeToProductData(): Promise<void>;
+    addMoreProductData(): Promise<void>;
     addProductData(entireBody: AddProductDataDto): Promise<void>;
     getAvailableProducts(brandCode: string, categoryCode: string): Promise<(import("mongoose").Document<unknown, any, ProductData> & ProductData & {
         _id: import("mongoose").Types.ObjectId;
