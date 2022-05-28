@@ -112,6 +112,9 @@ let ProductsService = class ProductsService {
         else if (category == 'watch') {
             newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
         }
+        else if (category == 'watch') {
+            newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
+        }
         else {
             newTitle = title + ' (' + condition + ', ' + color + ')';
         }
