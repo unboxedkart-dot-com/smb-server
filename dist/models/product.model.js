@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductSchema = void 0;
 const mongoose_1 = require("mongoose");
 exports.ProductSchema = new mongoose_1.default.Schema({
+    timestamp: { type: String, default: Date.now() },
     SKU: { type: String, required: true },
     productCode: { type: String, required: true },
     aboutProduct: { type: [String], required: true },

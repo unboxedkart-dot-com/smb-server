@@ -30,20 +30,20 @@ export class ProductsService {
     const productData = await this.productDataModel.findOne({
       productCode: entireBody.productCode,
     });
-    const imagePath = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/`;
-    const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
-    const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
+    const imagePath = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}`;
+    const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
+    const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
 
-    // const productImages = await this.productImagesModel.findOne({
-    //   productCode: entireBody.productCode,
-    //   colorCode: entireBody.colorCode,
-    // });
+    const productImages = await this.productImagesModel.findOne({
+      productCode: entireBody.productCode,
+      colorCode: entireBody.colorCode,
+    });
 
     const imageUrls = this._handleGetProductImageUrls(
       imageUrl,
       thumbailUrl,
-      4,
-      // productImages.count,
+      // 4,
+      productImages.count,
     );
 
     const searchCases = this._handleCreateProductSearchCases(
@@ -110,6 +110,10 @@ export class ProductsService {
         // expiryDate: entireBody.warrantyExpiryDate,
         warrantyLeft: entireBody.warrantyLeftInMonths,
         description: entireBody.warrantyDescription,
+      },
+      sellerDetails: {
+        sellerId: entireBody.sellerId,
+        sellerName: entireBody.sellerName,
       },
       boxContains: entireBody.boxContains,
     });

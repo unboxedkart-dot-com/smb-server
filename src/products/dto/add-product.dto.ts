@@ -146,6 +146,14 @@ export class CreateProductDto {
   @IsString()
   connectivity: string;
 
+  @IsString()
+  @IsNotEmpty()
+  sellerId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sellerName: string;
+
   // @IsString()
   // @IsOptional()
   // @IsNotEmpty()

@@ -408,10 +408,10 @@ let OrdersService = class OrdersService {
     sendNotification(data) {
         var headers = {
             'Content-Type': 'application/json; charset=utf-8',
-            Authorization: `Basic NzRjZDliNTUtY2Q5ZC00MjExLTk4MWEtZDZlMjg5MDYyYzBm`,
+            Authorization: `Basic ${process.env.NOTIFICATION_AUTH_KEY}`,
         };
         var options = {
-            host: 'onesignal.com',
+            host: `${process.env.NOTIFICATION_HOST}`,
             port: 443,
             path: '/api/v1/notifications',
             method: 'POST',

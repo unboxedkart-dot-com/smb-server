@@ -24,4 +24,6 @@ export declare class CreateProductDto {
     isUnderWarranty: boolean;
     warrantyLeftInMonths: number;
     connectivity: string;
+    sellerId: string;
+    sellerName: string;
 }

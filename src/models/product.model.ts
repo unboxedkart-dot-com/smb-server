@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
+  timestamp: { type: String, default: Date.now() },
   SKU: { type: String, required: true },
   productCode: { type: String, required: true },
   aboutProduct: { type: [String], required: true },
   title: { type: String, required: true },
   modelNumber: { type: String, required: true },
-  seriesCode: { type: String, required: false },
+  seriesCode: { type: String, required: false },///
   brand: { type: String, required: true },
   brandCode: { type: String, required: true },
   category: { type: String, required: true },
