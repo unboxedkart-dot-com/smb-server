@@ -25,6 +25,9 @@ let ProductDetailsController = class ProductDetailsController {
     async handleAddMany() {
         await this.productDetailsService.addMoreProductData();
     }
+    async handleAddManyImages() {
+        await this.productDetailsService.addMoreProductImages();
+    }
     async handleGetProductSpecs(productId) {
         const productSpecs = await this.productDetailsService.getProductSpecs(productId);
         return productSpecs;
@@ -34,6 +37,7 @@ let ProductDetailsController = class ProductDetailsController {
         return productDescription;
     }
     async handleSetProductSpecs(entireBody) {
+        console.log('adding individual sepcs');
         const response = await this.productDetailsService.addProductSpecs(entireBody);
     }
     async addSomething() {
@@ -59,6 +63,10 @@ let ProductDetailsController = class ProductDetailsController {
         const response = await this.productDetailsService.getProductVariants(productCode);
         return response;
     }
+    async handleAddManySpecs() {
+        const response = await this.productDetailsService.addMultipleProductSpecs();
+        return response;
+    }
 };
 __decorate([
     (0, common_1.Post)('add-many'),
@@ -66,6 +74,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleAddMany", null);
+__decorate([
+    (0, common_1.Post)('add-images-data'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleAddManyImages", null);
 __decorate([
     (0, common_1.Get)('/specs/:id'),
     __param(0, (0, common_1.Param)('id')),
@@ -129,6 +143,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleGetProductVariants", null);
+__decorate([
+    (0, common_1.Post)('/add-many-specs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductDetailsController.prototype, "handleAddManySpecs", null);
 ProductDetailsController = __decorate([
     (0, common_1.Controller)('product-details'),
     __metadata("design:paramtypes", [product_details_service_1.ProductDetailsService])

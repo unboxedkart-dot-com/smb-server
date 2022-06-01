@@ -14,6 +14,7 @@ export const ProductSchema = new mongoose.Schema({
   condition: { type: String, required: true },
   conditionCode: { type: String, required: true },
   imageUrls: {
+    desktopCoverImage: { type: String, required: true },
     coverImage: { type: String, required: true },
     images: { type: [String], required: true },
   },
@@ -72,6 +73,7 @@ export interface Product {
   condition: string;
   conditionCode: string;
   imageUrls: {
+    desktopCoverImage: string;
     coverImage: string;
     images: [string];
   };

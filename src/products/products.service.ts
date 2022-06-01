@@ -30,8 +30,8 @@ export class ProductsService {
     const productData = await this.productDataModel.findOne({
       productCode: entireBody.productCode,
     });
+    const imagePath = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/`;
     const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
-
     const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/product/${productData.categoryCode}s/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
 
     // const productImages = await this.productImagesModel.findOne({
@@ -85,7 +85,8 @@ export class ProductsService {
       condition: entireBody.condition,
       conditionCode: entireBody.conditionCode,
       imageUrls: {
-        coverImage: imageUrls.coverImage,
+        desktopCoverImage: `${imagePath}/desktop-cover.webp`,
+        coverImage: `${imagePath}/mobile-cover.webp`,
         images: imageUrls.images,
         thumbnails: imageUrls.thumbnails,
       },
@@ -178,7 +179,7 @@ export class ProductsService {
       images.push(`${imageUrl}-${n}.webp`);
     }
     return {
-      coverImage: `${imageUrl}-1.webp`,
+      coverImage: `${imageUrl}-.webp`,
       thumbnails: thumbnails,
       images: images,
     };

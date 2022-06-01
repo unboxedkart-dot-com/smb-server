@@ -15,6 +15,7 @@ export interface Product {
     condition: string;
     conditionCode: string;
     imageUrls: {
+        desktopCoverImage: string;
         coverImage: string;
         images: [string];
     };

@@ -16,6 +16,7 @@ exports.ProductSchema = new mongoose_1.default.Schema({
     condition: { type: String, required: true },
     conditionCode: { type: String, required: true },
     imageUrls: {
+        desktopCoverImage: { type: String, required: true },
         coverImage: { type: String, required: true },
         images: { type: [String], required: true },
     },

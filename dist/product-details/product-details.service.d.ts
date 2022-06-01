@@ -30,9 +30,13 @@ export declare class ProductDetailsService {
     addSomething(): Promise<void>;
     addSeriesCodeToProductData(): Promise<void>;
     addMoreProductData(): Promise<void>;
+    addMoreProductImages(): Promise<void>;
     addProductData(entireBody: AddProductDataDto): Promise<void>;
     getAvailableProducts(brandCode: string, categoryCode: string): Promise<(import("mongoose").Document<unknown, any, ProductData> & ProductData & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     addProductImages(entireBody: AddProductImagesDto): Promise<void>;
+    addAllProductImages(): Promise<void>;
+    addManySpecs(): Promise<void>;
+    addMultipleProductSpecs(): Promise<void>;
 }

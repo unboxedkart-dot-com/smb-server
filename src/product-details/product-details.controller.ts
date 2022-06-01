@@ -23,6 +23,11 @@ export class ProductDetailsController {
     await this.productDetailsService.addMoreProductData();
   }
 
+  @Post('add-images-data')
+  async handleAddManyImages(){
+    await this.productDetailsService.addMoreProductImages();
+  }
+
   @Get('/specs/:id')
   async handleGetProductSpecs(@Param('id') productId: string) {
     const productSpecs = await this.productDetailsService.getProductSpecs(
@@ -41,6 +46,7 @@ export class ProductDetailsController {
 
   @Post('/specs')
   async handleSetProductSpecs(@Body() entireBody: CreateProductDetailsDto) {
+    console.log('adding individual sepcs');
     const response = await this.productDetailsService.addProductSpecs(
       entireBody,
     );
@@ -93,6 +99,12 @@ export class ProductDetailsController {
     const response = await this.productDetailsService.getProductVariants(
       productCode,
     );
+    return response;
+  }
+
+  @Post('/add-many-specs')
+  async handleAddManySpecs() {
+    const response = await this.productDetailsService.addMultipleProductSpecs();
     return response;
   }
 }

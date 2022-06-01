@@ -9,6 +9,7 @@ export declare class ProductDetailsController {
     private readonly productDetailsService;
     constructor(productDetailsService: ProductDetailsService);
     handleAddMany(): Promise<void>;
+    handleAddManyImages(): Promise<void>;
     handleGetProductSpecs(productId: string): Promise<[{
         title: string;
         values: string[];
@@ -25,4 +26,5 @@ export declare class ProductDetailsController {
     handleGetProductVariants(productCode: string): Promise<import("mongoose").Document<unknown, any, import("../models/product_data.model").ProductData> & import("../models/product_data.model").ProductData & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    handleAddManySpecs(): Promise<void>;
 }
