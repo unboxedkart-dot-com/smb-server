@@ -28,7 +28,8 @@ let SearchService = class SearchService {
         }
         console.log('new search', isExact, title, category, brand, condition, product, seller, pageNumber);
         let query = {};
-        if (title != undefined && title != 'null') {
+        if (title != undefined && title != null && title != 'null') {
+            console.log('title', title);
             const searchTerm = title.replace(/\s/g, '');
             const titleExp = new RegExp(`${searchTerm}`);
             console.log('title expression', searchTerm, titleExp);
@@ -38,21 +39,22 @@ let SearchService = class SearchService {
                 },
             };
         }
-        else if (isExact && isExact == true) {
-            const productExp = new RegExp(`${product}`);
-            query = { productCode: productExp };
-        }
         else {
+            const productExp = new RegExp('apple-iphone');
             query = {
                 conditionCode: condition != undefined && condition != 'null'
                     ? { $eq: condition }
-                    : { $ne: null },
+                    : { $exists: true },
                 categoryCode: category != undefined && category != 'null'
                     ? { $eq: category }
                     : { $exists: true },
                 brandCode: brand != undefined && brand != 'null'
                     ? { $eq: brand }
-                    : { $ne: null, $eq: null },
+                    : { $exists: true },
+                productCode: product != undefined && product != 'null'
+                    ?
+                        { $eq: productExp }
+                    : { $exists: true },
             };
         }
         console.log('my query', query);
@@ -61,7 +63,7 @@ let SearchService = class SearchService {
         const products = await this.productModel
             .aggregate([
             {
-                $match: query
+                $match: query,
             },
             {
                 $lookup: {

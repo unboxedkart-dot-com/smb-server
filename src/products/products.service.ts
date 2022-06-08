@@ -42,8 +42,8 @@ export class ProductsService {
     const imageUrls = this._handleGetProductImageUrls(
       imageUrl,
       thumbailUrl,
-      // 4,
-      productImages.count,
+      4,
+      // productImages.count,
     );
 
     const searchCases = this._handleCreateProductSearchCases(
