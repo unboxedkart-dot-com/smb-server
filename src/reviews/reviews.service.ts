@@ -137,9 +137,11 @@ export class ReviewsService {
         },
       );
     } else {
+      const productData = await this.productModel.findById(review.productId);
       const newReviewsData = new this.reviewsDataModel({
         productId: review.productId,
         totalReviewsCount: 1,
+        productCode: productData.productCode,
         averageRating: review.rating,
         fiveStarCount: review.rating == 5 ? 1 : 0,
         fourStarCount: review.rating == 4 ? 1 : 0,

@@ -95,6 +95,8 @@ let CouponsService = class CouponsService {
                             couponCode: coupon.couponCode,
                             couponDescription: coupon.description,
                             discountAmount: coupon.discountAmount,
+                            expiryType: coupon.expiryType,
+                            expiryTime: coupon.expiryTime,
                         },
                     };
                 }
@@ -106,6 +108,8 @@ let CouponsService = class CouponsService {
                             couponCode: coupon.couponCode,
                             couponDescription: coupon.description,
                             discountAmount: coupon.discountAmount,
+                            expiryType: coupon.expiryType,
+                            expiryTime: coupon.expiryTime,
                         },
                     };
                 }
@@ -117,6 +121,8 @@ let CouponsService = class CouponsService {
                             couponCode: coupon.couponCode,
                             couponDescription: coupon.description,
                             discountAmount: coupon.discountAmount,
+                            expiryType: coupon.expiryType,
+                            expiryTime: coupon.expiryTime,
                         },
                     };
                 }

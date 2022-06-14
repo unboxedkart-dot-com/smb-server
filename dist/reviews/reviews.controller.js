@@ -53,12 +53,7 @@ let ReviewsController = class ReviewsController {
     async handleApproveReview(request, reviewId) {
         const userId = request.user.userId;
         const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            await this.reviewsService.approveReview(userId, reviewId);
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
+        await this.reviewsService.approveReview(userId, reviewId);
     }
     async handleDeleteReview(reviewId, request) {
         const userId = request.user.userId;

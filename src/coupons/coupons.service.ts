@@ -101,6 +101,8 @@ export class CouponsService {
               couponCode: coupon.couponCode,
               couponDescription: coupon.description,
               discountAmount: coupon.discountAmount,
+              expiryType: coupon.expiryType,
+              expiryTime: coupon.expiryTime,
             },
           };
         } else if (
@@ -113,6 +115,8 @@ export class CouponsService {
               couponCode: coupon.couponCode,
               couponDescription: coupon.description,
               discountAmount: coupon.discountAmount,
+              expiryType: coupon.expiryType,
+              expiryTime: coupon.expiryTime,
             },
           };
         } else if (
@@ -125,6 +129,8 @@ export class CouponsService {
               couponCode: coupon.couponCode,
               couponDescription: coupon.description,
               discountAmount: coupon.discountAmount,
+              expiryType: coupon.expiryType,
+              expiryTime: coupon.expiryTime,
             },
           };
         } else {

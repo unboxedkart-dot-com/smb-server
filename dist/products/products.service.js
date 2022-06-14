@@ -34,7 +34,7 @@ let ProductsService = class ProductsService {
             productCode: entireBody.productCode,
             colorCode: entireBody.colorCode,
         });
-        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, 4);
+        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, productImages.count);
         const searchCases = this._handleCreateProductSearchCases(productData.category, productData.brand, productData.title, entireBody);
         const newTitle = this._handleGenerateNewTitle(productData.categoryCode, productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor, entireBody.connectivity);
         const aboutProduct = entireBody.aboutProduct.split('///');

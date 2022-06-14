@@ -24,6 +24,8 @@ export declare class CouponsService {
             couponCode: string;
             couponDescription: string;
             discountAmount: number;
+            expiryType: import("src/models/coupon.model").ExpiryTypes;
+            expiryTime: Date;
         };
         errorText?: undefined;
     } | {
