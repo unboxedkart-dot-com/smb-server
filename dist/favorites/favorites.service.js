@@ -25,13 +25,26 @@ let FavoritesService = class FavoritesService {
     }
     async getFavorites(userId) {
         const userDoc = await this.userModel.findOne({ _id: userId }).exec();
+        const ObjectId = mongoose_2.default.Types.ObjectId;
         const favorites = userDoc.favoriteItemIds;
+        const favoritesIds = [];
+        favorites.forEach((doc) => favoritesIds.push(new ObjectId(doc)));
         console.log('getting favorites');
         if (favorites.length > 0) {
             console.log('fav', favorites);
-            const products = await this.productModel.find({
-                _id: { $in: favorites },
-            });
+            const products = await this.productModel.aggregate([
+                {
+                    $match: { _id: { $in: favoritesIds } },
+                },
+                {
+                    $lookup: {
+                        from: 'reviewsdatas',
+                        localField: 'productCode',
+                        foreignField: 'productCode',
+                        as: 'rating',
+                    },
+                },
+            ]);
             console.log(products);
             return products;
         }
