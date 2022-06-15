@@ -22,12 +22,8 @@ export declare class ProductsController {
         message: string;
     }>;
     handleDeleteProduct(id: string, request: any): Promise<void>;
-    handleGetSimilarProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
-    })[]>;
-    handleGetRelatedProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
-    })[]>;
-    handleGetBestSellers(brand: string, condition: string, category: string): Promise<Product[]>;
-    handleGetFeaturedProducts(brand: string, condition: string, category: string): Promise<Product[]>;
+    handleGetSimilarProducts(productId: string): Promise<Product[]>;
+    handleGetRelatedProducts(productId: string): Promise<Product[]>;
+    handleGetBestSellers(brand: string, condition: string, category: string): Promise<any[]>;
+    handleGetFeaturedProducts(brand: string, condition: string, category: string): Promise<any[]>;
 }

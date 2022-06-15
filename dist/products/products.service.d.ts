@@ -26,17 +26,13 @@ export declare class ProductsService {
     }): Promise<void>;
     getProducts(): Promise<Product[]>;
     getSelectedVariant(product: string, condition: string, storage: string, color: string, processor: string, ram: string, combination: String, screenSize: string): Promise<mongoose.Types.ObjectId>;
-    getSimilarProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
-    })[]>;
-    getRelatedProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
-    })[]>;
+    getSimilarProducts(productId: string): Promise<Product[]>;
+    getRelatedProducts(productId: string): Promise<Product[]>;
     getProduct(id: string): Promise<any>;
     deleteProducts(): Promise<void>;
     deleteSingleProduct(id: string): Promise<void>;
-    getBestSellers(brand: string, category: string, condition: string): Promise<Product[]>;
-    getFeaturedProducts(brand: string, category: string, condition: string): Promise<Product[]>;
+    getBestSellers(brand: string, category: string, condition: string): Promise<any[]>;
+    getFeaturedProducts(brand: string, category: string, condition: string): Promise<any[]>;
     getAllBestSellers(): Promise<Product[]>;
     getBestSellerByBrand(brand: string): Promise<Product[]>;
     getBestSellersByCategory(category: string): Promise<Product[]>;

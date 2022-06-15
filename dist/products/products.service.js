@@ -211,13 +211,26 @@ let ProductsService = class ProductsService {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {
             const product = await this.productModel.findById(productId);
             if (product) {
-                const similarProducts = await this.productModel
-                    .find({
-                    brandCode: product.brandCode,
-                    categoryCode: product.categoryCode,
-                })
-                    .limit(5);
-                return similarProducts;
+                const products = await this.productModel
+                    .aggregate([
+                    {
+                        $match: {
+                            brandCode: product.brandCode,
+                            categoryCode: product.categoryCode,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'reviewsdatas',
+                            localField: 'productCode',
+                            foreignField: 'productCode',
+                            as: 'rating',
+                        },
+                    },
+                ])
+                    .limit(10)
+                    .exec();
+                return products;
             }
         }
         else {
@@ -228,12 +241,26 @@ let ProductsService = class ProductsService {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {
             const product = await this.productModel.findById(productId);
             if (product) {
-                const relatedProducts = await this.productModel
-                    .find({
-                    brandCode: product.brandCode,
-                })
-                    .limit(5);
-                return relatedProducts;
+                const products = await this.productModel
+                    .aggregate([
+                    {
+                        $match: {
+                            brandCode: product.brandCode,
+                            categoryCode: product.categoryCode,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'reviewsdatas',
+                            localField: 'productCode',
+                            foreignField: 'productCode',
+                            as: 'rating',
+                        },
+                    },
+                ])
+                    .limit(10)
+                    .exec();
+                return products;
             }
         }
         else {
@@ -276,32 +303,108 @@ let ProductsService = class ProductsService {
         await this.productModel.deleteOne({ id: id });
     }
     async getBestSellers(brand, category, condition) {
+        let query = {};
         if (brand) {
-            return this.getBestSellerByBrand(brand);
+            query = {
+                brandCode: brand != undefined && brand != 'null'
+                    ? { $eq: brand }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else if (category) {
-            return this.getBestSellersByCategory(category);
+            query = {
+                categoryCode: category != undefined && category != 'null'
+                    ? { $eq: category }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else if (condition) {
-            return this.getBestSellersByCondition(condition);
+            query = {
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else {
-            return this.getAllBestSellers();
+            query = {
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
+        const products = await this.productModel
+            .aggregate([
+            {
+                $match: query,
+            },
+            {
+                $lookup: {
+                    from: 'reviewsdatas',
+                    localField: 'productCode',
+                    foreignField: 'productCode',
+                    as: 'rating',
+                },
+            },
+        ])
+            .limit(10)
+            .exec();
+        return products;
     }
     async getFeaturedProducts(brand, category, condition) {
+        let query = {};
         if (brand) {
-            return this.getFeaturedProductsByBrand(brand);
+            query = {
+                brandCode: brand != undefined && brand != 'null'
+                    ? { $eq: brand }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else if (category) {
-            return this.getFeaturedProductsByCategory(category);
+            query = {
+                categoryCode: category != undefined && category != 'null'
+                    ? { $eq: category }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else if (condition) {
-            return this.getFeaturedProductsByCondition(condition);
+            query = {
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
         else {
-            return this.getAllFeaturedProducts();
+            query = {
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $exists: true },
+                isFeatured: true,
+            };
         }
+        const products = await this.productModel
+            .aggregate([
+            {
+                $match: query,
+            },
+            {
+                $lookup: {
+                    from: 'reviewsdatas',
+                    localField: 'productCode',
+                    foreignField: 'productCode',
+                    as: 'rating',
+                },
+            },
+        ])
+            .limit(10)
+            .exec();
+        return products;
     }
     async getAllBestSellers() {
         const products = await this.productModel
@@ -344,10 +447,22 @@ let ProductsService = class ProductsService {
     }
     async getFeaturedProductsByBrand(brand) {
         const products = await this.productModel
-            .find({
-            isFeatured: { $eq: true },
-            brandCode: { $eq: brand },
-        })
+            .aggregate([
+            {
+                $match: {
+                    isFeatured: { $eq: true },
+                    brandCode: { $eq: brand },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'reviewsdatas',
+                    localField: 'productCode',
+                    foreignField: 'productCode',
+                    as: 'rating',
+                },
+            },
+        ])
             .limit(10)
             .exec();
         return products;
