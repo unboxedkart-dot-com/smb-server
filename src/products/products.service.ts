@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Mode } from 'fs';
+import mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { ProductData } from 'src/models/product_data.model';
 import { ProductImages } from 'src/models/product_images.model';
@@ -352,7 +353,8 @@ export class ProductsService {
   }
 
   async getProduct(id: string) {
-    console.log('grtting single product');
+    const ObjectId = mongoose.Types.ObjectId;
+    // console.log('grtting single product', id);
     {
       const product = await this.productModel.findById(id);
       if (!product) {
@@ -360,28 +362,23 @@ export class ProductsService {
         throw new NotFoundException('could not find product');
       } else {
         console.log('exos');
-        const product = await this.productModel.findById(id);
-        // const product = await this.productModel.aggregate([
-        //   {
-        //     $match: { _id: id },
-        //   },
-        //   {
-        //     $lookup: {
-        //       from: 'reviewsdatas',
-        //       localField: 'productCode',
-        //       foreignField: 'productCode',
-        //       as: 'rating',
-        //     },
-        //   },
-        //   { $unwind: '$rating' },
-        //   {
-        //     $project: {
-        //       rating: '$reviews.averageRating',
-        //       document: '$$ROOT',
-        //     },
-        //   },
-        // ]);
-        return product;
+        // const product = await this.productModel.findById(id);
+        const product = await this.productModel
+          .aggregate([
+            {
+              $match: { _id: new ObjectId(id) },
+            },
+            {
+              $lookup: {
+                from: 'reviewsdatas',
+                localField: 'productCode',
+                foreignField: 'productCode',
+                as: 'rating',
+              },
+            },
+          ])
+          .limit(1);
+        return product[0];
       }
       // try {
 
@@ -541,5 +538,9 @@ export class ProductsService {
       .limit(10)
       .exec();
     return products as Product[];
+  }
+
+  async handleRemoveRating() {
+    await this.productModel.updateMany({ $unset: { 'rating': '' } });
   }
 }

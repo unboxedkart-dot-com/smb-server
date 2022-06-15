@@ -1,5 +1,4 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/error" />
+import mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { ProductData } from 'src/models/product_data.model';
 import { ProductImages } from 'src/models/product_images.model';
@@ -26,16 +25,14 @@ export declare class ProductsService {
         count: number;
     }): Promise<void>;
     getProducts(): Promise<Product[]>;
-    getSelectedVariant(product: string, condition: string, storage: string, color: string, processor: string, ram: string, combination: String, screenSize: string): Promise<import("mongoose").Types.ObjectId>;
-    getSimilarProducts(productId: string): Promise<(import("mongoose").Document<unknown, any, Product> & Product & {
-        _id: import("mongoose").Types.ObjectId;
+    getSelectedVariant(product: string, condition: string, storage: string, color: string, processor: string, ram: string, combination: String, screenSize: string): Promise<mongoose.Types.ObjectId>;
+    getSimilarProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
+        _id: mongoose.Types.ObjectId;
     })[]>;
-    getRelatedProducts(productId: string): Promise<(import("mongoose").Document<unknown, any, Product> & Product & {
-        _id: import("mongoose").Types.ObjectId;
+    getRelatedProducts(productId: string): Promise<(mongoose.Document<unknown, any, Product> & Product & {
+        _id: mongoose.Types.ObjectId;
     })[]>;
-    getProduct(id: string): Promise<import("mongoose").Document<unknown, any, Product> & Product & {
-        _id: import("mongoose").Types.ObjectId;
-    }>;
+    getProduct(id: string): Promise<any>;
     deleteProducts(): Promise<void>;
     deleteSingleProduct(id: string): Promise<void>;
     getBestSellers(brand: string, category: string, condition: string): Promise<Product[]>;
@@ -48,4 +45,5 @@ export declare class ProductsService {
     getFeaturedProductsByCategory(category: string): Promise<Product[]>;
     getFeaturedProductsByCondition(condition: string): Promise<Product[]>;
     getAllFeaturedProducts(): Promise<Product[]>;
+    handleRemoveRating(): Promise<void>;
 }

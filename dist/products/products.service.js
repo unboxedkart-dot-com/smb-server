@@ -16,6 +16,7 @@ exports.ProductsService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const mongoose_3 = require("mongoose");
 let ProductsService = class ProductsService {
     constructor(productModel, productDataModel, productImagesModel, reviewModel) {
         this.productModel = productModel;
@@ -240,7 +241,7 @@ let ProductsService = class ProductsService {
         }
     }
     async getProduct(id) {
-        console.log('grtting single product');
+        const ObjectId = mongoose_2.default.Types.ObjectId;
         {
             const product = await this.productModel.findById(id);
             if (!product) {
@@ -249,8 +250,22 @@ let ProductsService = class ProductsService {
             }
             else {
                 console.log('exos');
-                const product = await this.productModel.findById(id);
-                return product;
+                const product = await this.productModel
+                    .aggregate([
+                    {
+                        $match: { _id: new ObjectId(id) },
+                    },
+                    {
+                        $lookup: {
+                            from: 'reviewsdatas',
+                            localField: 'productCode',
+                            foreignField: 'productCode',
+                            as: 'rating',
+                        },
+                    },
+                ])
+                    .limit(1);
+                return product[0];
             }
         }
     }
@@ -366,16 +381,19 @@ let ProductsService = class ProductsService {
             .exec();
         return products;
     }
+    async handleRemoveRating() {
+        await this.productModel.updateMany({ $unset: { 'rating': '' } });
+    }
 };
 ProductsService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Product')),
     __param(1, (0, mongoose_1.InjectModel)('ProductData')),
     __param(2, (0, mongoose_1.InjectModel)('ProductImages')),
     __param(3, (0, mongoose_1.InjectModel)('Review')),
-    __metadata("design:paramtypes", [mongoose_2.Model,
-        mongoose_2.Model,
-        mongoose_2.Model,
-        mongoose_2.Model])
+    __metadata("design:paramtypes", [mongoose_3.Model,
+        mongoose_3.Model,
+        mongoose_3.Model,
+        mongoose_3.Model])
 ], ProductsService);
 exports.ProductsService = ProductsService;
 //# sourceMappingURL=products.service.js.map

@@ -7,15 +7,14 @@ export declare class ProductsController {
     private readonly productsService;
     private readonly authService;
     constructor(productsService: ProductsService, authService: AuthService);
+    removeRatings(): Promise<void>;
     addProduct(request: any, entireBody: CreateProductDto): Promise<{
         data: {
             response: void;
         };
     }>;
     addManyProducts(): Promise<void>;
-    getProduct(q: string): Promise<mongoose.Document<unknown, any, Product> & Product & {
-        _id: mongoose.Types.ObjectId;
-    }>;
+    getProduct(q: string): Promise<any>;
     getSelectedVariant(product: string, condition: string, storage: string, color: string, processor: string, combination: string, ram: string, screenSize: string): Promise<mongoose.Types.ObjectId>;
     handleDeleteProducts(): Promise<string>;
     handleUpdateInventoryCount(count: number, request: any, productId: string): Promise<{

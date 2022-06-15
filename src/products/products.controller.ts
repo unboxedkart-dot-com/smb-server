@@ -34,6 +34,11 @@ export class ProductsController {
 
   // @UseGuards(JwtAuthGuard)
 
+  @Patch('remove-ratings')
+  async removeRatings() {
+    await this.productsService.handleRemoveRating();
+  }
+
   @Post('/add')
   async addProduct(
     @Req() request: any,

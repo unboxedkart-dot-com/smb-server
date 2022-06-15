@@ -23,6 +23,9 @@ let ProductsController = class ProductsController {
         this.productsService = productsService;
         this.authService = authService;
     }
+    async removeRatings() {
+        await this.productsService.handleRemoveRating();
+    }
     async addProduct(request, entireBody) {
         const generatedId = await this.productsService.insertProduct(entireBody);
         return {
@@ -87,6 +90,12 @@ let ProductsController = class ProductsController {
         return products;
     }
 };
+__decorate([
+    (0, common_1.Patch)('remove-ratings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "removeRatings", null);
 __decorate([
     (0, common_1.Post)('/add'),
     __param(0, (0, common_1.Req)()),
