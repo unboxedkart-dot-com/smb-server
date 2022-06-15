@@ -361,6 +361,26 @@ export class ProductsService {
       } else {
         console.log('exos');
         const product = await this.productModel.findById(id);
+        // const product = await this.productModel.aggregate([
+        //   {
+        //     $match: { _id: id },
+        //   },
+        //   {
+        //     $lookup: {
+        //       from: 'reviewsdatas',
+        //       localField: 'productCode',
+        //       foreignField: 'productCode',
+        //       as: 'rating',
+        //     },
+        //   },
+        //   { $unwind: '$rating' },
+        //   {
+        //     $project: {
+        //       rating: '$reviews.averageRating',
+        //       document: '$$ROOT',
+        //     },
+        //   },
+        // ]);
         return product;
       }
       // try {

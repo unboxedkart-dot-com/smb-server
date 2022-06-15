@@ -104,9 +104,16 @@ export class SearchService {
             from: 'reviewsdatas',
             localField: 'productCode',
             foreignField: 'productCode',
-            as: 'reviews',
+            as: 'rating',
           },
         },
+        // { $unwind: '$rating' },
+        // {
+        //   $project: {
+        //     rating: '$reviews.averageRating',
+        //     document: '$$ROOT',
+        //   },
+        // },
       ])
       .limit(10)
       .skip(itemsToSkip)

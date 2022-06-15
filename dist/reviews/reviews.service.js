@@ -34,6 +34,7 @@ let ReviewsService = class ReviewsService {
     async getProductReviews(productId) {
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {
             const product = await this.productModel.findById(productId);
+            console.log('product code', product.productCode);
             const reviews = await this.reviewModel
                 .find({
                 productCode: product.productCode,
@@ -43,6 +44,7 @@ let ReviewsService = class ReviewsService {
             const reviewsData = await this.reviewsDataModel.findOne({
                 productCode: product.productCode,
             });
+            console.log('reviews data', reviewsData, reviews);
             return { reviews: reviews, reviewsData: reviewsData };
         }
         else {

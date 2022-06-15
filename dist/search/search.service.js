@@ -70,7 +70,7 @@ let SearchService = class SearchService {
                     from: 'reviewsdatas',
                     localField: 'productCode',
                     foreignField: 'productCode',
-                    as: 'reviews',
+                    as: 'rating',
                 },
             },
         ])
