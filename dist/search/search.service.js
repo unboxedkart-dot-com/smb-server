@@ -26,6 +26,7 @@ let SearchService = class SearchService {
         if (pageNumber && parseInt(pageNumber) > 0) {
             itemsToSkip = 10 * parseInt(pageNumber) - 10;
         }
+        console.log('item to skip', itemsToSkip);
         console.log('new search', isExact, title, category, brand, condition, product, seller, pageNumber);
         let query = {};
         if (title != undefined && title != null && title != 'null') {
@@ -73,10 +74,11 @@ let SearchService = class SearchService {
                     as: 'rating',
                 },
             },
+            { '$skip': itemsToSkip },
         ])
             .limit(10)
-            .skip(itemsToSkip)
             .exec();
+        console.log('joined product', products.length);
         return products;
     }
     async getRecentSearches(userId) {

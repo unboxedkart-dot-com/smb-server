@@ -27,6 +27,7 @@ export class SearchService {
     if (pageNumber && parseInt(pageNumber) > 0) {
       itemsToSkip = 10 * parseInt(pageNumber) - 10;
     }
+    console.log('item to skip', itemsToSkip);
     console.log(
       'new search',
       isExact,
@@ -54,13 +55,7 @@ export class SearchService {
           $in: [searchTerm, titleExp],
         },
       };
-    }
-    // else if (isExact && isExact == true) {
-    //   // else if (isExact && isExact == true) {
-    //   const productExp = new RegExp(`${product}`);
-    //   query = { productCode: productExp };
-    // }
-    else {
+    } else {
       // const productExp = new RegExp(`${product}`);
       const productExp = new RegExp('apple-iphone');
       // new RegExp(`${searchTerm}`);
@@ -92,12 +87,6 @@ export class SearchService {
       .aggregate([
         {
           $match: query,
-          // {
-          //   searchCases: {
-          //     '$in': [searchTerm, titleExp],
-          //   },
-          //   // query,
-          // },
         },
         {
           $lookup: {
@@ -107,18 +96,13 @@ export class SearchService {
             as: 'rating',
           },
         },
-        // { $unwind: '$rating' },
-        // {
-        //   $project: {
-        //     rating: '$reviews.averageRating',
-        //     document: '$$ROOT',
-        //   },
-        // },
+        // { '$limit': itemsToSkip + 10 },
+        { '$skip': itemsToSkip },
       ])
       .limit(10)
-      .skip(itemsToSkip)
+      // .skip(itemsToSkip)
       .exec();
-    // console.log('joined product', products);
+    console.log('joined product', products.length);
     return products as Product[];
   }
 
