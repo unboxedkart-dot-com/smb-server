@@ -23,6 +23,7 @@ let VariantsController = class VariantsController {
         await this.variantsService.addVariantsData();
     }
     async handleGetProductVariants(productCode) {
+        console.log('getting product varinats', productCode);
         const response = await this.variantsService.getVariantsData(productCode);
         return response;
     }

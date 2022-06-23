@@ -27,7 +27,7 @@ export class ProductDetailsService {
 
   async getProductVariants(productCode: string) {
     const variants = await this.productDataModel.findOne({
-      productCode: 'samsung-galaxy-s10',
+      productCode: productCode,
     });
     return variants;
   }

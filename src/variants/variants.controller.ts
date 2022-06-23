@@ -12,6 +12,7 @@ export class VariantsController {
 
   @Get('/product/:code')
   async handleGetProductVariants(@Param('code') productCode: string) {
+    console.log('getting product varinats', productCode);
     const response = await this.variantsService.getVariantsData(productCode);
     return response;
   }

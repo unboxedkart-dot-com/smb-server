@@ -59,8 +59,6 @@ let SearchService = class SearchService {
             };
         }
         console.log('my query', query);
-        const searchTerm = title.replace(/\s/g, '');
-        const titleExp = new RegExp(`${searchTerm}`);
         const products = await this.productModel
             .aggregate([
             {

@@ -50,7 +50,7 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         couponDiscount: { type: Number, required: false },
     },
     orderNumber: { type: String, required: true },
-    orderDate: { type: String, required: true, default: Date.now() },
+    orderDate: { type: String, required: true, default: Date() },
     updatedDate: { type: Date, required: false },
     orderStatus: { type: String, required: true, default: order_model_1.OrderStatuses.ORDERED },
     productDetails: {
