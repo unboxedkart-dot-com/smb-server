@@ -84,7 +84,7 @@ export class OrderSummaryService {
       payableAmount: payableAmount,
       paymentOrderId: paymentOrderId['id'],
       partialPaymentOrderId: partialPaymentOrderId['id'],
-      partialPaymentAmount: 3,
+      partialPaymentAmount: 2000,
       name: userDoc.name,
       email: userDoc.emailId,
       phoneNumber: userDoc.phoneNumber,

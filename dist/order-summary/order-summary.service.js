@@ -51,20 +51,20 @@ let OrderSummaryService = class OrderSummaryService {
             }
         }
         const orderNumber = this._generateOrderNumber();
-        const paymentOrderId = await this.createPaymentOrder(100, orderNumber);
-        const partialPaymentOrderId = await this.createPaymentOrder(200, orderNumber);
+        const paymentOrderId = await this.createPaymentOrder(payableAmount, orderNumber);
+        const partialPaymentOrderId = await this.createPaymentOrder(2000, orderNumber);
         await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.orderNumber': orderNumber,
             'orderSummary.paymentAmount': payableAmount,
             'orderSummary.paymentOrderId': paymentOrderId['id'],
             'orderSummary.partialPaymentOrderId': partialPaymentOrderId['id'],
-            'orderSummary.partialPaymentAmount': 2000,
+            'orderSummary.partialPaymentAmount': payableAmount,
         });
         return {
             payableAmount: payableAmount,
             paymentOrderId: paymentOrderId['id'],
             partialPaymentOrderId: partialPaymentOrderId['id'],
-            partialPaymentAmount: 3,
+            partialPaymentAmount: 2000,
             name: userDoc.name,
             email: userDoc.emailId,
             phoneNumber: userDoc.phoneNumber,
