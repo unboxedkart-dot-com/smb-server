@@ -64,9 +64,12 @@ export class OrderSummaryService {
       }
     }
     const orderNumber = this._generateOrderNumber();
-    const paymentOrderId = await this.createPaymentOrder(100, orderNumber);
+    const paymentOrderId = await this.createPaymentOrder(
+      payableAmount,
+      orderNumber,
+    );
     const partialPaymentOrderId = await this.createPaymentOrder(
-      200,
+      2000,
       orderNumber,
     );
     await this.userModel.findByIdAndUpdate(userId, {
