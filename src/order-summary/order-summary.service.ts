@@ -74,7 +74,7 @@ export class OrderSummaryService {
       'orderSummary.paymentAmount': payableAmount,
       'orderSummary.paymentOrderId': paymentOrderId['id'],
       'orderSummary.partialPaymentOrderId': partialPaymentOrderId['id'],
-      'orderSummary.partialPaymentAmount': 2000,
+      'orderSummary.partialPaymentAmount': payableAmount,
     });
 
     return {
