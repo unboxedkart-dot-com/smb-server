@@ -88,7 +88,7 @@ let OrderSummaryService = class OrderSummaryService {
     }
     async createPaymentOrder(payableAmount, orderNumber) {
         const order = await instance.orders.create({
-            amount: payableAmount,
+            amount: payableAmount * 100,
             currency: 'INR',
             receipt: orderNumber,
         });
