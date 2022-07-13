@@ -30,6 +30,8 @@ const variants_module_1 = require("./variants/variants.module");
 const s3_module_1 = require("./s3/s3.module");
 const carousel_items_module_1 = require("./carousel-items/carousel-items.module");
 const app_version_module_1 = require("./app-version/app-version.module");
+const services_module_1 = require("./services/services.module");
+const service_module_1 = require("./service/service.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -40,6 +42,9 @@ AppModule = __decorate([
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
+            mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
+                connectionName: 'serviceDb',
+            }),
             orders_module_1.OrdersModule,
             favorites_module_1.FavoritesModule,
             cart_module_1.CartModule,
@@ -57,6 +62,8 @@ AppModule = __decorate([
             s3_module_1.S3Module,
             carousel_items_module_1.CarouselItemsModule,
             app_version_module_1.AppVersionModule,
+            services_module_1.ServicesModule,
+            service_module_1.ServiceModule,
         ],
     })
 ], AppModule);

@@ -1083,13 +1083,15 @@ export class OrdersService {
   }
 
   async getSalesOverview(startDate: string) {
+    console.log('getting sales overview', startDate);
     const sales = await this.orderItemModel.find({
       orderStatus: 'DELIVERED',
-      deliveryTimeStamp: { $gte: startDate },
+      // deliveryTimeStamp: { $gte: startDate },
     });
     const orders = await this.orderItemModel.find({
-      orderDate: { $gte: startDate },
+      // orderDate: { $gte: startDate },
     });
+    console.log('overview', sales.length, orders.length);
     return {
       sales: sales as [],
       orders: orders as [],
@@ -1101,8 +1103,6 @@ export class OrdersService {
   async sendInvoiceCopy(userId: string, orderId: string) {
     const user = await this.userModel.findById(userId);
     const emailId = user.emailId;
-
-    
   }
 }
 

@@ -21,6 +21,8 @@ import { VariantsModule } from './variants/variants.module';
 import { S3Module } from './s3/s3.module';
 import { CarouselItemsModule } from './carousel-items/carousel-items.module';
 import { AppVersionModule } from './app-version/app-version.module';
+import { ServicesModule } from './services/services.module';
+import { ServiceModule } from './service/service.module';
 
 @Module({
   imports: [
@@ -28,9 +30,14 @@ import { AppVersionModule } from './app-version/app-version.module';
     ProductsModule,
     SearchModule,
     AuthModule,
-    MongooseModule.forRoot(
-      process.env.DB_CONNECTION_URL
+    MongooseModule.forRoot(process.env.DB_CONNECTION_URL, 
+    //   {
+    //   connectionName: 'salesDb',
+    // }
     ),
+    MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
+      connectionName: 'serviceDb',
+    }),
     OrdersModule,
     FavoritesModule,
     CartModule,
@@ -48,6 +55,8 @@ import { AppVersionModule } from './app-version/app-version.module';
     S3Module,
     CarouselItemsModule,
     AppVersionModule,
+    ServicesModule,
+    ServiceModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

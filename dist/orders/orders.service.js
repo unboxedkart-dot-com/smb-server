@@ -796,13 +796,12 @@ let OrdersService = class OrdersService {
         const response = this.sendNotification(message);
     }
     async getSalesOverview(startDate) {
+        console.log('getting sales overview', startDate);
         const sales = await this.orderItemModel.find({
             orderStatus: 'DELIVERED',
-            deliveryTimeStamp: { $gte: startDate },
         });
-        const orders = await this.orderItemModel.find({
-            orderDate: { $gte: startDate },
-        });
+        const orders = await this.orderItemModel.find({});
+        console.log('overview', sales.length, orders.length);
         return {
             sales: sales,
             orders: orders,
