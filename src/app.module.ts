@@ -23,6 +23,7 @@ import { CarouselItemsModule } from './carousel-items/carousel-items.module';
 import { AppVersionModule } from './app-version/app-version.module';
 import { ServicesModule } from './services/services.module';
 import { ServiceModule } from './service/service.module';
+import { LocalInventoryModule } from './local-inventory/local-inventory.module';
 
 @Module({
   imports: [
@@ -30,14 +31,17 @@ import { ServiceModule } from './service/service.module';
     ProductsModule,
     SearchModule,
     AuthModule,
-    MongooseModule.forRoot(process.env.DB_CONNECTION_URL, 
-    //   {
-    //   connectionName: 'salesDb',
-    // }
-    ),
+    MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
     MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
       connectionName: 'serviceDb',
     }),
+    MongooseModule.forRoot(
+      'mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority',
+      {
+        connectionName: 'inventoryDb',
+      },
+    ),
+
     OrdersModule,
     FavoritesModule,
     CartModule,
@@ -57,6 +61,7 @@ import { ServiceModule } from './service/service.module';
     AppVersionModule,
     ServicesModule,
     ServiceModule,
+    LocalInventoryModule,
   ],
   // controllers: [AppController],
   // providers: [AppService],

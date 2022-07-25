@@ -32,6 +32,7 @@ const carousel_items_module_1 = require("./carousel-items/carousel-items.module"
 const app_version_module_1 = require("./app-version/app-version.module");
 const services_module_1 = require("./services/services.module");
 const service_module_1 = require("./service/service.module");
+const local_inventory_module_1 = require("./local-inventory/local-inventory.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -44,6 +45,9 @@ AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
             mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
                 connectionName: 'serviceDb',
+            }),
+            mongoose_1.MongooseModule.forRoot('mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority', {
+                connectionName: 'inventoryDb',
             }),
             orders_module_1.OrdersModule,
             favorites_module_1.FavoritesModule,
@@ -64,6 +68,7 @@ AppModule = __decorate([
             app_version_module_1.AppVersionModule,
             services_module_1.ServicesModule,
             service_module_1.ServiceModule,
+            local_inventory_module_1.LocalInventoryModule,
         ],
     })
 ], AppModule);

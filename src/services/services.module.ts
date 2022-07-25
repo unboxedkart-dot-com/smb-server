@@ -6,10 +6,7 @@ import { ServiceSchema } from 'src/models/service.model';
 
 @Module({
   imports: [
-    MongooseModule.forFeature(
-      [{ name: 'Service', schema: ServiceSchema }],
-      // 'serviceDb',
-    ),
+    MongooseModule.forFeature([{ name: 'Service', schema: ServiceSchema }]),
   ],
   controllers: [ServicesController],
   providers: [ServicesService],

@@ -19,19 +19,31 @@ let S3Service = class S3Service {
     }
     async uploadFile(file) {
         const { originalname } = file;
-        await this.s3_upload(file.buffer, this.AWS_S3_BUCKET, originalname, file.mimetype);
+        await this.s3_upload(file.buffer, 'unboxedkart-india/invoices/sales', originalname, file.mimetype);
+    }
+    async uploadOriginalInvoice(file) {
+        const { originalname } = file;
+        await this.s3_upload(file.buffer, 'unboxedkart-india/inventory/invoices/original-invoices', originalname, file.mimetype);
+    }
+    async uploadPurchaseInvoice(file) {
+        const { originalname } = file;
+        await this.s3_upload(file.buffer, 'unboxedkart-india/inventory/invoices/purchase-invoices', originalname, file.mimetype);
+    }
+    async uploadSellerIdProof(file) {
+        const { originalname } = file;
+        await this.s3_upload(file.buffer, 'unboxedkart-india/inventory/id-proofs/sellers', originalname, file.mimetype);
     }
     async s3_upload(file, bucket, name, mimetype) {
         const params = {
-            Bucket: 'unboxedkart-india/invoices/sales',
+            Bucket: bucket,
             Key: String(name),
             Body: file,
-            ACL: "public-read",
+            ACL: 'public-read',
             ContentType: mimetype,
-            ContentDisposition: "inline",
+            ContentDisposition: 'inline',
             CreateBucketConfiguration: {
-                LocationConstraint: "ap-south-1"
-            }
+                LocationConstraint: 'ap-south-1',
+            },
         };
         console.log(params);
         try {

@@ -1,0 +1,121 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LocalInventoryService = void 0;
+const common_1 = require("@nestjs/common");
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
+let LocalInventoryService = class LocalInventoryService {
+    constructor(productModel, vendorModel, buyerModel, agentModel) {
+        this.productModel = productModel;
+        this.vendorModel = vendorModel;
+        this.buyerModel = buyerModel;
+        this.agentModel = agentModel;
+    }
+    async getNewSearch(title, category, brand, serialNumber) {
+        let query = {};
+        if (title != undefined && title != null && title != 'null') {
+            const searchTerm = title.replace(/\s/g, '');
+            const titleExp = new RegExp(`${searchTerm}`);
+            console.log('title expression', searchTerm, titleExp);
+            query = {
+                searchCases: {
+                    $in: [searchTerm, titleExp],
+                },
+            };
+        }
+        else {
+            const productExp = new RegExp('apple-iphone');
+            query = {
+                categoryCode: category != undefined && category != 'null'
+                    ? { $eq: category }
+                    : { $exists: true },
+                brandCode: brand != undefined && brand != 'null'
+                    ? { $eq: brand }
+                    : { $exists: true },
+                serialNumber: serialNumber != undefined && serialNumber != 'null'
+                    ? { $eq: serialNumber }
+                    : { $exists: true },
+            };
+        }
+    }
+    async addProduct(entireBody) {
+        console.log('hello', entireBody);
+        const newProduct = new this.productModel(entireBody);
+        await newProduct.save();
+    }
+    async sellProduct(entireBody) { }
+    async addVendor(entireBody) {
+        const newVendor = new this.vendorModel({
+            name: entireBody.name,
+            phoneNumber: entireBody.phoneNumber,
+            alternatePhoneNumber: entireBody.alternatePhoneNumber,
+            idProofDoc: entireBody.idProofDoc,
+            idProofNumber: entireBody.idProofNumber,
+            city: entireBody.city,
+        });
+        await newVendor.save();
+    }
+    async getAvailableInventory(title, category, brand, serialNumber) {
+        let query = {};
+        if (title != undefined && title != null && title != 'null') {
+            const searchTerm = title.replace(/\s/g, '');
+            const titleExp = new RegExp(`${searchTerm}`);
+            console.log('title expression', searchTerm, titleExp);
+            query = {
+                'productDetails.title': titleExp,
+            };
+        }
+        else {
+            const productExp = new RegExp('apple-iphone');
+            query = {
+                'productDetails.categoryCode': category != undefined && category != 'null'
+                    ? { $eq: category }
+                    : { $exists: true },
+                'productDetails.brandCode': brand != undefined && brand != 'null'
+                    ? { $eq: brand }
+                    : { $exists: true },
+                'productDetails.serialNumber': serialNumber != undefined && serialNumber != 'null'
+                    ? { $eq: serialNumber }
+                    : { $exists: true },
+            };
+        }
+        const products = await this.productModel.find(query);
+        return products;
+    }
+    async getSoldInventory(startDate, endDate) {
+        const products = await this.productModel.find({
+            saleDate: { $gte: startDate, $lte: endDate },
+            isAvailable: false,
+        });
+        return products;
+    }
+    async getVendors() {
+        const vendors = await this.vendorModel.find();
+        return vendors;
+    }
+};
+LocalInventoryService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)('Product')),
+    __param(1, (0, mongoose_1.InjectModel)('Vendor')),
+    __param(2, (0, mongoose_1.InjectModel)('Buyer')),
+    __param(3, (0, mongoose_1.InjectModel)('Agent')),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model])
+], LocalInventoryService);
+exports.LocalInventoryService = LocalInventoryService;
+//# sourceMappingURL=local-inventory.service.js.map
