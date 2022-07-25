@@ -48,8 +48,13 @@ exports.ProductSchema = new mongoose_1.default.Schema({
     saleDateInString: { type: String },
     originalInvoiceUrl: { type: String },
     purchaseInvoiceUrl: { type: String },
-    agentDetails: { type: agent_model_1.AgentSchema },
+    buyingAgentDetails: { type: agent_model_1.AgentSchema },
+    sellingAgentDetails: { type: agent_model_1.AgentSchema },
     buyerDetails: { type: buyer_model_1.BuyerSchema },
     sellerDetails: { type: vendor_model_1.VendorSchema },
+    buyingLeadSource: { type: String },
+    buyingLeadSourceInformation: { type: String },
+    sellingLeadSource: { type: String },
+    sellingLeadSourceInformation: { type: String },
 });
 //# sourceMappingURL=product.model.js.map

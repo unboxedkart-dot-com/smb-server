@@ -7,5 +7,7 @@ exports.BuyerSchema = new mongoose_1.default.Schema({
     emailId: { type: String, required: true },
     phoneNumber: { type: Number, required: true },
     city: { type: String, required: true },
+    leadSource: { type: String },
+    leadSourceInformation: { type: String },
 });
 //# sourceMappingURL=buyer.model.js.map

@@ -3,6 +3,8 @@ export declare class AddProductDto {
     purchaseDate: String;
     originalInvoiceUrl: string;
     purchaseInvoiceUrl: string;
+    leadSource: string;
+    leadSourceInformation: string;
     agentDetails: any;
     sellerDetails: any;
     productDetails: any;

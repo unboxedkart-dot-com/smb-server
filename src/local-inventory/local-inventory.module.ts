@@ -8,6 +8,9 @@ import { AgentSchema } from 'src/models/local_inventory/agent.model';
 import { ProductSchema } from 'src/models/local_inventory/product.model';
 import { S3Module } from 'src/s3/s3.module';
 import { S3Service } from 'src/s3/s3.service';
+import { NotificationSchema } from 'src/models/local_inventory/notification.model';
+import { CustomerSchema } from 'src/models/local_inventory/customer.model';
+import { PurchasedProductSchema } from 'src/models/local_inventory/purchased-item.model';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { S3Service } from 'src/s3/s3.service';
         { name: 'Buyer', schema: BuyerSchema },
         { name: 'Agent', schema: AgentSchema },
         { name: 'Product', schema: ProductSchema },
+        { name: 'Notification', schema: NotificationSchema },
+        { name: 'Customer', schema: CustomerSchema },
+        { name: 'PurchasedProduct', schema: PurchasedProductSchema },
       ],
       'inventoryDb',
     ),

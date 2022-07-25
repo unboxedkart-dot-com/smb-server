@@ -17,6 +17,9 @@ const agent_model_1 = require("../models/local_inventory/agent.model");
 const product_model_1 = require("../models/local_inventory/product.model");
 const s3_module_1 = require("../s3/s3.module");
 const s3_service_1 = require("../s3/s3.service");
+const notification_model_1 = require("../models/local_inventory/notification.model");
+const customer_model_1 = require("../models/local_inventory/customer.model");
+const purchased_item_model_1 = require("../models/local_inventory/purchased-item.model");
 let LocalInventoryModule = class LocalInventoryModule {
 };
 LocalInventoryModule = __decorate([
@@ -27,6 +30,9 @@ LocalInventoryModule = __decorate([
                 { name: 'Buyer', schema: buyer_model_1.BuyerSchema },
                 { name: 'Agent', schema: agent_model_1.AgentSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
+                { name: 'Notification', schema: notification_model_1.NotificationSchema },
+                { name: 'Customer', schema: customer_model_1.CustomerSchema },
+                { name: 'PurchasedProduct', schema: purchased_item_model_1.PurchasedProductSchema },
             ], 'inventoryDb'),
             s3_module_1.S3Module,
         ],

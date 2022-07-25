@@ -33,6 +33,7 @@ let LocalInventoryController = class LocalInventoryController {
         const generatedId = await this.localInventoryService.addProduct(entireBody);
     }
     async sellProduct(request, entireBody) {
+        console.log('seeling');
         await this.localInventoryService.sellProduct(entireBody);
     }
     async addVendor(request, entireBody) {
@@ -40,6 +41,9 @@ let LocalInventoryController = class LocalInventoryController {
     }
     async handleGetVendors() {
         return await this.localInventoryService.getVendors();
+    }
+    async handleGetCustomers() {
+        return await this.localInventoryService.getCustomers();
     }
     async getOverview() { }
     async getSalesData() { }
@@ -67,6 +71,9 @@ let LocalInventoryController = class LocalInventoryController {
         console.log('uploading invoice', file, typeof file);
         const response = this.s3Service.uploadSellerIdProof(file);
         return response;
+    }
+    async getNotifications() {
+        return this.localInventoryService.getNotifications();
     }
 };
 __decorate([
@@ -109,6 +116,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], LocalInventoryController.prototype, "handleGetVendors", null);
+__decorate([
+    (0, common_1.Get)('/get-customers'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LocalInventoryController.prototype, "handleGetCustomers", null);
 __decorate([
     (0, common_1.Get)('overview'),
     __metadata("design:type", Function),
@@ -175,6 +188,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], LocalInventoryController.prototype, "handleUploadSellerIdProof", null);
+__decorate([
+    (0, common_1.Get)('/get-notifications'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LocalInventoryController.prototype, "getNotifications", null);
 LocalInventoryController = __decorate([
     (0, common_1.Controller)('local-inventory'),
     __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => s3_service_1.S3Service))),

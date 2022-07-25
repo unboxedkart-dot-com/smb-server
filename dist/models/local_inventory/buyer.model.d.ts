@@ -5,4 +5,6 @@ export interface BuyerModel {
     emailId: string;
     phoneNumber: number;
     city: string;
+    leadSource: string;
+    leadSourceInformation: string;
 }

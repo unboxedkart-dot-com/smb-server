@@ -17,11 +17,14 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let LocalInventoryService = class LocalInventoryService {
-    constructor(productModel, vendorModel, buyerModel, agentModel) {
+    constructor(productModel, vendorModel, buyerModel, agentModel, customerModel, purchasedItemModel, notificationModel) {
         this.productModel = productModel;
         this.vendorModel = vendorModel;
         this.buyerModel = buyerModel;
         this.agentModel = agentModel;
+        this.customerModel = customerModel;
+        this.purchasedItemModel = purchasedItemModel;
+        this.notificationModel = notificationModel;
     }
     async getNewSearch(title, category, brand, serialNumber) {
         let query = {};
@@ -52,10 +55,83 @@ let LocalInventoryService = class LocalInventoryService {
     }
     async addProduct(entireBody) {
         console.log('hello', entireBody);
+        entireBody.productDetails.title =
+            entireBody.productDetails.title +
+                ' (' +
+                entireBody.productDetails.grade +
+                ', ' +
+                entireBody.moreDetails.color +
+                (entireBody.moreDetails.storage != null
+                    ? `, ${entireBody.moreDetails.storage}`
+                    : ``) +
+                (entireBody.productDetails.ram != null
+                    ? `, ${entireBody.productDetails.ram}`
+                    : ``) +
+                (entireBody.productDetails.processor != null
+                    ? `, ${entireBody.productDetails.processor}`
+                    : ``) +
+                ')';
+        console.log(entireBody.productDetails.title);
         const newProduct = new this.productModel(entireBody);
         await newProduct.save();
+        const newNotification = new this.notificationModel({
+            title: `Product purchased by ${entireBody.agentDetails.name}`,
+            subtitle: entireBody.productDetails.title,
+            content: `purchased at ₹${entireBody.pricingDetails.buyingPrice} from ${entireBody.sellerDetails.name}`,
+        });
+        newNotification.save();
     }
-    async sellProduct(entireBody) { }
+    async sellProduct(entireBody) {
+        var _a;
+        console.log('sellingproduct');
+        console.log(entireBody);
+        await this.productModel.findByIdAndUpdate(entireBody.productId, {
+            isAvailable: false,
+            buyerDetails: entireBody.buyerDetails,
+            sellingAgentDetails: entireBody.agentDetails,
+            'pricingDetails.sellingPrice': entireBody.sellingPrice,
+            saleDate: entireBody.saleDate,
+            saleDateInString: entireBody.saleDateInString,
+            sellingLeadSource: entireBody.buyerDetails.leadSource,
+            sellingLeadSourceInformation: entireBody.buyerDetails.leadSourceInformation,
+        });
+        const product = await this.productModel.findById(entireBody.productId);
+        console.log('new', product);
+        const newNotification = new this.notificationModel({
+            title: `Product Sold by ${entireBody.agentDetails.name}`,
+            subtitle: product.productDetails.title,
+            content: `Sold at a profit of ₹${product.pricingDetails.sellingPrice - product.pricingDetails.buyingPrice} to ${product.buyerDetails.name} (${(_a = product.buyerDetails.leadSource) !== null && _a !== void 0 ? _a : 'Own Lead'})`,
+        });
+        newNotification.save();
+        const customer = await this.customerModel.findOne({
+            phoneNumber: product.buyerDetails.phoneNumber,
+        });
+        const itemPurchased = new this.purchasedItemModel({
+            productCode: product.productDetails.productCode,
+            title: product.productDetails.title,
+            brand: product.productDetails.brand,
+            category: product.productDetails.category,
+            color: product.moreDetails.color,
+            brandCode: product.productDetails.brandCode,
+            categoryCode: product.productDetails.categoryCode,
+            colorCode: product.moreDetails.colorCode,
+        });
+        if (customer == null) {
+            const newCustomer = new this.customerModel({
+                name: product.buyerDetails.name,
+                emailId: product.buyerDetails.emailId,
+                phoneNumber: product.buyerDetails.phoneNumber,
+                city: product.buyerDetails.city,
+                leadSource: product.buyerDetails.leadSource,
+                leadSourceInformation: product.buyerDetails.leadSourceInformation,
+                itemsPurchased: [itemPurchased],
+            });
+            newCustomer.save();
+        }
+        else if (customer != null) {
+            await this.customerModel.findOneAndUpdate({ phoneNumber: product.buyerDetails.phoneNumber }, { $push: { itemsPurchased: itemPurchased } });
+        }
+    }
     async addVendor(entireBody) {
         const newVendor = new this.vendorModel({
             name: entireBody.name,
@@ -66,6 +142,12 @@ let LocalInventoryService = class LocalInventoryService {
             city: entireBody.city,
         });
         await newVendor.save();
+        const newNotification = new this.notificationModel({
+            title: 'Vendor added',
+            subtitle: entireBody.name,
+            content: 'New vendor was added',
+        });
+        newNotification.save();
     }
     async getAvailableInventory(title, category, brand, serialNumber) {
         let query = {};
@@ -105,6 +187,14 @@ let LocalInventoryService = class LocalInventoryService {
         const vendors = await this.vendorModel.find();
         return vendors;
     }
+    async getCustomers() {
+        const vendors = await this.customerModel.find();
+        return vendors;
+    }
+    async getNotifications() {
+        const vendors = await this.notificationModel.find();
+        return vendors;
+    }
 };
 LocalInventoryService = __decorate([
     (0, common_1.Injectable)(),
@@ -112,7 +202,13 @@ LocalInventoryService = __decorate([
     __param(1, (0, mongoose_1.InjectModel)('Vendor')),
     __param(2, (0, mongoose_1.InjectModel)('Buyer')),
     __param(3, (0, mongoose_1.InjectModel)('Agent')),
+    __param(4, (0, mongoose_1.InjectModel)('Customer')),
+    __param(5, (0, mongoose_1.InjectModel)('PurchasedProduct')),
+    __param(6, (0, mongoose_1.InjectModel)('Notification')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])

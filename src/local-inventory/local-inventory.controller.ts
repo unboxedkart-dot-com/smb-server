@@ -62,6 +62,7 @@ export class LocalInventoryController {
     @Body()
     entireBody: SellProductDto,
   ) {
+    console.log('seeling');
     await this.localInventoryService.sellProduct(entireBody);
   }
 
@@ -77,6 +78,12 @@ export class LocalInventoryController {
   @Get('/get-vendors')
   async handleGetVendors() {
     return await this.localInventoryService.getVendors();
+  }
+
+
+  @Get('/get-customers')
+  async handleGetCustomers() {
+    return await this.localInventoryService.getCustomers();
   }
 
   @Get('overview')
@@ -147,5 +154,10 @@ export class LocalInventoryController {
     console.log('uploading invoice', file, typeof file);
     const response = this.s3Service.uploadSellerIdProof(file);
     return response;
+  }
+
+  @Get('/get-notifications')
+  async getNotifications() {
+    return this.localInventoryService.getNotifications();
   }
 }

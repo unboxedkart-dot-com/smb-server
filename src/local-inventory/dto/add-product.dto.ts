@@ -130,11 +130,11 @@ export class AddProductDto {
   @IsOptional()
   purchaseInvoiceUrl: string;
 
-  //   @IsString()
-  //   leadSource: string;
+  @IsString()
+  leadSource: string;
 
-  //   @IsString()
-  //   leadSourceInformation: string;
+  @IsString()
+  leadSourceInformation: string;
 
   @IsNotEmpty()
   agentDetails: any;

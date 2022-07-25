@@ -18,6 +18,9 @@ export declare class LocalInventoryController {
     handleGetVendors(): Promise<(import("mongoose").Document<unknown, any, import("../models/local_inventory/vendor.model").VendorModel> & import("../models/local_inventory/vendor.model").VendorModel & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
+    handleGetCustomers(): Promise<(import("mongoose").Document<unknown, any, import("../models/local_inventory/customer.model").CustomerModel> & import("../models/local_inventory/customer.model").CustomerModel & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
     getOverview(): Promise<void>;
     getSalesData(): Promise<void>;
     getAvailableInventory(title: string, category: string, brand: string, serialNumber: string): Promise<(import("mongoose").Document<unknown, any, import("../models/local_inventory/product.model").ProductModel> & import("../models/local_inventory/product.model").ProductModel & {
@@ -32,4 +35,7 @@ export declare class LocalInventoryController {
     handleUploadPurchaseInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
     handleUploadOriginalInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
     handleUploadSellerIdProof(file: Express.Multer.File, request: any, Body: any): Promise<void>;
+    getNotifications(): Promise<(import("mongoose").Document<unknown, any, import("../models/local_inventory/notification.model").NotificationModel> & import("../models/local_inventory/notification.model").NotificationModel & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
 }

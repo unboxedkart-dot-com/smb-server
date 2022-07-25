@@ -14,21 +14,32 @@ const class_validator_1 = require("class-validator");
 class SellProductDto {
 }
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SellProductDto.prototype, "productId", void 0);
+__decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], SellProductDto.prototype, "sellingPrice", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], SellProductDto.prototype, "leadSource", void 0);
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Object)
+], SellProductDto.prototype, "buyerDetails", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
 ], SellProductDto.prototype, "saleDate", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], SellProductDto.prototype, "SaleDateInString", void 0);
+], SellProductDto.prototype, "saleDateInString", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Object)
+], SellProductDto.prototype, "agentDetails", void 0);
 exports.SellProductDto = SellProductDto;
 //# sourceMappingURL=sell-product.dto.js.map

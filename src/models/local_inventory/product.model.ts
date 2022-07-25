@@ -12,7 +12,7 @@ export const ProductSchema = new mongoose.Schema({
     warrantyEndDate: { type: String },
     warrantyEndDateInString: { type: String },
     serialNumber: { type: String, required: true },
-    imei1Number: { type: String},
+    imei1Number: { type: String },
     imei2Number: { type: String },
     category: { type: String, required: true },
     brand: { type: String, required: true },
@@ -47,9 +47,14 @@ export const ProductSchema = new mongoose.Schema({
   saleDateInString: { type: String },
   originalInvoiceUrl: { type: String },
   purchaseInvoiceUrl: { type: String },
-  agentDetails: { type: AgentSchema },
+  buyingAgentDetails: { type: AgentSchema },
+  sellingAgentDetails: { type: AgentSchema },
   buyerDetails: { type: BuyerSchema },
   sellerDetails: { type: VendorSchema },
+  buyingLeadSource: { type: String },
+  buyingLeadSourceInformation: { type: String },
+  sellingLeadSource: { type: String },
+  sellingLeadSourceInformation: { type: String },
 });
 
 export interface ProductModel {
@@ -69,7 +74,7 @@ export interface ProductModel {
     brandCode: string;
     gradeCode: string;
     title: string;
-    productCode : string;
+    productCode: string;
     boxContains: string;
   };
   moreDetails: {
@@ -93,8 +98,11 @@ export interface ProductModel {
   saleDateInString: string;
   originalInvoiceUrl: string;
   purchaseInvoiceUrl: string;
-  //   leadSource: string;
-  //   leadSourceInformation: string;
+  buyingLeadSource: string;
+  buyingLeadSourceInformation: string;
+  sellingLeadSource: string;
+  sellingLeadSourceInformation: string;
+
   agentDetails: AgentModel;
   buyerDetails: BuyerModel;
   sellerDetails: VendorModel;

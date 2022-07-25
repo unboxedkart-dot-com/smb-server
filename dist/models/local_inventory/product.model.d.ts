@@ -44,6 +44,10 @@ export interface ProductModel {
     saleDateInString: string;
     originalInvoiceUrl: string;
     purchaseInvoiceUrl: string;
+    buyingLeadSource: string;
+    buyingLeadSourceInformation: string;
+    sellingLeadSource: string;
+    sellingLeadSourceInformation: string;
     agentDetails: AgentModel;
     buyerDetails: BuyerModel;
     sellerDetails: VendorModel;
