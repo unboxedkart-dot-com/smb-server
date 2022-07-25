@@ -131,10 +131,10 @@ export class AddProductDto {
   purchaseInvoiceUrl: string;
 
   @IsString()
-  leadSource: string;
+  buyingLeadSource: string;
 
   @IsString()
-  leadSourceInformation: string;
+  buyingLeadSourceInformation: string;
 
   @IsNotEmpty()
   agentDetails: any;

@@ -36,11 +36,11 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AddProductDto.prototype, "leadSource", void 0);
+], AddProductDto.prototype, "buyingLeadSource", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AddProductDto.prototype, "leadSourceInformation", void 0);
+], AddProductDto.prototype, "buyingLeadSourceInformation", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)
