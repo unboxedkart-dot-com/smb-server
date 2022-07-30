@@ -24,158 +24,6 @@ let ProductsService = class ProductsService {
         this.productImagesModel = productImagesModel;
         this.reviewModel = reviewModel;
     }
-    async insertProduct(entireBody) {
-        const productData = await this.productDataModel.findOne({
-            productCode: entireBody.productCode,
-        });
-        const imagePath = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}`;
-        const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
-        const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
-        const productImages = await this.productImagesModel.findOne({
-            productCode: entireBody.productCode,
-            colorCode: entireBody.colorCode,
-        });
-        const imageUrls = this._handleGetProductImageUrls(imageUrl, thumbailUrl, productImages.count);
-        const searchCases = this._handleCreateProductSearchCases(productData.category, productData.brand, productData.title, entireBody);
-        const newTitle = this._handleGenerateNewTitle(productData.categoryCode, productData.title, entireBody.condition, entireBody.color, entireBody.storage, entireBody.ram, entireBody.processor, entireBody.connectivity);
-        const aboutProduct = entireBody.aboutProduct.split('///');
-        console.log('about splitting', aboutProduct);
-        console.log('new title', newTitle);
-        const newProduct = new this.productModel({
-            productCode: entireBody.productCode,
-            SKU: 'ABCD',
-            title: newTitle,
-            seriesCode: productData.seriesCode,
-            highlights: productData.highlights,
-            aboutProduct: aboutProduct,
-            modelNumber: productData.modelNumber,
-            brand: productData.brandCode,
-            brandCode: productData.brandCode,
-            category: productData.category,
-            categoryCode: productData.categoryCode,
-            condition: entireBody.condition,
-            conditionCode: entireBody.conditionCode,
-            imageUrls: {
-                desktopCoverImage: `${imagePath}/desktop-cover.webp`,
-                coverImage: `${imagePath}/mobile-cover.webp`,
-                images: imageUrls.images,
-                thumbnails: imageUrls.thumbnails,
-            },
-            pricing: {
-                price: entireBody.price,
-                sellingPrice: entireBody.sellingPrice,
-            },
-            quantity: entireBody.inventoryCount,
-            searchCases: searchCases,
-            isBestSeller: entireBody.isBestSeller,
-            isFeatured: entireBody.isFeatured,
-            isCertified: entireBody.isCertified,
-            moreDetails: {
-                color: entireBody.color,
-                colorCode: entireBody.colorCode,
-                storage: entireBody.storage,
-                storageCode: entireBody.storageCode,
-            },
-            warrantyDetails: {
-                isUnderWarranty: entireBody.isUnderWarranty,
-                warrantyLeft: entireBody.warrantyLeftInMonths,
-                description: entireBody.warrantyDescription,
-            },
-            sellerDetails: {
-                sellerId: entireBody.sellerId,
-                sellerName: entireBody.sellerName,
-            },
-            boxContains: entireBody.boxContains,
-        });
-        console.log('new product', newProduct);
-        await newProduct.save();
-    }
-    _handleGetAboutProduct(aboutProduct) {
-        console.log(aboutProduct);
-        const aboutList = aboutProduct.split('...');
-        console.log('aboutList', aboutList);
-    }
-    _handleGenerateNewTitle(category, title, condition, color, storage, ram, processor, connectivity) {
-        let newTitle = '';
-        if (category == 'mobile-phone') {
-            newTitle =
-                title +
-                    ' (' +
-                    condition +
-                    ', ' +
-                    color +
-                    (storage != null ? `, ${storage}` : ``) +
-                    (ram != null ? `, ${ram}` : ``) +
-                    ')';
-        }
-        else if (category == 'laptop') {
-            newTitle =
-                title +
-                    ' (' +
-                    condition +
-                    ', ' +
-                    color +
-                    (storage != null ? `, ${storage}` : ``) +
-                    (ram != null ? `, ${ram}` : ``) +
-                    (processor != null ? `, ${processor}` : ``) +
-                    ')';
-        }
-        else if (category == 'watch') {
-            newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
-        }
-        else if (category == 'watch') {
-            newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
-        }
-        else {
-            newTitle = title + ' (' + condition + ', ' + color + ')';
-        }
-        return newTitle;
-    }
-    _handleGetProductImageUrls(imageUrl, thumbnailUrl, count) {
-        const thumbnails = [];
-        const images = [];
-        for (let n = 1; n <= count; n++) {
-            thumbnails.push(`${thumbnailUrl}-${n}.webp`);
-            images.push(`${imageUrl}-${n}.webp`);
-        }
-        return {
-            coverImage: `${imageUrl}-.webp`,
-            thumbnails: thumbnails,
-            images: images,
-        };
-    }
-    _handleCreateProductSearchCases(category, brand, title, entireBody) {
-        var _a, _b, _c;
-        const searchCases = [];
-        function addTerm(term) {
-            searchCases.push(term.toLowerCase().replace(/\s/g, ''));
-        }
-        addTerm(brand);
-        addTerm(category);
-        addTerm(entireBody.color);
-        (_a = entireBody.storage != null) !== null && _a !== void 0 ? _a : addTerm(entireBody.storage);
-        (_b = entireBody.processor != null) !== null && _b !== void 0 ? _b : addTerm(entireBody.processor);
-        (_c = entireBody.ram != null) !== null && _c !== void 0 ? _c : addTerm(entireBody.ram);
-        for (let i = 1; i <= title.length; i++) {
-            addTerm(title.substring(0, i));
-        }
-        console.log('generated search terms', searchCases);
-        return searchCases;
-    }
-    async updateInventoryCount({ productId, count, }) {
-        try {
-            await this.productModel.findByIdAndUpdate(productId, {
-                quantity: count,
-            });
-        }
-        catch (e) {
-            throw new common_1.ForbiddenException('cannot update product pricing', "the product id doesn't exists");
-        }
-    }
-    async getProducts() {
-        const products = await this.productModel.find().exec();
-        return products;
-    }
     async getSelectedVariant(product, condition, storage, color, processor, ram, combination, screenSize) {
         console.log('selected variant details', product, condition, storage, color, processor, ram, combination, screenSize);
         const query = {
@@ -295,12 +143,6 @@ let ProductsService = class ProductsService {
                 return product[0];
             }
         }
-    }
-    async deleteProducts() {
-        await this.productModel.deleteMany({});
-    }
-    async deleteSingleProduct(id) {
-        await this.productModel.deleteOne({ id: id });
     }
     async getBestSellers(brand, category, condition) {
         let query = {};
@@ -495,9 +337,6 @@ let ProductsService = class ProductsService {
             .limit(10)
             .exec();
         return products;
-    }
-    async handleRemoveRating() {
-        await this.productModel.updateMany({ $unset: { 'rating': '' } });
     }
 };
 ProductsService = __decorate([

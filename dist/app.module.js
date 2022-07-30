@@ -43,7 +43,7 @@ AppModule = __decorate([
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
-            mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
+            mongoose_1.MongooseModule.forRoot(process.env.SERVICE_DB_CONNECTION_URL, {
                 connectionName: 'serviceDb',
             }),
             mongoose_1.MongooseModule.forRoot('mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority', {

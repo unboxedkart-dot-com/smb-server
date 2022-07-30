@@ -23,9 +23,7 @@ export declare class QAndAService {
         status: string;
         message: string;
     }>;
-    approveQuestion(userId: string, questionId: string): Promise<void>;
     createAnswer(userId: string, entireBody: CreateAnswerDto): Promise<void>;
-    approveAnswer(answerId: string): Promise<void>;
     getUserQuestions(userId: string): Promise<(import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
@@ -39,8 +37,4 @@ export declare class QAndAService {
     getQuestionsFeed(userId: string): Promise<(import("mongoose").Document<unknown, any, QuestionAndAnswer> & QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
-    getNewQuestions(): Promise<Question[]>;
-    getApprovedQAndA(): Promise<QuestionAndAnswer[]>;
-    getNewAnswers(): Promise<Answer[]>;
-    getApprovedAnswers(): Promise<Answer[]>;
 }

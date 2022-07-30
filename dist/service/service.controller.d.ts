@@ -6,7 +6,7 @@ import { CreateServiceDto } from './dto/create-service.dto';
 export declare class ServiceController {
     private readonly serviceService;
     constructor(serviceService: ServiceService);
-    getDiagnosisFee(categoryCode: string): Promise<300 | 800 | 500 | 400>;
+    getDiagnosisFee(categoryCode: string): Promise<500 | 300 | 800 | 400>;
     createServiceRequest(request: any, entireBody: CreateServiceDto): Promise<{
         orderNumber: string;
     }>;

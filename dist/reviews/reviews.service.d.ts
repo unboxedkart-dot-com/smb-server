@@ -13,9 +13,6 @@ export declare class ReviewsService {
     private reviewsDataModel;
     private productModel;
     constructor(reviewModel: Model<Review>, userModel: Model<User>, reviewsDataModel: Model<ReviewsData>, productModel: Model<Product>);
-    getAllReviews(): Promise<(import("mongoose").Document<unknown, any, Review> & Review & {
-        _id: import("mongoose").Types.ObjectId;
-    })[]>;
     getUserReviews(userId: string): Promise<(import("mongoose").Document<unknown, any, Review> & Review & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
@@ -34,5 +31,4 @@ export declare class ReviewsService {
     createReview(userId: string, entireBody: CreateReviewDto): Promise<void>;
     updateReview(userId: string, entireBody: UpdateReviewDto): Promise<void>;
     deleteReview(userId: string, reviewId: string): Promise<void>;
-    approveReview(userId: string, reviewId: string): Promise<void>;
 }

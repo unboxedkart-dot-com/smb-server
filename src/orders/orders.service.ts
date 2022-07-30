@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as SendGrid from '@sendgrid/mail';
 import axios from 'axios';
 import { Model } from 'mongoose';
-import { AuthService } from 'src/auth/auth.service';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
 import {
@@ -20,7 +19,6 @@ import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
 import { User } from 'src/models/user.model';
 import { CancelOrderDto } from './dto/cancel-order.dto';
-import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -50,12 +48,6 @@ export class OrdersService {
     // console.log('orderrrrr', orderItems);
     console.log('pro', orderItems);
     return orderItems as OrderItem[];
-  }
-
-  async deleteAll() {
-    await this.orderItemModel.deleteMany();
-    await this.orderModel.deleteMany();
-    await this.orderSummaryModel.deleteMany();
   }
 
   async getReferrals(userId: string) {
@@ -203,96 +195,6 @@ export class OrdersService {
     return orderSummary.orderNumber;
   }
 
-  async acceptOrder(userId: string, orderItemId: string) {
-    const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
-      orderStatus: OrderStatuses.ACCEPTED,
-    });
-    await this.productModel.findByIdAndUpdate(order.orderDetails.productId, {
-      $inc: { quantity: 1 },
-    });
-    this._handleSendOrderConfirmedMessage(order);
-    this._handleSendOrderConfirmedMail(order);
-    this._handleOrderConfirmationNotification(order);
-  }
-
-  async orderReadyForPickUp(userId: string, orderItemId: string) {
-    const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
-      orderStatus: OrderStatuses.READY_FOR_PICKUP,
-    });
-    this._handleSendOutForPickUpMessage(order);
-    this._handleSendOutForPickUpMail(order);
-    this._handleSendOrderReadyForPickUpNotification(order);
-  }
-
-  async orderShipped(userId: string, orderItemId: string) {
-    const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
-      orderStatus: OrderStatuses.SHIPPED,
-    });
-    this._handleSendOrderShippedMessage(order);
-    this._handleSendOrderShippedMail(order);
-    this._handleSendOrderShippedNotification(order);
-  }
-
-  async orderOutForDelivery(userId: string, orderItemId: string) {
-    const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
-      orderStatus: OrderStatuses.OUT_FOR_DELIVERY,
-    });
-    this._handleSendOutForDeliveryMessage(order);
-    this._handleSendOutForDeliveryMail(order);
-    this._handleSendOutForDeliveryNotification(order);
-  }
-
-  async orderDelivered(userId: string, orderItemId: string) {
-    const order = await this.orderItemModel.findByIdAndUpdate(orderItemId, {
-      deliveryTimeStamp: Date(),
-      orderStatus: OrderStatuses.DELIVERED,
-    });
-    console.log('delivering  order', order);
-
-    // this._handleSendOrderDeliveredMessage(order);
-    // this._handleSendOrderDeliveredMail(order);
-    // this._handleSendOrderDeliveredNotification(order);
-
-    // const itemPurchasedUsers = await this.itemPurchasedUsersModel.findOne({
-    //   productId: order.orderDetails.productId,
-    // });
-    // if (itemPurchasedUsers) {
-    //   await this.itemPurchasedUsersModel.findOneAndUpdate(
-    //     {
-    //       productId: order.orderDetails.productId,
-    //     },
-    //     {
-    //       $push: {
-    //         userIds: order.userId.substring(0, 20),
-    //         users: {
-    //           userId: order.userId,
-    //           userName: order.userDetails.userName,
-    //           phoneNumber: order.userDetails.phoneNumber,
-    //           emailId: order.userDetails.emailId,
-    //         },
-    //       },
-    //     },
-    //   );
-    // } else {
-    //   const newItemPurchasedUsers = new this.itemPurchasedUsersModel({
-    //     productId: order.orderDetails.productId,
-    //     users: [
-    //       {
-    //         userId: order.userId,
-    //         userName: order.userDetails.userName,
-    //         phoneNumber: order.userDetails.phoneNumber,
-    //         emailId: order.userDetails.emailId,
-    //       },
-    //     ],
-    //     userIds: [order.userId.substring(0, 20)],
-    //   });
-    //   newItemPurchasedUsers.save();
-    // }
-    // await this.userModel.findByIdAndUpdate(order.userId, {
-    //   $push: { purchasedItemIds: order.orderDetails.productId },
-    // });
-  }
-
   async cancelOrder(userId: string, entireBody: CancelOrderDto) {
     console.log('cancelling order');
     const order = await this.orderItemModel.findById(entireBody.orderId);
@@ -314,6 +216,7 @@ export class OrdersService {
     console.log('orderrrrr', orderItems);
     return orderItems as OrderItem[];
   }
+
   async getOrder(userId: string, orderNumber: string) {
     console.log('getting order', orderNumber);
     var order = await this.orderModel.findOne({
@@ -361,22 +264,10 @@ export class OrdersService {
           },
         };
       }
-      // const orderItemDetails = {
-      //   reviewDetails: reviewDetails,
-      //   shippingDetails: orderItem.shippingDetails,
-      //   deliveryDetails: orderItem.shippingDetails,
-      //   pickUpDetails: orderItem.pickUpDetails,
-      //   paymentDetails: orderItem.pickUpDetails,
-      //   pricingDetails: orderItem.pricingDetails,
-      //   orderDetails: orderItem.orderDetails,
-      //   orderNumber: orderItem.orderNumber,
-      //   orderDate: orderItem.orderDate,
-      //   orderStatus: orderItem.orderStatus,
-      //   id: orderItem._id,
-      // };
-      // return orderItemDetails;
+     
     }
   }
+
 
   async _getCouponDiscount(
     userId: string,
@@ -620,8 +511,6 @@ export class OrdersService {
     req.end();
   }
 
-  //order placed messages
-
   async _handleSendOrderPlacedMessage(userDoc: any, orderItems: any) {
     console.log('sending order message');
     const url = 'https://api.msg91.com/api/v5/flow';
@@ -728,8 +617,6 @@ export class OrdersService {
     // }
   }
 
-  //referral order notifications
-
   async _handleSendReferralOrderPlaceMessage(
     name: string,
     phoneNumber: number,
@@ -780,326 +667,6 @@ export class OrdersService {
     const response = this.sendNotification(message);
   }
 
-  // order confirmed messages
-
-  async _handleSendOrderConfirmedMessage(order: any) {
-    if (order.deliveryType == 'STORE PICKUP') {
-      const url = process.env.SMS_FLOW_URL;
-      const postBody = {
-        flow_id: process.env.PICKUP_ORDER_CONFIRMED_FLOW_ID,
-        sender: process.env.ORDER_SMS_SENDER_ID,
-        mobiles: '91' + order.userDetails.phoneNumber,
-        authkey: process.env.SMS_AUTH_KEY,
-        order: order.productDetails.title.substring(0, 25) + '...',
-        orderid: order.orderNumber,
-        pickupdate: order.pickUpDetails.pickUpDateInString,
-      };
-      await axios.post(url, postBody);
-    } else if (order.deliveryType == 'HOME DELIVERY') {
-      const url = process.env.SMS_FLOW_URL;
-      const postBody = {
-        flow_id: process.env.DELIVERY_ORDER_CONFIRMED_FLOW_ID,
-        sender: process.env.ORDER_SMS_SENDER_ID,
-        mobiles: '91' + order.userDetails.phoneNumber,
-        authkey: process.env.SMS_AUTH_KEY,
-        order: order.productDetails.title.substring(0, 25) + '...',
-        orderid: order.orderNumber,
-        deliverydate: order.shippingDetails.deliveryDateInString,
-      };
-      await axios.post(url, postBody);
-    }
-  }
-
-  async _handleSendOrderConfirmedMail(order: any) {
-    if (order.deliveryType == 'STORE PICKUP') {
-      const msg = {
-        to: order.userDetails.emailId,
-        from: 'info@unboxedkart.com',
-        templateId: process.env.PICKUP_ORDER_CONFIRMED_TEMPLATE_ID,
-        dynamic_template_data: {
-          name: order.userDetails.name,
-          order: order.productDetails.title,
-          orderId: order.orderNumber,
-          pickupdate: order.pickUpDetails.pickUpDateInString,
-        },
-      };
-      const transport = await SendGrid.send(msg)
-        .then(() => console.log('email send', 'confirmed'))
-        .catch((e) => console.log('email error', e));
-      return transport;
-    } else if (order.deliveryType == 'HOME DELIVERY') {
-      const msg = {
-        to: order.userDetails.emailId,
-        from: 'info@unboxedkart.com',
-        templateId: process.env.DELIVERY_ORDER_CONFIRMED_TEMPLATE_ID,
-        dynamic_template_data: {
-          name: order.userDetails.name,
-          order: order.productDetails.title,
-          orderId: order.orderNumber,
-          deliverydate: order.shippingDetails.deliveryDateInString,
-        },
-      };
-      const transport = await SendGrid.send(msg)
-        .then(() => console.log('email send'))
-        .catch((e) => console.log('email error', e));
-      return transport;
-    }
-  }
-
-  async _handleOrderConfirmationNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order is confirmed`;
-    const content = `Your order for ${order.productDetails.title} is confirmed & will be ready for pick up by ${order.pickUpDetails.pickUpDateInString}. Click here to know more..`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-    console.log('response', response);
-  }
-
-  // out for pickup messages
-
-  async _handleSendOutForPickUpMail(order: any) {
-    const msg = {
-      to: order.userDetails.emailId,
-      from: 'info@unboxedkart.com',
-      templateId: process.env.PICKUP_ORDER_READY_FOR_PICKUP,
-      dynamic_template_data: {
-        name: order.userDetails.userName,
-        order: order.orderDetails.productTitle,
-        orderId: order.orderNumber,
-        pickupdate: order.pickUpDetails.pickUpDateInString,
-        pickuptime: order.pickUpDetails.pickUpTimeInString,
-        pickupstore: order.pickUpDetails.storeLocation.storeName,
-        otp: '123456',
-        directions: order.pickUpDetails.storeLocation.directions,
-      },
-    };
-    const transport = await SendGrid.send(msg)
-      .then(() => console.log('email send'))
-      .catch((e) => console.log('email error', e));
-    return transport;
-  }
-
-  async _handleSendOutForPickUpMessage(order: any) {
-    const url = process.env.SMS_FLOW_URL;
-    const postBody = {
-      flow_id: process.env.PICKUP_ORDER_READY_FOR_PICKUP_FLOW_ID,
-      sender: process.env.ORDER_SMS_SENDER_ID,
-      mobiles: '91' + order.userDetails.phoneNumber,
-      authkey: process.env.SMS_AUTH_KEY,
-      order: order.productDetails.title.substring(0, 25) + '...',
-      orderid: order.orderNumber,
-      pickupdate: order.pickUpDetails.pickUpDateInString,
-      pickuptime: order.pickUpDetails.pickUpTimeInString,
-      pickupstore: order.pickUpDetails.storeLocation.storeName,
-      otp: '123456',
-      directions: order.pickUpDetails.storeLocation.directions,
-    };
-    await axios.post(url, postBody);
-  }
-
-  async _handleSendOrderReadyForPickUpNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order is ready for pickup`;
-    const content = `Your order for ${order.productDetails.title} is ready for pickup. Click here to get directions to our store.`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
-
-  // order shipped messages
-
-  async _handleSendOrderShippedMessage(order: any) {
-    const url = process.env.SMS_FLOW_URL;
-    const postBody = {
-      flow_id: process.env.DELIVERY_ORDER_SHIPPED_FLOW_ID,
-      sender: process.env.ORDER_SMS_SENDER_ID,
-      mobiles: '91' + order.userDetails.phoneNumber,
-      authkey: process.env.SMS_AUTH_KEY,
-      order: order.productDetails.title.substring(0, 25) + '...',
-      orderid: order.orderNumber,
-      deliverydate: order.shippingDetails.deliveryDate,
-    };
-    await axios.post(url, postBody);
-  }
-
-  async _handleSendOrderShippedMail(order: any) {
-    const msg = {
-      to: order.userDetails.emailId,
-      from: 'info@unboxedkart.com',
-      templateId: process.env.DELIVERY_ORDER_SHIPPED_TEMPLATE_ID,
-      dynamic_template_data: {
-        name: order.userDetails.userName,
-        order: order.productDetails.title,
-        orderid: order.orderNumber,
-        deliverydate: order.shippingDetails.deliveryDate,
-      },
-    };
-    const transport = await SendGrid.send(msg)
-      .then(() => console.log('email send'))
-      .catch((e) => console.log('email error', e));
-    return transport;
-  }
-
-  async _handleSendOrderShippedNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order has been shipped`;
-    const content = `Your order for ${order.productDetails.title} with has been shipped & will be delivered to you by ${order.shippingDetails.deliveryDateInString}.`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
-
-  // out for delivery messages
-
-  async _handleSendOutForDeliveryMessage(order: any) {
-    console.log('order details', order);
-    const url = process.env.SMS_FLOW_URL;
-    const postBody = {
-      flow_id: process.env.DELIVERY_ORDER_OUT_FOR_DELIVERY_FLOW_ID,
-      sender: process.env.ORDER_SMS_SENDER_ID,
-      mobiles: '91' + order.userDetails.phoneNumber,
-      authkey: process.env.SMS_AUTH_KEY,
-      order: order.productDetails.title.substring(0, 25) + '...',
-      orderid: order.orderNumber,
-      otp: '123456',
-    };
-    await axios.post(url, postBody);
-  }
-
-  async _handleSendOutForDeliveryMail(order: any) {
-    const msg = {
-      to: order.userDetails.emailId,
-      from: 'info@unboxedkart.com',
-      templateId: process.env.DELIVERY_ORDER_OUT_FOR_DELIVERY_TEMPLATE_ID,
-      dynamic_template_data: {
-        name: order.userDetails.userName,
-        order: order.productDetails.title,
-        orderid: order.orderNumber,
-        otp: '123456',
-      },
-    };
-    const transport = await SendGrid.send(msg)
-      .then(() => console.log('email send'))
-      .catch((e) => console.log('email error', e));
-    return transport;
-  }
-
-  async _handleSendOutForDeliveryNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order will be delivered today`;
-    const content = `Your order for ${order.productDetails.title} is confirmed & will be delivered today.`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-    console.log('response', response);
-  }
-
-  // order delivered messages
-
-  async _handleSendOrderDeliveredMessage(order: any) {
-    console.log('order details', order);
-    const url = process.env.SMS_FLOW_URL;
-    const postBody = {
-      flow_id: process.env.ORDER_DELIVERED_FLOW_ID,
-      sender: process.env.ORDER_SMS_SENDER_ID,
-      mobiles: '91' + order.userDetails.phoneNumber,
-      authkey: process.env.SMS_AUTH_KEY,
-      order: order.productDetails.title.substring(0, 25) + '...',
-      orderid: order.orderNumber,
-    };
-    await axios.post(url, postBody);
-  }
-
-  async _handleSendOrderDeliveredMail(order: any) {
-    const msg = {
-      to: order.userDetails.emailId,
-      from: 'info@unboxedkart.com',
-      templateId: process.env.ORDER_DELIVERED_TEMPLATE_ID,
-      dynamic_template_data: {
-        name: order.userDetails.userName,
-        order: order.productDetails.title,
-        orderid: order.orderNumber,
-      },
-    };
-    const transport = await SendGrid.send(msg)
-      .then(() => console.log('email send'))
-      .catch((e) => console.log('email error', e));
-    return transport;
-  }
-
-  async _handleSendOrderDeliveredNotification(order: any) {
-    const title = `Hey ${order.userDetails.userName}, Your order has been delivered`;
-    const content = `Your order for ${order.productDetails.title} has been delivered. Click here to rate your purchase`;
-    //without template
-    var message = {
-      app_id: '12fb7561-03e6-409e-bc03-a558aee286de',
-      channel_for_external_user_ids: 'push',
-      contents: {
-        en: content,
-      },
-      headings: {
-        en: title,
-      },
-      include_external_user_ids: [order.userId.substring(0, 20)],
-    };
-    const response = this.sendNotification(message);
-  }
-
-  async getSalesOverview(startDate: string) {
-    console.log('getting sales overview', startDate);
-    const sales = await this.orderItemModel.find({
-      orderStatus: 'DELIVERED',
-      // deliveryTimeStamp: { $gte: startDate },
-    });
-    const orders = await this.orderItemModel.find({
-      // orderDate: { $gte: startDate },
-    });
-    console.log('overview', sales.length, orders.length);
-    return {
-      sales: sales as [],
-      orders: orders as [],
-    };
-  }
-
-  async uploadInvoice(file: any) {}
-
   async sendInvoiceCopy(userId: string, orderId: string) {
     const user = await this.userModel.findById(userId);
     const emailId = user.emailId;
@@ -1135,103 +702,3 @@ export interface IndividualOrderItem {
     pickUpDateInString: string;
   };
 }
-
-// async _getCouponDiscount(couponCode : string){
-//   const couponDiscount = await this.
-// }
-
-// console.log('single product', order);
-// console.log('order data', order);
-// console.log(
-//   'total',
-//   order.total,
-//   'coupon discount',
-//   params.couponDiscount,
-//   'length',
-//   params.orderData.length,
-// );
-
-// const newOrder = new this.orderModel({
-//   userId: userId,
-//   orderNumber: orderNumber,
-//   deliveryType: 0,
-//   paymentDetails: {
-//     paymentType: paymentTypes.PAY_AT_STORE,
-//     billTotal: orderItemDetails.orderTotal,
-//     payableTotal: payableAmount.payableAmount,
-//     couponCode: orderSummary.couponCode,
-//     couponDiscount: payableAmount.couponDiscount,
-//   },
-//   // deliveryAddress: entireBody.deliveryAddress,
-//   itemsCount: orderItemDetails.orderItemsCount,
-//   orderItems: orderItemDetails.orderItems,
-// });
-
-// const payableAmount = await this._validateCouponCode(
-//   orderSummary.couponCode,
-//   orderItemDetails.orderTotal,
-// );
-
-//creating order object
-
-// if (paymentType == PaymentTypes.PARTIAL) {
-//   let transactionData: any;
-//   if (paymentMethod == PaymentMethods.PAY_AT_STORE_DUE) {
-//     transactionData = await this.paymentModel.findOne({
-//       paymentId: partialPaymentId,
-//     });
-//   } else if (paymentMethod == PaymentMethods.CASH_ON_DELIVERY_DUE) {
-//     transactionData = await this.paymentModel.findOne({
-//       paymentId: partialPaymentId,
-//     });
-//   }
-//   const amount = transactionData.amount;
-//   amountPaid = amount;
-//   amountDue = payableAmount - amountPaid;
-// } else if (paymentType == PaymentTypes.FULL) {
-//   let transactionData: any;
-//   if (paymentMethod == PaymentMethods.PREPAID) {
-//     transactionData = await this.paymentModel.findOne({
-//       paymentId: partialPaymentId,
-//     });
-//     const amount = transactionData.amount;
-//     amountPaid = amount;
-//     amountDue = payableAmount - amountPaid;
-//   } else if (
-//     paymentMethod == PaymentMethods.CASH_ON_DELIVERY ||
-//     paymentMethod == PaymentMethods.PAY_AT_STORE
-//   ) {
-//     amountPaid = 0;
-//     amountDue = payableAmount;
-//   }
-// }
-
-//saving order individually in db
-
-// await this._handleSaveIndividualOrders(userDoc, {
-// orderNumber: orderNumber,
-// deliveryType: orderSummary.deliveryType,
-// paymentType: paymentType,
-
-// itemsCount: orderItemDetails.orderItemsCount,
-// orderData: orderItemDetails.orderItems,
-
-// shippingDetails: orderSummary.shippingDetails,
-// pickUpDetails : orderSummary.pickUpDetails,
-// couponCode: orderSummary.couponCode,
-// couponDiscount: couponDiscount,
-// });
-
-// let orderItemIds = [];
-
-// orderNumber: orderNumber,
-// orderDate: Date.now(),
-// selectedPickUpDate: Date.now(),
-// deliveryDate: orderSummary.shippingDetails.deliveryDateInString,
-// pickUpDateInString: orderSummary.pickUpDetails.pickUpDateInString,
-// pickUpTimeInString: orderSummary.pickUpDetails.pickUpTimeInString,
-// paymentType: paymentTypes.PAY_AT_STORE,
-// deliveryType: orderSummary.deliveryType,
-// selectedAddress: orderSummary.shippingDetails.deliveryAddress,
-// selectedStore: orderSummary.pickUpDetails.storeLocation,
-// orderItems: orderItemDetails,

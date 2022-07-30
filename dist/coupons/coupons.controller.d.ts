@@ -3,7 +3,6 @@
 /// <reference types="mongoose" />
 import { AuthService } from 'src/auth/auth.service';
 import { CouponsService } from './coupons.service';
-import { CreateCouponDto } from './dto/create-coupon.dto';
 export declare class CouponsController {
     private readonly couponsService;
     private readonly authService;
@@ -12,7 +11,6 @@ export declare class CouponsController {
         _id: import("mongoose").Types.ObjectId;
     }>;
     handleGetCoupons(): Promise<import("../models/coupon.model").Coupon[]>;
-    handleCreatePersonalCoupon(request: any): Promise<void>;
     handleValidateCoupon(couponCode: string, cartTotal: number, request: any): Promise<{
         isValid: boolean;
         couponDetails: {
@@ -28,6 +26,4 @@ export declare class CouponsController {
         errorText: string;
         couponDetails?: undefined;
     }>;
-    handleGetAllCoupons(request: any): Promise<import("../models/coupon.model").Coupon[]>;
-    handleCreateCoupon(request: any, entireBody: CreateCouponDto): Promise<void>;
 }

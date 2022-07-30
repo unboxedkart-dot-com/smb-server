@@ -24,17 +24,6 @@ let ReviewsController = class ReviewsController {
         this.reviewsService = reviewsService;
         this.authService = authService;
     }
-    async handleGetAllReviews(request) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const reviews = await this.reviewsService.getAllReviews();
-            return reviews;
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
     async handleGetUserReviews(request) {
         const userId = request.user.userId;
         const reviews = await this.reviewsService.getUserReviews(userId);
@@ -49,11 +38,6 @@ let ReviewsController = class ReviewsController {
         const userId = request.user.userId;
         const review = await this.reviewsService.updateReview(userId, entireBody);
         return review;
-    }
-    async handleApproveReview(request, reviewId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        await this.reviewsService.approveReview(userId, reviewId);
     }
     async handleDeleteReview(reviewId, request) {
         const userId = request.user.userId;
@@ -70,14 +54,6 @@ let ReviewsController = class ReviewsController {
         };
     }
 };
-__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('/all-reviews'),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ReviewsController.prototype, "handleGetAllReviews", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
@@ -104,15 +80,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_review_dto_1.UpdateReviewDto]),
     __metadata("design:returntype", Promise)
 ], ReviewsController.prototype, "handleUpdateReview", null);
-__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Patch)('/approve/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], ReviewsController.prototype, "handleApproveReview", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)('/delete/:id'),

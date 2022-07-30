@@ -104,31 +104,6 @@ let QAndAService = class QAndAService {
             message: 'question is added successfully',
         };
     }
-    async approveQuestion(userId, questionId) {
-        const question = await this.questionModel
-            .findByIdAndUpdate(questionId, {
-            isApproved: true,
-        })
-            .select('+userId');
-        console.log('questions', question);
-        const newQAndA = new this.questionAndAnswerModel({
-            userId: question.userId,
-            userName: question.userName,
-            userRole: question.userRole,
-            productId: question.productId,
-            questionDetails: {
-                questionId: question._id,
-                isApproved: question.isApproved,
-                question: question.question,
-                timestamp: question.timestamp,
-            },
-        });
-        newQAndA.save();
-        const users = await this.itemPurchasedUsersModel.findOne({
-            productId: newQAndA.productId,
-        });
-        console.log('updating question', question);
-    }
     async createAnswer(userId, entireBody) {
         console.log('creating answer', entireBody);
         const user = await this.userModel.findByIdAndUpdate(userId, {
@@ -147,19 +122,6 @@ let QAndAService = class QAndAService {
             answer: entireBody.answer,
         });
         await newAnswer.save();
-        this.approveAnswer(newAnswer._id.toString());
-        console.log('answer craeted');
-    }
-    async approveAnswer(answerId) {
-        const answer = await this.answerModel
-            .findByIdAndUpdate(answerId, {
-            isApproved: true,
-        })
-            .select('+userId');
-        console.log('new answer', answer);
-        await this.questionAndAnswerModel.findOneAndUpdate({
-            'questionDetails.questionId': answer.questionId,
-        }, { $push: { answers: answer } });
     }
     async getUserQuestions(userId) {
         const questionAndAnswers = await this.questionAndAnswerModel.find({
@@ -191,22 +153,6 @@ let QAndAService = class QAndAService {
             'questionDetails.questionId': { $nin: user.answeredQuestionIds },
         });
         return questions;
-    }
-    async getNewQuestions() {
-        const questions = await this.questionModel.find({ isApproved: false });
-        return questions;
-    }
-    async getApprovedQAndA() {
-        const qAndA = await this.questionAndAnswerModel.find({ isApproved: true });
-        return qAndA;
-    }
-    async getNewAnswers() {
-        const answers = await this.answerModel.find({ isApproved: false });
-        return answers;
-    }
-    async getApprovedAnswers() {
-        const answers = await this.answerModel.find({ isApproved: true });
-        return answers;
     }
 };
 QAndAService = __decorate([

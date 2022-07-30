@@ -15,7 +15,6 @@ import { ProductImages } from 'src/models/product_images.model';
 import { QuestionAndAnswer } from 'src/models/q_and_a.model';
 import { Review } from 'src/models/review.model';
 import { Product } from '../models/product.model';
-import { CreateProductDto } from './dto/add-product.dto';
 
 export class ProductsService {
   constructor(
@@ -26,218 +25,6 @@ export class ProductsService {
     private readonly productImagesModel: Model<ProductImages>,
     @InjectModel('Review') private readonly reviewModel: Model<Review>, // @InjectModel('ProductSpecs') // private readonly productSpecsModel: Model<Product>, // @InjectModel('QuestionAndAnswer') // private readonly questionAndAnswersModel: Model<QuestionAndAnswer>, // @InjectModel('ProductDetails') private readonly productModel: Model<Product>,
   ) {}
-
-  async insertProduct(entireBody: CreateProductDto) {
-    const productData = await this.productDataModel.findOne({
-      productCode: entireBody.productCode,
-    });
-    const imagePath = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}`;
-    const imageUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/${entireBody.productCode}-unboxedkart`;
-    const thumbailUrl = `https://unboxedkart-india.s3.ap-south-1.amazonaws.com/products/${productData.categoryCode}/${productData.brandCode}/${productData.modelCode}/${entireBody.colorCode}/thumbnails/${entireBody.productCode}-unboxedkart`;
-
-    const productImages = await this.productImagesModel.findOne({
-      productCode: entireBody.productCode,
-      colorCode: entireBody.colorCode,
-    });
-
-    const imageUrls = this._handleGetProductImageUrls(
-      imageUrl,
-      thumbailUrl,
-      productImages.count,
-    );
-
-    const searchCases = this._handleCreateProductSearchCases(
-      productData.category,
-      productData.brand,
-      productData.title,
-      entireBody,
-    );
-
-    const newTitle = this._handleGenerateNewTitle(
-      productData.categoryCode,
-      productData.title,
-      entireBody.condition,
-      entireBody.color,
-      entireBody.storage,
-      entireBody.ram,
-      entireBody.processor,
-      entireBody.connectivity,
-    );
-
-    const aboutProduct = entireBody.aboutProduct.split('///');
-
-    console.log('about splitting', aboutProduct);
-
-    console.log('new title', newTitle);
-
-    const newProduct = new this.productModel({
-      productCode: entireBody.productCode,
-      SKU: 'ABCD',
-      title: newTitle,
-      seriesCode: productData.seriesCode,
-      highlights: productData.highlights,
-      aboutProduct: aboutProduct,
-      modelNumber: productData.modelNumber,
-      brand: productData.brandCode,
-      brandCode: productData.brandCode,
-      category: productData.category,
-      categoryCode: productData.categoryCode,
-      condition: entireBody.condition,
-      conditionCode: entireBody.conditionCode,
-      imageUrls: {
-        desktopCoverImage: `${imagePath}/desktop-cover.webp`,
-        coverImage: `${imagePath}/mobile-cover.webp`,
-        images: imageUrls.images,
-        thumbnails: imageUrls.thumbnails,
-      },
-      pricing: {
-        price: entireBody.price,
-        sellingPrice: entireBody.sellingPrice,
-      },
-      quantity: entireBody.inventoryCount,
-      searchCases: searchCases,
-      isBestSeller: entireBody.isBestSeller,
-      isFeatured: entireBody.isFeatured,
-      isCertified: entireBody.isCertified,
-      moreDetails: {
-        color: entireBody.color,
-        colorCode: entireBody.colorCode,
-        storage: entireBody.storage,
-        storageCode: entireBody.storageCode,
-      },
-      warrantyDetails: {
-        isUnderWarranty: entireBody.isUnderWarranty,
-        // expiryDate: entireBody.warrantyExpiryDate,
-        warrantyLeft: entireBody.warrantyLeftInMonths,
-        description: entireBody.warrantyDescription,
-      },
-      sellerDetails: {
-        sellerId: entireBody.sellerId,
-        sellerName: entireBody.sellerName,
-      },
-      boxContains: entireBody.boxContains,
-    });
-    console.log('new product', newProduct);
-    await newProduct.save();
-    // return result.id;
-  }
-
-  _handleGetAboutProduct(aboutProduct: string) {
-    console.log(aboutProduct);
-    const aboutList = aboutProduct.split('...');
-    console.log('aboutList', aboutList);
-  }
-
-  _handleGenerateNewTitle(
-    category: string,
-    title: string,
-    condition: string,
-    color: string,
-    storage: string,
-    ram: string,
-    processor: string,
-    connectivity: string,
-  ) {
-    let newTitle = '';
-    if (category == 'mobile-phone') {
-      newTitle =
-        title +
-        ' (' +
-        condition +
-        ', ' +
-        color +
-        (storage != null ? `, ${storage}` : ``) +
-        (ram != null ? `, ${ram}` : ``) +
-        ')';
-    } else if (category == 'laptop') {
-      newTitle =
-        title +
-        ' (' +
-        condition +
-        ', ' +
-        color +
-        (storage != null ? `, ${storage}` : ``) +
-        (ram != null ? `, ${ram}` : ``) +
-        (processor != null ? `, ${processor}` : ``) +
-        ')';
-    } else if (category == 'watch') {
-      newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
-    } else if (category == 'watch') {
-      newTitle = title + ' (' + condition + ', ' + connectivity + color + ')';
-    } else {
-      newTitle = title + ' (' + condition + ', ' + color + ')';
-    }
-
-    return newTitle;
-  }
-
-  _handleGetProductImageUrls(
-    imageUrl: string,
-    thumbnailUrl: string,
-    count: number,
-  ) {
-    const thumbnails = [];
-    const images = [];
-    for (let n = 1; n <= count; n++) {
-      thumbnails.push(`${thumbnailUrl}-${n}.webp`);
-      images.push(`${imageUrl}-${n}.webp`);
-    }
-    return {
-      coverImage: `${imageUrl}-.webp`,
-      thumbnails: thumbnails,
-      images: images,
-    };
-  }
-
-  _handleCreateProductSearchCases(
-    category: string,
-    brand: string,
-    title: string,
-    entireBody: CreateProductDto,
-  ) {
-    const searchCases = [];
-
-    function addTerm(term: string) {
-      searchCases.push(term.toLowerCase().replace(/\s/g, ''));
-    }
-
-    addTerm(brand);
-    addTerm(category);
-    addTerm(entireBody.color);
-    entireBody.storage != null ?? addTerm(entireBody.storage);
-    entireBody.processor != null ?? addTerm(entireBody.processor);
-    entireBody.ram != null ?? addTerm(entireBody.ram);
-
-    for (let i = 1; i <= title.length; i++) {
-      addTerm(title.substring(0, i));
-    }
-    console.log('generated search terms', searchCases);
-    return searchCases;
-  }
-
-  async updateInventoryCount({
-    productId,
-    count,
-  }: {
-    productId: string;
-    count: number;
-  }) {
-    try {
-      await this.productModel.findByIdAndUpdate(productId, {
-        quantity: count,
-      });
-    } catch (e) {
-      throw new ForbiddenException(
-        'cannot update product pricing',
-        "the product id doesn't exists",
-      );
-    }
-  }
-
-  async getProducts() {
-    const products = await this.productModel.find().exec();
-    return products as Product[];
-  }
 
   async getSelectedVariant(
     product: string,
@@ -457,14 +244,6 @@ export class ProductsService {
     }
   }
 
-  async deleteProducts() {
-    await this.productModel.deleteMany({});
-  }
-
-  async deleteSingleProduct(id: string) {
-    await this.productModel.deleteOne({ id: id });
-  }
-
   async getBestSellers(brand: string, category: string, condition: string) {
     let query = {};
     if (brand) {
@@ -522,18 +301,6 @@ export class ProductsService {
       .exec();
     return products;
   }
-
-  // async getBestSellers(brand: string, category: string, condition: string) {
-  //   if (brand) {
-  //     return this.getBestSellerByBrand(brand);
-  //   } else if (category) {
-  //     return this.getBestSellersByCategory(category);
-  //   } else if (condition) {
-  //     return this.getBestSellersByCondition(condition);
-  //   } else {
-  //     return this.getAllBestSellers();
-  //   }
-  // }
 
   async getFeaturedProducts(
     brand: string,
@@ -703,7 +470,4 @@ export class ProductsService {
     return products as Product[];
   }
 
-  async handleRemoveRating() {
-    await this.productModel.updateMany({ $unset: { 'rating': '' } });
-  }
 }

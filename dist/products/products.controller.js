@@ -15,26 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../auth/auth.service");
-const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
-const add_product_dto_1 = require("./dto/add-product.dto");
 const products_service_1 = require("./products.service");
 let ProductsController = class ProductsController {
     constructor(productsService, authService) {
         this.productsService = productsService;
         this.authService = authService;
-    }
-    async removeRatings() {
-        await this.productsService.handleRemoveRating();
-    }
-    async addProduct(request, entireBody) {
-        const generatedId = await this.productsService.insertProduct(entireBody);
-        return {
-            data: {
-                response: generatedId,
-            },
-        };
-    }
-    async addManyProducts() {
     }
     async getProduct(q) {
         const product = await this.productsService.getProduct(q);
@@ -44,34 +29,6 @@ let ProductsController = class ProductsController {
         const response = await this.productsService.getSelectedVariant(product, condition, storage, color, processor, ram, combination, screenSize);
         console.log('getting variant product', product);
         return response;
-    }
-    async handleDeleteProducts() {
-        await this.productsService.deleteProducts();
-        return 'products deleted';
-    }
-    async handleUpdateInventoryCount(count, request, productId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (!isAdmin) {
-            await this.productsService.updateInventoryCount({ productId, count });
-            return {
-                statusCode: 200,
-                message: 'product inventory count is updated',
-            };
-        }
-        else {
-            throw new common_1.ForbiddenException('you are not allowed to perform this action');
-        }
-    }
-    async handleDeleteProduct(id, request) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            await this.productsService.deleteSingleProduct(id);
-        }
-        else {
-            throw new common_1.ForbiddenException('You are not allowed to perform this action');
-        }
     }
     async handleGetSimilarProducts(productId) {
         const products = await this.productsService.getSimilarProducts(productId);
@@ -90,26 +47,6 @@ let ProductsController = class ProductsController {
         return products;
     }
 };
-__decorate([
-    (0, common_1.Patch)('remove-ratings'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "removeRatings", null);
-__decorate([
-    (0, common_1.Post)('/add'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, add_product_dto_1.CreateProductDto]),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "addProduct", null);
-__decorate([
-    (0, common_1.Post)('/add-many'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "addManyProducts", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('q')),
@@ -131,31 +68,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getSelectedVariant", null);
-__decorate([
-    (0, common_1.Delete)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleDeleteProducts", null);
-__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Patch)('/update-count/:id'),
-    __param(0, (0, common_1.Body)('count')),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, String]),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleUpdateInventoryCount", null);
-__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Body)('id')),
-    __param(1, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], ProductsController.prototype, "handleDeleteProduct", null);
 __decorate([
     (0, common_1.Get)('/similar-products/:id'),
     __param(0, (0, common_1.Param)('id')),

@@ -10,8 +10,8 @@ export declare class QAndAController {
     private readonly authService;
     constructor(qAndAService: QAndAService, authService: AuthService);
     handleGetQuestionAndAnswers(productId: string): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
-    handleGetProductReviews(productId: string): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
-    handleGetAllProductReviews(productId: string): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
+    handleGetProductQandA(productId: string): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
+    handleGetAllProductQandA(productId: string): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
     handleGetAnswers(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/answer.model").Answer> & import("../models/answer.model").Answer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
@@ -22,14 +22,8 @@ export declare class QAndAController {
         status: string;
         message: string;
     }>;
-    handleApproveQuestion(questionId: string, request: any): Promise<void>;
     handleCreateAnswer(request: any, entireBody: CreateAnswerDto): Promise<void>;
-    handleApproveAnswer(answerId: string, request: any): Promise<void>;
     handleGetQuestionsFeed(request: any): Promise<(import("mongoose").Document<unknown, any, import("../models/q_and_a.model").QuestionAndAnswer> & import("../models/q_and_a.model").QuestionAndAnswer & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
-    handleGetNewQuestions(request: any): Promise<import("../models/question.model").Question[]>;
-    handleGetApprovedQAndA(request: any): Promise<import("../models/q_and_a.model").QuestionAndAnswer[]>;
-    handleGetNewAnswers(request: any): Promise<import("../models/answer.model").Answer[]>;
-    handleGetApprovedAnswers(request: any): Promise<import("../models/answer.model").Answer[]>;
 }

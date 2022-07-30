@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
-import { ApproveReviewDto } from './dto/approve-review.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
@@ -27,19 +26,6 @@ export class ReviewsController {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/all-reviews')
-  async handleGetAllReviews(@Req() request: any) {
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const reviews = await this.reviewsService.getAllReviews();
-      return reviews;
-    } else {
-      throw new UnauthorizedException();
-    }
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -75,20 +61,6 @@ export class ReviewsController {
     return review;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('/approve/:id')
-  async handleApproveReview(
-    @Req() request: any,
-    @Param('id') reviewId: string,
-  ) {
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    // if (isAdmin) {
-    await this.reviewsService.approveReview(userId, reviewId);
-    // } else {
-    //   throw new UnauthorizedException();
-    // }
-  }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete/:id')

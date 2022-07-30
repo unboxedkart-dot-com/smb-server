@@ -114,37 +114,8 @@ export class QAndAService {
     // saving question in db
   }
 
-  async approveQuestion(userId: string, questionId: string) {
-    const question = await this.questionModel
-      .findByIdAndUpdate(questionId, {
-        isApproved: true,
-      })
-      .select('+userId');
-    console.log('questions', question);
-    const newQAndA = new this.questionAndAnswerModel({
-      userId: question.userId,
-      userName: question.userName,
-      userRole: question.userRole,
-      productId: question.productId,
-      questionDetails: {
-        questionId: question._id,
-        isApproved: question.isApproved,
-        question: question.question,
-        timestamp: question.timestamp,
-      },
-    });
-    newQAndA.save();
-
-    const users = await this.itemPurchasedUsersModel.findOne({
-      productId: newQAndA.productId,
-    });
-
-    console.log('updating question', question);
-  }
-
   async createAnswer(userId: string, entireBody: CreateAnswerDto) {
     console.log('creating answer', entireBody);
-    // const userDetails = await this._getUserDetails(userId);
     const user = await this.userModel.findByIdAndUpdate(userId, {
       $push: { answeredQuestionIds: entireBody.questionId },
     });
@@ -161,24 +132,6 @@ export class QAndAService {
       answer: entireBody.answer,
     });
     await newAnswer.save();
-    this.approveAnswer(newAnswer._id.toString());
-    console.log('answer craeted');
-  }
-
-  async approveAnswer(answerId: string) {
-    const answer = await this.answerModel
-      .findByIdAndUpdate(answerId, {
-        isApproved: true,
-      })
-      .select('+userId');
-    console.log('new answer', answer);
-
-    await this.questionAndAnswerModel.findOneAndUpdate(
-      {
-        'questionDetails.questionId': answer.questionId,
-      },
-      { $push: { answers: answer } },
-    );
   }
 
   async getUserQuestions(userId: string) {
@@ -216,27 +169,6 @@ export class QAndAService {
     return questions;
   }
 
-  //admin
-
-  async getNewQuestions() {
-    const questions = await this.questionModel.find({ isApproved: false });
-    return questions as Question[];
-  }
-
-  async getApprovedQAndA() {
-    const qAndA = await this.questionAndAnswerModel.find({ isApproved: true });
-    return qAndA as QuestionAndAnswer[];
-  }
-
-  async getNewAnswers() {
-    const answers = await this.answerModel.find({ isApproved: false });
-    return answers as Answer[];
-  }
-
-  async getApprovedAnswers() {
-    const answers = await this.answerModel.find({ isApproved: true });
-    return answers as Answer[];
-  }
 }
 
 // async getQuestionAndAnswers(productId: string) {

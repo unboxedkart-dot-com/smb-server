@@ -14,19 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductDetailsController = void 0;
 const common_1 = require("@nestjs/common");
-const add_product_data_dto_1 = require("./dto/add-product-data.dto");
-const add_product_images_dto_1 = require("./dto/add-product-images.dto");
-const create_product_details_dto_1 = require("./dto/create-product-details.dto");
 const product_details_service_1 = require("./product-details.service");
 let ProductDetailsController = class ProductDetailsController {
     constructor(productDetailsService) {
         this.productDetailsService = productDetailsService;
-    }
-    async handleAddMany() {
-        await this.productDetailsService.addMoreProductData();
-    }
-    async handleAddManyImages() {
-        await this.productDetailsService.addMoreProductImages();
     }
     async handleGetProductSpecs(productId) {
         const productSpecs = await this.productDetailsService.getProductSpecs(productId);
@@ -36,26 +27,8 @@ let ProductDetailsController = class ProductDetailsController {
         const productDescription = await this.productDetailsService.getProductDescription(productId);
         return productDescription;
     }
-    async handleSetProductSpecs(entireBody) {
-        console.log('adding individual sepcs');
-        const response = await this.productDetailsService.addProductSpecs(entireBody);
-    }
-    async addSomething() {
-        const response = await this.productDetailsService.addSomething();
-    }
-    async modifyProductData() {
-        await this.productDetailsService.addSeriesCodeToProductData();
-    }
-    async addProductData(request, entireBody) {
-        const response = await this.productDetailsService.addProductData(entireBody);
-        return response;
-    }
     async getAvailableProducts(brandCode, categoryCode) {
         const response = await this.productDetailsService.getAvailableProducts(brandCode, categoryCode);
-        return response;
-    }
-    async handleAddProductImages(entireBody) {
-        const response = await this.productDetailsService.addProductImages(entireBody);
         return response;
     }
     async handleGetProductVariants(productCode) {
@@ -63,23 +36,7 @@ let ProductDetailsController = class ProductDetailsController {
         const response = await this.productDetailsService.getProductVariants(productCode);
         return response;
     }
-    async handleAddManySpecs() {
-        const response = await this.productDetailsService.addMultipleProductSpecs();
-        return response;
-    }
 };
-__decorate([
-    (0, common_1.Post)('add-many'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "handleAddMany", null);
-__decorate([
-    (0, common_1.Post)('add-images-data'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "handleAddManyImages", null);
 __decorate([
     (0, common_1.Get)('/specs/:id'),
     __param(0, (0, common_1.Param)('id')),
@@ -95,33 +52,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleGetProductDescription", null);
 __decorate([
-    (0, common_1.Post)('/specs'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_product_details_dto_1.CreateProductDetailsDto]),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "handleSetProductSpecs", null);
-__decorate([
-    (0, common_1.Post)('some'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "addSomething", null);
-__decorate([
-    (0, common_1.Patch)('modify-product-data'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "modifyProductData", null);
-__decorate([
-    (0, common_1.Post)('/data'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, add_product_data_dto_1.AddProductDataDto]),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "addProductData", null);
-__decorate([
     (0, common_1.Get)('/available-products'),
     __param(0, (0, common_1.Query)('brand-code')),
     __param(1, (0, common_1.Query)('category-code')),
@@ -130,25 +60,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "getAvailableProducts", null);
 __decorate([
-    (0, common_1.Post)('/images'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [add_product_images_dto_1.AddProductImagesDto]),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "handleAddProductImages", null);
-__decorate([
     (0, common_1.Get)('/variants'),
     __param(0, (0, common_1.Query)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductDetailsController.prototype, "handleGetProductVariants", null);
-__decorate([
-    (0, common_1.Post)('/add-many-specs'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProductDetailsController.prototype, "handleAddManySpecs", null);
 ProductDetailsController = __decorate([
     (0, common_1.Controller)('product-details'),
     __metadata("design:paramtypes", [product_details_service_1.ProductDetailsService])

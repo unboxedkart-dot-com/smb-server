@@ -32,9 +32,12 @@ import { LocalInventoryModule } from './local-inventory/local-inventory.module';
     SearchModule,
     AuthModule,
     MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
-    MongooseModule.forRoot(process.env.DB_CONNECTION_URL2, {
+    MongooseModule.forRoot(process.env.SERVICE_DB_CONNECTION_URL, {
       connectionName: 'serviceDb',
     }),
+    // MongooseModule.forRoot(process.env.ADMIN_DB_CONNECTION_URL, {
+    //   connectionName: 'adminDb',
+    // }),
     MongooseModule.forRoot(
       'mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority',
       {

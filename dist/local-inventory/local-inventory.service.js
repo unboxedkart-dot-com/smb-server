@@ -75,7 +75,7 @@ let LocalInventoryService = class LocalInventoryService {
         const newProduct = new this.productModel(entireBody);
         await newProduct.save();
         const newNotification = new this.notificationModel({
-            title: `Product purchased by ${entireBody.agentDetails.name}`,
+            title: `Product purchased by ${entireBody.buyingAgentDetails.name}`,
             subtitle: entireBody.productDetails.title,
             content: `purchased at ₹${entireBody.pricingDetails.buyingPrice} from ${entireBody.sellerDetails.name}`,
         });

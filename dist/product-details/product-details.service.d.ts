@@ -1,14 +1,10 @@
 /// <reference types="mongoose/types/pipelinestage" />
 /// <reference types="mongoose/types/error" />
-import { Product } from 'src/models/product.model';
 import { Model } from 'mongoose';
-import { ProductSpecs } from 'src/models/product-specs';
 import { ProductDescription } from 'src/models/product-description';
-import { AddProductSpecsDto } from './dto/add-product-specs.dto';
-import { AddProductDescriptionDto } from './dto/add-product-description.dto';
-import { AddProductDataDto } from './dto/add-product-data.dto';
+import { ProductSpecs } from 'src/models/product-specs';
+import { Product } from 'src/models/product.model';
 import { ProductData } from 'src/models/product_data.model';
-import { AddProductImagesDto } from './dto/add-product-images.dto';
 import { ProductImages } from 'src/models/product_images.model';
 export declare class ProductDetailsService {
     private readonly productModel;
@@ -25,18 +21,7 @@ export declare class ProductDetailsService {
         values: string[];
     }]>;
     getProductDescription(productId: string): Promise<string[]>;
-    addProductSpecs(entireBody: AddProductSpecsDto): Promise<void>;
-    addProductDescription(entireBody: AddProductDescriptionDto): Promise<void>;
-    addSomething(): Promise<void>;
-    addSeriesCodeToProductData(): Promise<void>;
-    addMoreProductData(): Promise<void>;
-    addMoreProductImages(): Promise<void>;
-    addProductData(entireBody: AddProductDataDto): Promise<void>;
     getAvailableProducts(brandCode: string, categoryCode: string): Promise<(import("mongoose").Document<unknown, any, ProductData> & ProductData & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
-    addProductImages(entireBody: AddProductImagesDto): Promise<void>;
-    addAllProductImages(): Promise<void>;
-    addManySpecs(): Promise<void>;
-    addMultipleProductSpecs(): Promise<void>;
 }

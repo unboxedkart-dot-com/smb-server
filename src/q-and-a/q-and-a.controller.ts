@@ -37,19 +37,16 @@ export class QAndAController {
   }
 
   @Get('/product/:id')
-  async handleGetProductReviews(@Param('id') productId: string) {
+  async handleGetProductQandA(@Param('id') productId: string) {
     console.log('given product id', productId);
     const qAndA = await this.qAndAService.getProductQuestionAndAnswers(
       productId,
     );
     return qAndA;
-    // return {
-    //   data: reviews,
-    // };
   }
 
   @Get('/product/all/:id')
-  async handleGetAllProductReviews(@Param('id') productId: string) {
+  async handleGetAllProductQandA(@Param('id') productId: string) {
     console.log('given product id', productId);
     const qAndA = await this.qAndAService.getAllProductQuestionAndAnswers(
       productId,
@@ -87,15 +84,6 @@ export class QAndAController {
     return question;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('approve-question/:id')
-  async handleApproveQuestion(
-    @Param('id') questionId: string,
-    @Req() request: any,
-  ) {
-    const userId = request.user.userId;
-    await this.qAndAService.approveQuestion(userId, questionId);
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post('/create/answer')
@@ -108,21 +96,6 @@ export class QAndAController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('approve-answer/:id')
-  async handleApproveAnswer(
-    @Param('id') answerId: string,
-    @Req() request: any,
-  ) {
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      await this.qAndAService.approveAnswer(answerId);
-    } else {
-      throw new UnauthorizedException();
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('/feed')
   async handleGetQuestionsFeed(@Req() request: any) {
     const userId = request.user.userId;
@@ -130,83 +103,8 @@ export class QAndAController {
     return response;
   }
 
-  // admin functions
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/new-questions')
-  async handleGetNewQuestions(@Req() request: any) {
 
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.qAndAService.getNewQuestions();
-      return response;
 
-    } else {
-      throw new ForbiddenException(
-        'you are not allowed to perform this action',
-      );
-    }
-  }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/approved-questions')
-  async handleGetApprovedQAndA(@Req() request: any) {
-
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.qAndAService.getApprovedQAndA();
-      return response;
-
-    } else {
-      throw new ForbiddenException(
-        'you are not allowed to perform this action',
-      );
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/new-answers')
-  async handleGetNewAnswers(@Req() request: any) {
-
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.qAndAService.getNewAnswers();
-      return response;
-
-    } else {
-      throw new ForbiddenException(
-        'you are not allowed to perform this action',
-      );
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/approved-answers')
-  async handleGetApprovedAnswers(@Req() request: any) {
-
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.qAndAService.getApprovedAnswers();
-      return response;
-
-    } else {
-      throw new ForbiddenException(
-        'you are not allowed to perform this action',
-      );
-    }
-  }
-
-  // @Get('answers')
-  // async handleGetAnswers(@Body('') id:string){
-  //   await this.qAndAService.answers(id);
-  // }
-
-  // @Get('questions')
-  // async handleGetQuestions(@Body() id:){
-
-  // }
 }

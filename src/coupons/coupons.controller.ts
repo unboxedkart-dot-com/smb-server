@@ -14,7 +14,6 @@ import {
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { CouponsService } from './coupons.service';
-import { CreateCouponDto } from './dto/create-coupon.dto';
 
 // @UseGuards(JwtAuthGuard)
 @Controller('coupons')
@@ -40,14 +39,6 @@ export class CouponsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('personal-coupon')
-  async handleCreatePersonalCoupon(@Req() request: any) {
-    const userId = request.user.userId;
-    const response = await this.couponsService.createPersonalCoupon(userId);
-    return response;
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('validate')
   async handleValidateCoupon(
     @Query('couponCode') couponCode: string,
@@ -62,32 +53,5 @@ export class CouponsController {
     return response;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('all-coupons')
-  async handleGetAllCoupons(@Req() request: any) {
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.couponsService.getCoupons();
-      return response;
-    } else {
-      throw new UnauthorizedException();
-    }
-  }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('create')
-  async handleCreateCoupon(
-    @Req() request: any,
-    @Body() entireBody: CreateCouponDto,
-  ) {
-    const userId = request.user.userId;
-    const isAdmin = await this.authService.CheckIfAdmin(userId);
-    if (isAdmin) {
-      const response = await this.couponsService.createCoupon(entireBody);
-      return response;
-    } else {
-      throw new UnauthorizedException();
-    }
-  }
 }

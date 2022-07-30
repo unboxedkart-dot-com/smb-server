@@ -158,16 +158,6 @@ export class AuthService {
   }
 
   async loginUser(entireBody: LoginDto) {
-    // console.log('login user');
-    // const user = await this.userModel
-    //   .findOne({ phoneNumber: { $eq: entireBody.phoneNumber } })
-    //   .exec();
-    // console.log('user recent', user.recentSearches);
-    // const recentSearches = await this._getRecentSearches(user.recentSearches);
-    // console.log('recent searches array');
-    // console.log(recentSearches);
-
-    // valid
     const otpStatus = await this.verifyOtp(
       entireBody.phoneNumber,
       entireBody.otp,
@@ -249,7 +239,7 @@ export class AuthService {
       };
     }
   }
-
+  
   _createCouponCode(name: string) {
     const randomNumber = Math.floor(1000 + Math.random() * 9000);
     const couponCode = name.substring(0, 6) + randomNumber;

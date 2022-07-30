@@ -25,14 +25,8 @@ export declare class OrdersService {
     private readonly referralModel;
     constructor(orderModel: Model<Order>, paymentModel: Model<Payment>, orderSummaryModel: Model<OrderSummary>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
     getAllOrders(status: string): Promise<OrderItem[]>;
-    deleteAll(): Promise<void>;
     getReferrals(userId: string): Promise<ReferralOrder[]>;
     createOrder(userId: string): Promise<string>;
-    acceptOrder(userId: string, orderItemId: string): Promise<void>;
-    orderReadyForPickUp(userId: string, orderItemId: string): Promise<void>;
-    orderShipped(userId: string, orderItemId: string): Promise<void>;
-    orderOutForDelivery(userId: string, orderItemId: string): Promise<void>;
-    orderDelivered(userId: string, orderItemId: string): Promise<void>;
     cancelOrder(userId: string, entireBody: CancelOrderDto): Promise<void>;
     getOrderItems(userId: string): Promise<OrderItem[]>;
     getOrder(userId: string, orderNumber: string): Promise<import("mongoose").Document<unknown, any, Order> & Order & {
@@ -94,26 +88,6 @@ export declare class OrdersService {
     _handleSendReferralOrderPlaceMessage(name: string, phoneNumber: number): Promise<void>;
     _handleSendReferralOrderPlaceMail(userName: any, emailId: string): Promise<void>;
     referralOrderNotification(referrerName: any, referrerId: any, referreName: any): Promise<void>;
-    _handleSendOrderConfirmedMessage(order: any): Promise<void>;
-    _handleSendOrderConfirmedMail(order: any): Promise<void>;
-    _handleOrderConfirmationNotification(order: any): Promise<void>;
-    _handleSendOutForPickUpMail(order: any): Promise<void>;
-    _handleSendOutForPickUpMessage(order: any): Promise<void>;
-    _handleSendOrderReadyForPickUpNotification(order: any): Promise<void>;
-    _handleSendOrderShippedMessage(order: any): Promise<void>;
-    _handleSendOrderShippedMail(order: any): Promise<void>;
-    _handleSendOrderShippedNotification(order: any): Promise<void>;
-    _handleSendOutForDeliveryMessage(order: any): Promise<void>;
-    _handleSendOutForDeliveryMail(order: any): Promise<void>;
-    _handleSendOutForDeliveryNotification(order: any): Promise<void>;
-    _handleSendOrderDeliveredMessage(order: any): Promise<void>;
-    _handleSendOrderDeliveredMail(order: any): Promise<void>;
-    _handleSendOrderDeliveredNotification(order: any): Promise<void>;
-    getSalesOverview(startDate: string): Promise<{
-        sales: [];
-        orders: [];
-    }>;
-    uploadInvoice(file: any): Promise<void>;
     sendInvoiceCopy(userId: string, orderId: string): Promise<void>;
 }
 export interface IndividualOrderItem {

@@ -29,7 +29,6 @@ import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
       useFactory: async () => ({
         secret: 'raina',
       }),
-      // inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],

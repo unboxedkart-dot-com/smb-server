@@ -34,17 +34,9 @@ __decorate([
     __metadata("design:type", String)
 ], AddProductDto.prototype, "purchaseInvoiceUrl", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddProductDto.prototype, "buyingLeadSource", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], AddProductDto.prototype, "buyingLeadSourceInformation", void 0);
-__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)
-], AddProductDto.prototype, "agentDetails", void 0);
+], AddProductDto.prototype, "buyingAgentDetails", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)

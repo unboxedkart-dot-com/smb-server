@@ -3,9 +3,7 @@ export declare class AddProductDto {
     purchaseDate: String;
     originalInvoiceUrl: string;
     purchaseInvoiceUrl: string;
-    buyingLeadSource: string;
-    buyingLeadSourceInformation: string;
-    agentDetails: any;
+    buyingAgentDetails: any;
     sellerDetails: any;
     productDetails: any;
     pricingDetails: any;

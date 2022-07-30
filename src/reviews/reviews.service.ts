@@ -5,7 +5,6 @@ import { Product } from 'src/models/product.model';
 import { Review } from 'src/models/review.model';
 import { ReviewsData } from 'src/models/reviews_data.model';
 import { User } from 'src/models/user.model';
-import { ApproveReviewDto } from './dto/approve-review.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -18,10 +17,7 @@ export class ReviewsService {
     @InjectModel('Product') private productModel: Model<Product>,
   ) {}
 
-  async getAllReviews() {
-    const reviews = await this.reviewModel.find().select('+isApproved');
-    return reviews;
-  }
+
 
   async getUserReviews(userId: string) {
     const reviews = await this.reviewModel.find({ userId: userId });
@@ -109,51 +105,7 @@ export class ReviewsService {
     await this.reviewModel.findOneAndDelete({ userId: userId, _id: reviewId });
   }
 
-  async approveReview(userId: string, reviewId: string) {
-    console.log('approving review', reviewId);
-    const review = await this.reviewModel.findByIdAndUpdate(reviewId, {
-      isApproved: true,
-    });
-    console.log('reviewww', review);
-    const reviewsData = await this.reviewsDataModel.findOne({
-      productId: review.productId,
-    });
-    console.log('rdata', reviewsData);
-    if (reviewsData) {
-      const newAverage =
-        (reviewsData.averageRating * reviewsData.totalReviewsCount +
-          review.rating) /
-        (reviewsData.totalReviewsCount + 1);
-      await this.reviewsDataModel.updateOne(
-        { productId: review.productId },
-        {
-          $inc: {
-            totalReviewsCount: 1,
-            fiveStarCount: review.rating == 5 ? 1 : 0,
-            fourStarCount: review.rating == 4 ? 1 : 0,
-            threeStarCount: review.rating == 3 ? 1 : 0,
-            twoSarCount: review.rating == 2 ? 1 : 0,
-            oneStarCount: review.rating == 1 ? 1 : 0,
-          },
-          averageRating: newAverage,
-        },
-      );
-    } else {
-      const productData = await this.productModel.findById(review.productId);
-      const newReviewsData = new this.reviewsDataModel({
-        productId: review.productId,
-        totalReviewsCount: 1,
-        productCode: productData.productCode,
-        averageRating: review.rating,
-        fiveStarCount: review.rating == 5 ? 1 : 0,
-        fourStarCount: review.rating == 4 ? 1 : 0,
-        threeStarCount: review.rating == 3 ? 1 : 0,
-        twoStarCount: review.rating == 2 ? 1 : 0,
-        oneStarCount: review.rating == 1 ? 1 : 0,
-      });
-      newReviewsData.save();
-    }
-  }
+
 }
 
 // const review = await this.reviewModel.findOne({

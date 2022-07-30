@@ -5,11 +5,9 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
-import { AddAddressDto } from 'src/addresses/dto';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
-import { AddStoreLocationDto } from 'src/store-location/dto/add-store-location.dto';
 import { AddDeliveryAddressDto } from './dto/add-address.dto';
 import { AddSelectedStoreDto } from './dto/add-selected-store.dto';
 import { CreateOrderSummaryDto } from './dto/create-order-summary.dto';

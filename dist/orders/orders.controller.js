@@ -14,11 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
-const platform_express_1 = require("@nestjs/platform-express");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const s3_service_1 = require("../s3/s3.service");
-const cancel_order_dto_1 = require("./dto/cancel-order.dto");
 const orders_service_1 = require("./orders.service");
 let OrdersController = class OrdersController {
     constructor(ordersService, authService, s3Service) {
@@ -43,14 +41,6 @@ let OrdersController = class OrdersController {
         const referrals = await this.ordersService.getReferrals(userId);
         return referrals;
     }
-    async handleDeleteAllOrder() {
-        const orders = await this.ordersService.deleteAll();
-        return orders;
-    }
-    async createDummyOrder() {
-        const payment = await this.ordersService.createPaymentOrder();
-        return payment;
-    }
     async handleCreateOrder(request) {
         const userId = request.user.userId;
         const orderNumber = this._generateOrderNumber();
@@ -72,87 +62,6 @@ let OrdersController = class OrdersController {
         const userId = request.user.userId;
         const order = await this.ordersService.getOrderItem(userId, orderId);
         return order;
-    }
-    async updateOrderItem(request, productId) {
-        const userId = request.user.userId;
-    }
-    async handleAcceptOrder(request, orderItemId) {
-        console.log('accepting order');
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.acceptOrder(userId, orderItemId);
-            return response;
-        }
-        else {
-            console.log('throwing a new error');
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleSetOrderReadyForPickup(request, orderItemId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.orderReadyForPickUp(userId, orderItemId);
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleSerOrderDelivered(request, orderItemId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.orderDelivered(userId, orderItemId);
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleSetOrderShipped(request, orderItemId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.orderShipped(userId, orderItemId);
-            return response;
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleSetOrderOutForDelivery(request, orderItemId) {
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.orderOutForDelivery(userId, orderItemId);
-            return response;
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleGetSalesOverview(request, startDate) {
-        console.log('starting sales');
-        console.log('given date', startDate);
-        const userId = request.user.userId;
-        const isAdmin = await this.authService.CheckIfAdmin(userId);
-        if (isAdmin) {
-            const response = await this.ordersService.getSalesOverview(startDate);
-            return response;
-        }
-        else {
-            throw new common_1.UnauthorizedException();
-        }
-    }
-    async handleCancelOrder(request, entireBody) {
-        const userId = request.user.userId;
-        const response = await this.ordersService.cancelOrder(userId, entireBody);
-        return response;
-    }
-    async handleUploadInvoice(file, request, Body) {
-        console.log('uploading invoice', file, typeof file);
-        const response = this.s3Service.uploadFile(file);
-        return response;
     }
     async handleSendInvoiceCopy(request, orderId) {
         const userId = request.user.userId;
@@ -180,18 +89,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleGetReferrals", null);
-__decorate([
-    (0, common_1.Delete)('/deleteall'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleDeleteAllOrder", null);
-__decorate([
-    (0, common_1.Post)('/create-payment'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "createDummyOrder", null);
 __decorate([
     (0, common_1.Post)('create'),
     __param(0, (0, common_1.Req)()),
@@ -224,80 +121,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "handleGetOrderItem", null);
-__decorate([
-    (0, common_1.Patch)('update/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "updateOrderItem", null);
-__decorate([
-    (0, common_1.Patch)('accept/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleAcceptOrder", null);
-__decorate([
-    (0, common_1.Patch)('ready-for-pickup/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleSetOrderReadyForPickup", null);
-__decorate([
-    (0, common_1.Patch)('delivered/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleSerOrderDelivered", null);
-__decorate([
-    (0, common_1.Patch)('shipped/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleSetOrderShipped", null);
-__decorate([
-    (0, common_1.Patch)('out-for-delivery/:id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleSetOrderOutForDelivery", null);
-__decorate([
-    (0, common_1.Get)('/sales-overview'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Query)('start-date')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleGetSalesOverview", null);
-__decorate([
-    (0, common_1.Patch)('/cancel-order'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, cancel_order_dto_1.CancelOrderDto]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleCancelOrder", null);
-__decorate([
-    (0, common_1.Post)('/upload-invoice'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
-    __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
-    __metadata("design:returntype", Promise)
-], OrdersController.prototype, "handleUploadInvoice", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Req)()),

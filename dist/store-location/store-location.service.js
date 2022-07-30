@@ -24,20 +24,6 @@ let StoreLocationService = class StoreLocationService {
         const locations = await this.storeLocationModel.find({});
         return locations;
     }
-    async addStoreLocation(userId, entireBody) {
-        const newLocation = new this.storeLocationModel({
-            storeName: entireBody.storeName,
-            streetName: entireBody.streetName,
-            cityName: entireBody.cityName,
-            pinCode: entireBody.pinCode,
-            directionsUrl: entireBody.directionsUrl,
-            storeTimings: entireBody.storeTimings,
-            storeOpenDays: entireBody.storeOpenDays,
-            contactNumber: entireBody.contactNumber,
-            alternateContactNumber: entireBody.alternateContactNumber,
-        });
-        newLocation.save();
-    }
 };
 StoreLocationService = __decorate([
     (0, common_1.Injectable)(),
