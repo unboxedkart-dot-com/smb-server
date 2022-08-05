@@ -40,6 +40,11 @@ let SearchService = class SearchService {
                 },
             };
         }
+        else if (product != undefined && product != null && product != 'null') {
+            query = {
+                productCode: product,
+            };
+        }
         else {
             const productExp = new RegExp('apple-iphone');
             query = {

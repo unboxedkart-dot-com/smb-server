@@ -55,6 +55,14 @@ export class SearchService {
           $in: [searchTerm, titleExp],
         },
       };
+    } else if (product != undefined && product != null && product != 'null') {
+      // console.log('title', title);
+      // const searchTerm = title.replace(/\s/g, '');
+      // const titleExp = new RegExp(`${searchTerm}`);
+      // console.log('title expression', searchTerm, titleExp);
+      query = {
+        productCode: product,
+      };
     } else {
       // const productExp = new RegExp(`${product}`);
       const productExp = new RegExp('apple-iphone');

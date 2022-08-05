@@ -21,11 +21,6 @@ export class CarouselItemsController {
     return this.carouselItemsService.create(createCarouselItemDto);
   }
 
-  // @Get() d
-  // findAll() {
-  //   return this.carouselItemsService.findAll();
-  // }
-
   @Delete()
   deleteAll() {
     return this.carouselItemsService.deleteAll();
