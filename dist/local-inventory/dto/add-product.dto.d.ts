@@ -8,4 +8,5 @@ export declare class AddProductDto {
     productDetails: any;
     pricingDetails: any;
     moreDetails: any;
+    imageUrls: any;
 }

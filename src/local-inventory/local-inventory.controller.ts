@@ -9,9 +9,10 @@ import {
   Query,
   Req,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { S3Service } from 'src/s3/s3.service';
 import { AddProductDto } from './dto/add-product.dto';
 import { AddVendorDto } from './dto/add-seller.dto';
@@ -79,7 +80,6 @@ export class LocalInventoryController {
   async handleGetVendors() {
     return await this.localInventoryService.getVendors();
   }
-
 
   @Get('/get-customers')
   async handleGetCustomers() {
@@ -153,6 +153,20 @@ export class LocalInventoryController {
   ) {
     console.log('uploading invoice', file, typeof file);
     const response = this.s3Service.uploadSellerIdProof(file);
+    return response;
+  }
+
+  @Post('/upload-device-images')
+  @UseInterceptors(FilesInterceptor('file'))
+  async handleUploadDeviceImages(
+    @UploadedFiles() files: Express.Multer.File,
+    // @Req('folderName') request: any,
+    @Query('folderName') folderName: string,
+    @Body() Body: any,
+  ) {
+    console.log('uploading images');
+    console.log('files', files);
+    const response = this.s3Service.uploadDeviceImages(files, folderName);
     return response;
   }
 

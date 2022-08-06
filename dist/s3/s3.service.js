@@ -33,6 +33,21 @@ let S3Service = class S3Service {
         const { originalname } = file;
         await this.s3_upload(file.buffer, 'unboxedkart-india/inventory/id-proofs/sellers', originalname, file.mimetype);
     }
+    async uploadDeviceImages(files, folderName) {
+        console.log('uploading device images', folderName);
+        for (var i = 0; i < files.length; i++) {
+            await this.s3_upload(files[i].buffer, `unboxedkart-india/inventory/device-images/${folderName}`, `${i}.png`, files[i].mimetype);
+        }
+        return folderName;
+    }
+    _generateFolderName() {
+        const randomNumber = Math.floor(10000000000000 + Math.random() * 9000000000000000);
+        return randomNumber;
+    }
+    async handleUploadDeviceImage(file, folderName, index) {
+        const { originalname } = file;
+        await this.s3_upload(file.buffer, `unboxedkart-india/inventory/device-images/${folderName}/${index}`, originalname, file.mimetype);
+    }
     async s3_upload(file, bucket, name, mimetype) {
         const params = {
             Bucket: bucket,

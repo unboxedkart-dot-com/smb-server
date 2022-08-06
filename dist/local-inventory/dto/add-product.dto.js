@@ -53,5 +53,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)
 ], AddProductDto.prototype, "moreDetails", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], AddProductDto.prototype, "imageUrls", void 0);
 exports.AddProductDto = AddProductDto;
 //# sourceMappingURL=add-product.dto.js.map

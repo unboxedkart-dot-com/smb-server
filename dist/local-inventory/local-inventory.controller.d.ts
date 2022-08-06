@@ -35,6 +35,7 @@ export declare class LocalInventoryController {
     handleUploadPurchaseInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
     handleUploadOriginalInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
     handleUploadSellerIdProof(file: Express.Multer.File, request: any, Body: any): Promise<void>;
+    handleUploadDeviceImages(files: Express.Multer.File, folderName: string, Body: any): Promise<any>;
     getNotifications(): Promise<(import("mongoose").Document<unknown, any, import("../models/local_inventory/notification.model").NotificationModel> & import("../models/local_inventory/notification.model").NotificationModel & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;

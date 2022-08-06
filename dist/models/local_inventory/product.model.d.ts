@@ -48,6 +48,7 @@ export interface ProductModel {
     buyingLeadSourceInformation: string;
     sellingLeadSource: string;
     sellingLeadSourceInformation: string;
+    imageUrls: string[];
     agentDetails: AgentModel;
     buyerDetails: BuyerModel;
     sellerDetails: VendorModel;

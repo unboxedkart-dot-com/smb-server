@@ -72,6 +72,12 @@ let LocalInventoryController = class LocalInventoryController {
         const response = this.s3Service.uploadSellerIdProof(file);
         return response;
     }
+    async handleUploadDeviceImages(files, folderName, Body) {
+        console.log('uploading images');
+        console.log('files', files);
+        const response = this.s3Service.uploadDeviceImages(files, folderName);
+        return response;
+    }
     async getNotifications() {
         return this.localInventoryService.getNotifications();
     }
@@ -188,6 +194,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], LocalInventoryController.prototype, "handleUploadSellerIdProof", null);
+__decorate([
+    (0, common_1.Post)('/upload-device-images'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFiles)()),
+    __param(1, (0, common_1.Query)('folderName')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], LocalInventoryController.prototype, "handleUploadDeviceImages", null);
 __decorate([
     (0, common_1.Get)('/get-notifications'),
     __metadata("design:type", Function),

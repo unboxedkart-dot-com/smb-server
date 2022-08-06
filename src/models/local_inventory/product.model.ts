@@ -55,6 +55,7 @@ export const ProductSchema = new mongoose.Schema({
   buyingLeadSourceInformation: { type: String },
   sellingLeadSource: { type: String },
   sellingLeadSourceInformation: { type: String },
+  imageUrls: { type: [String] },
 });
 
 export interface ProductModel {
@@ -102,7 +103,7 @@ export interface ProductModel {
   buyingLeadSourceInformation: string;
   sellingLeadSource: string;
   sellingLeadSourceInformation: string;
-
+  imageUrls: string[];
   agentDetails: AgentModel;
   buyerDetails: BuyerModel;
   sellerDetails: VendorModel;

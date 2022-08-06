@@ -144,4 +144,8 @@ export class AddProductDto {
 
   @IsNotEmpty()
   moreDetails: any;
+
+  @IsNotEmpty()
+  @IsOptional()
+  imageUrls: any;
 }
