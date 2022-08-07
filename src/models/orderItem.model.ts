@@ -48,7 +48,7 @@ export const OrderItemSchema = new mongoose.Schema({
     couponDiscount: { type: Number, required: false },
   },
   orderNumber: { type: String, required: true },
-  orderDate: { type: String, required: true, default: Date() },
+  orderDate: { type: String, required: true, default: Date.now().toString() },
   // orderDateInString : {type : String, default : `${Date.now.}`}
   updatedDate: { type: Date, required: false },
   orderStatus: { type: String, required: true, default: OrderStatuses.ORDERED },
