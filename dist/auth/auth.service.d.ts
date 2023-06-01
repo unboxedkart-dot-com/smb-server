@@ -6,7 +6,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { Coupon } from 'src/models/coupon.model';
 import { RefreshTokenModel } from 'src/models/refresh-token.model';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 export declare class AuthService {
     private readonly userModel;
     private readonly couponModel;

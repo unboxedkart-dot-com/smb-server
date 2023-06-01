@@ -7,7 +7,7 @@ import { User } from 'src/models/user.model';
 import mongoose from 'mongoose';
 import { CartItem } from 'src/models/cart-item.model';
 import { SavedToLater } from 'src/models/save_to_later.model';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 
 @Injectable()
 export class CartService {

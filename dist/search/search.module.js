@@ -12,7 +12,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const product_model_1 = require("../models/product.model");
 const search_term_1 = require("../models/search_term");
-const Tracking_notification_model_1 = require("../models/Tracking-notification.model");
+const tracking_notification_model_1 = require("../models/tracking-notification.model");
 const user_model_1 = require("../models/user.model");
 const search_controller_1 = require("./search.controller");
 const search_service_1 = require("./search.service");
@@ -25,7 +25,7 @@ SearchModule = __decorate([
                 { name: 'Product', schema: product_model_1.ProductSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'SearchTerm', schema: search_term_1.SearchTermSchema },
-                { name: 'TrackingNotification', schema: Tracking_notification_model_1.TrackingNotificationSchema },
+                { name: 'TrackingNotification', schema: tracking_notification_model_1.TrackingNotificationSchema },
             ]),
         ],
         controllers: [search_controller_1.SearchController],

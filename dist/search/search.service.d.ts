@@ -3,7 +3,7 @@
 import { Model } from 'mongoose';
 import { Product } from 'src/models/product.model';
 import { SearchTerm } from 'src/models/search_term';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 import { User } from 'src/models/user.model';
 export declare class SearchService {
     private readonly productModel;

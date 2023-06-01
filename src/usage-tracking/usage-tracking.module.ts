@@ -7,7 +7,7 @@ import { UserSchema } from 'src/models/user.model';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { AuthModule } from 'src/auth/auth.module';
 import { ProductSchema } from 'src/models/product.model';
-import { TrackingNotificationSchema } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationSchema } from 'src/models/tracking-notification.model';
 import { CarouselItemSchema } from 'src/models/carousel_item.model';
 
 @Module({

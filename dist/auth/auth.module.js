@@ -22,7 +22,7 @@ const search_term_1 = require("../models/search_term");
 const jwt_refresh_strategy_1 = require("./jwt-strategies/jwt-refresh.strategy");
 const refresh_token_model_1 = require("../models/refresh-token.model");
 const jwt_auth_guard_1 = require("./jwt-strategies/jwt-auth.guard");
-const Tracking_notification_model_1 = require("../models/Tracking-notification.model");
+const tracking_notification_model_1 = require("../models/tracking-notification.model");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -33,7 +33,7 @@ AuthModule = __decorate([
                 { name: 'Coupon', schema: coupon_model_1.CouponSchema },
                 { name: 'SearchTerm', schema: search_term_1.SearchTermSchema },
                 { name: 'RefreshToken', schema: refresh_token_model_1.RefreshTokenSchema },
-                { name: 'TrackingNotification', schema: Tracking_notification_model_1.TrackingNotificationSchema },
+                { name: 'TrackingNotification', schema: tracking_notification_model_1.TrackingNotificationSchema },
             ]),
             passport_1.PassportModule,
             axios_1.HttpModule,

@@ -15,4 +15,4 @@ exports.TrackingNotificationSchema = new mongoose_1.default.Schema({
     seenId: { type: String },
     userPhoneNumber: { type: String },
 });
-//# sourceMappingURL=Tracking-notification.model.js.map
+//# sourceMappingURL=tracking-notification.model.js.map

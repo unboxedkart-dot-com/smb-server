@@ -12,7 +12,7 @@ export declare class UsageTrackingController {
     private readonly usageTrackingService;
     private readonly authService;
     constructor(usageTrackingService: UsageTrackingControllerService, authService: AuthService);
-    handleGetNotifications(request: any, type: string): Promise<import("../models/Tracking-notification.model").TrackingNotificationModel[]>;
+    handleGetNotifications(request: any, type: string): Promise<import("../models/tracking-notification.model").TrackingNotificationModel[]>;
     handleAddSearchedItem(request: any, entireBody: AddSearchedTermDto): Promise<void>;
     handleAddViewedProduct(request: any, entireBody: AddViewedProductDto): Promise<void>;
     handleAddClickedOnBuyNow(request: any, entireBody: ClickedOnBuyNowDto): Promise<void>;

@@ -8,7 +8,7 @@ import { AddWishlistItemDto } from './dtos/add-wishlist-item.dto';
 import { RemoveWishlistItemDto } from './dtos/remove-wishlist-item.dto';
 import { AddCartItemDto } from './dtos/add-cart-item.dto';
 import { RemoveCartItemDto } from './dtos/remove-cart-item.dto';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 import { AddViewedProductDto } from './dtos/add-viewed-product.dto';
 import { clickedOnNeedMoreDiscountDto } from './dtos/clicked-on-need-more-discount.dto';
 import { CarouselItem } from 'src/models/carousel_item.model';

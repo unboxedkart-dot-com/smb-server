@@ -13,7 +13,7 @@ import { SearchTermSchema } from 'src/models/search_term';
 import { JwtRefreshStrategy } from './jwt-strategies/jwt-refresh.strategy';
 import { RefreshTokenSchema } from 'src/models/refresh-token.model';
 import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
-import { TrackingNotificationSchema } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationSchema } from 'src/models/tracking-notification.model';
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Favorite } from 'src/models/favorite.model';
 import { Product } from 'src/models/product.model';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 import { User } from 'src/models/user.model';
 export declare class FavoritesService {
     private readonly favoriteModel;

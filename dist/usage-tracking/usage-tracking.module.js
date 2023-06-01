@@ -15,7 +15,7 @@ const user_model_1 = require("../models/user.model");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const auth_module_1 = require("../auth/auth.module");
 const product_model_1 = require("../models/product.model");
-const Tracking_notification_model_1 = require("../models/Tracking-notification.model");
+const tracking_notification_model_1 = require("../models/tracking-notification.model");
 const carousel_item_model_1 = require("../models/carousel_item.model");
 let UsageTrackingModule = class UsageTrackingModule {
 };
@@ -25,7 +25,7 @@ UsageTrackingModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
-                { name: 'TrackingNotification', schema: Tracking_notification_model_1.TrackingNotificationSchema },
+                { name: 'TrackingNotification', schema: tracking_notification_model_1.TrackingNotificationSchema },
                 { name: 'CarouselItem', schema: carousel_item_model_1.CarouselItemSchema },
             ]),
             auth_module_1.AuthModule,

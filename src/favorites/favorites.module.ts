@@ -6,7 +6,7 @@ import { FavoriteSchema } from 'src/models/favorite.model';
 import { UserSchema } from 'src/models/user.model';
 import { ProductSchema } from 'src/models/product.model';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
-import { TrackingNotificationSchema } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationSchema } from 'src/models/tracking-notification.model';
 
 @Module({
   imports: [

@@ -3,7 +3,7 @@ import { Model } from 'mongoose';
 import { User } from 'src/models/user.model';
 import { CartItem } from 'src/models/cart-item.model';
 import { SavedToLater } from 'src/models/save_to_later.model';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 export declare class CartService {
     private readonly cartItemModel;
     private readonly savedToLaterModel;

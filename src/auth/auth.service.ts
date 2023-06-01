@@ -27,7 +27,7 @@ import * as SendGrid from '@sendgrid/mail';
 import { RefreshToken } from 'aws-sdk/clients/ssooidc';
 import { RefreshTokenModel } from 'src/models/refresh-token.model';
 import { ObjectId } from 'aws-sdk/clients/codecommit';
-import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
+import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 
 export class AuthService {
   constructor(
