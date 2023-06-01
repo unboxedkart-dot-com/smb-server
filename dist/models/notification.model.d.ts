@@ -3,9 +3,16 @@ export declare const NotificationSchema: mongoose.Schema<any, mongoose.Model<any
 export interface NotificationModel {
     title: string;
     subtitle: string;
+    content: string;
     orderStatus: string;
     dateInString: string;
-    deviceTitle: string;
+    productTitle: string;
     orderId: string;
+    orderItemId: string;
     userId: string;
+    timestamp: string;
+    type: string;
+    seen: boolean;
+    seenId: string;
+    userPhoneNumber: string;
 }

@@ -20,7 +20,7 @@ const axios_1 = require("axios");
 const mongoose_2 = require("mongoose");
 const order_model_1 = require("../models/order.model");
 let OrdersService = class OrdersService {
-    constructor(orderModel, paymentModel, orderSummaryModel, productModel, couponModel, orderItemModel, userModel, reviewModel, itemPurchasedUsersModel, referralModel) {
+    constructor(orderModel, paymentModel, orderSummaryModel, productModel, couponModel, orderItemModel, userModel, reviewModel, itemPurchasedUsersModel, referralModel, notificationModel) {
         this.orderModel = orderModel;
         this.paymentModel = paymentModel;
         this.orderSummaryModel = orderSummaryModel;
@@ -31,6 +31,7 @@ let OrdersService = class OrdersService {
         this.reviewModel = reviewModel;
         this.itemPurchasedUsersModel = itemPurchasedUsersModel;
         this.referralModel = referralModel;
+        this.notificationModel = notificationModel;
         SendGrid.setApiKey(process.env.MAIL_API_KEY);
     }
     async getAllOrders(status) {
@@ -135,9 +136,7 @@ let OrdersService = class OrdersService {
             orderItems: orderItemDetails.orderItems,
         });
         newOrder.save();
-        await this._handleSaveIndividualOrders(newOrder);
-        this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
-        this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
+        await this._handleSaveIndividualOrders(userId, userDoc, newOrder);
         return orderSummary.orderNumber;
     }
     async cancelOrder(userId, entireBody) {
@@ -304,8 +303,8 @@ let OrdersService = class OrdersService {
         };
         return newOrderItem;
     }
-    async _handleSaveIndividualOrders(order) {
-        var _a;
+    async _handleSaveIndividualOrders(userId, userDoc, order) {
+        var _a, _b;
         console.log('executing new individual order');
         const paymentId = order.paymentDetails.paymentIds[0];
         const itemsCount = order.orderItems.length;
@@ -341,7 +340,7 @@ let OrdersService = class OrdersService {
                 pricingDetails: {
                     billTotal: orderItem.total,
                     payableTotal: payableAmount,
-                    couponCode: order.pricingDetails.couponCode,
+                    couponCode: (_b = order.pricingDetails.couponCode) !== null && _b !== void 0 ? _b : 'NA',
                     couponDiscount: order.pricingDetails.couponDiscount,
                 },
                 productDetails: orderItem.productDetails,
@@ -352,6 +351,25 @@ let OrdersService = class OrdersService {
                 },
             });
             newOrderItem.save();
+            const content = `Payable Amount is ₹${orderItem.pricePerItem - newOrderItem.pricingDetails.couponDiscount}` +
+                (couponDiscount != 0 ? ' - ' : '') +
+                (couponDiscount != 0 ? newOrderItem.pricingDetails.couponCode : '') +
+                (couponDiscount != 0
+                    ? `(₹${newOrderItem.pricingDetails.couponDiscount})`
+                    : '');
+            const newNotification = new this.notificationModel({
+                userId: userId,
+                title: `New Item Ordered by ${userDoc.name} - ${userDoc.phoneNumber}`,
+                subtitle: `${orderItem.productDetails.title}`,
+                content: content,
+                type: 'new-order',
+                userPhoneNumber: userDoc.phoneNumber,
+                orderId: newOrderItem.orderNumber,
+                orderItemId: newOrderItem.orderNumber,
+                orderStatus: newOrderItem.orderStatus,
+                productTitle: orderItem.productDetails.title,
+            });
+            newNotification.save();
         }
     }
     async createPaymentOrder() {
@@ -407,6 +425,22 @@ let OrdersService = class OrdersService {
         console.log('udd', userDoc._id);
         console.log('91' + userDoc.phoneNumber);
         await axios_1.default.post(url, postBody);
+        const adminPostBody1 = {
+            flow_id: process.env.ORDER_PLACED_FLOW_ID,
+            sender: process.env.ORDER_SMS_SENDER_ID,
+            mobiles: '919494111131',
+            order: order,
+            authkey: process.env.SMS_AUTH_KEY,
+        };
+        await axios_1.default.post(url, adminPostBody1);
+        const adminPostBody2 = {
+            flow_id: process.env.ORDER_PLACED_FLOW_ID,
+            sender: process.env.ORDER_SMS_SENDER_ID,
+            mobiles: '917097070707',
+            order: order,
+            authkey: process.env.SMS_AUTH_KEY,
+        };
+        await axios_1.default.post(url, adminPostBody2);
     }
     async _handleSendOrderPlacedMail(userDoc, orderItems) {
         console.log('sending order mail', orderItems);
@@ -491,7 +525,9 @@ OrdersService = __decorate([
     __param(7, (0, mongoose_1.InjectModel)('Review')),
     __param(8, (0, mongoose_1.InjectModel)('ItemPurchasedUsers')),
     __param(9, (0, mongoose_1.InjectModel)('ReferralOrder')),
+    __param(10, (0, mongoose_1.InjectModel)('Notification')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

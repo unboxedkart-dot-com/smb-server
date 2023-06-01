@@ -3,6 +3,7 @@
 import { Model } from 'mongoose';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
+import { NotificationModel } from 'src/models/notification.model';
 import { Order } from 'src/models/order.model';
 import { OrderItem } from 'src/models/orderItem.model';
 import { OrderSummary } from 'src/models/order_summary.model';
@@ -23,7 +24,8 @@ export declare class OrdersService {
     private readonly reviewModel;
     private readonly itemPurchasedUsersModel;
     private readonly referralModel;
-    constructor(orderModel: Model<Order>, paymentModel: Model<Payment>, orderSummaryModel: Model<OrderSummary>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>);
+    private readonly notificationModel;
+    constructor(orderModel: Model<Order>, paymentModel: Model<Payment>, orderSummaryModel: Model<OrderSummary>, productModel: Model<Product>, couponModel: Model<Coupon>, orderItemModel: Model<OrderItem>, userModel: Model<User>, reviewModel: Model<Review>, itemPurchasedUsersModel: Model<ItemPurchasedUser>, referralModel: Model<ReferralOrder>, notificationModel: Model<NotificationModel>);
     getAllOrders(status: string): Promise<OrderItem[]>;
     getReferrals(userId: string): Promise<ReferralOrder[]>;
     createOrder(userId: string): Promise<string>;
@@ -79,7 +81,7 @@ export declare class OrdersService {
             category: string;
         };
     }>;
-    _handleSaveIndividualOrders(order: Order): Promise<void>;
+    _handleSaveIndividualOrders(userId: string, userDoc: User, order: Order): Promise<void>;
     createPaymentOrder(): Promise<void>;
     validatePaymentSignature(): Promise<void>;
     sendNotification(data: any): void;

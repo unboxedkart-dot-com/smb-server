@@ -7,6 +7,10 @@ export declare class SearchController {
     private readonly searchService;
     constructor(searchService: SearchService);
     handleGetSearchedProducts(title: string, category: string, brand: string, condition: string, product: string, seller: string, pageNumber: string): Promise<import("../models/product.model").Product[]>;
+    handleSendDate(): {
+        date1: number;
+        date2: () => number;
+    };
     handleGetRecentSearches(request: any): Promise<[{
         searchTerm: string;
         timestamp: Date;

@@ -17,6 +17,7 @@ import { S3Module } from 'src/s3/s3.module';
 import { S3Service } from 'src/s3/s3.service';
 import { OrderSummarySchema } from 'src/models/order_summary.model';
 import { PaymentSchema } from 'src/models/payment.model';
+import { NotificationSchema } from 'src/models/notification.model';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PaymentSchema } from 'src/models/payment.model';
       { name: 'User', schema: UserSchema },
       { name: 'Review', schema: ReviewSchema },
       { name: 'ReferralOrder', schema: ReferralOrderSchema },
+      { name: 'Notification', schema: NotificationSchema },
       { name: 'ItemPurchasedUsers', schema: ItemPurchasedUsersSchema },
     ]),
     S3Module,

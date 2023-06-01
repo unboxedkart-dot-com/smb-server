@@ -1,8 +1,10 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Mode } from 'fs';
 import { Model } from 'mongoose';
+import { timestamp } from 'rxjs';
 import { Product } from 'src/models/product.model';
 import { SearchTerm } from 'src/models/search_term';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 import { User } from 'src/models/user.model';
 
 export class SearchService {
@@ -11,6 +13,8 @@ export class SearchService {
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('SearchTerm')
     private readonly searchTermModel: Model<SearchTerm>,
+    @InjectModel('TrackingNotification')
+    private readonly trackingNotificationModel: Model<TrackingNotificationModel>,
   ) {}
 
   async getNewSearch(
@@ -54,6 +58,7 @@ export class SearchService {
         searchCases: {
           $in: [searchTerm, titleExp],
         },
+        // hide: false,
       };
     } else if (product != undefined && product != null && product != 'null') {
       // console.log('title', title);
@@ -62,6 +67,7 @@ export class SearchService {
       // console.log('title expression', searchTerm, titleExp);
       query = {
         productCode: product,
+        // hide: false,
       };
     } else {
       // const productExp = new RegExp(`${product}`);
@@ -85,6 +91,7 @@ export class SearchService {
             ? // ? { $or: [{ $eq: product }, { $eq: productExp }] }
               { $eq: productExp }
             : { $exists: true },
+        hide: false,
       };
     }
     console.log('my query', query);
@@ -96,6 +103,7 @@ export class SearchService {
         {
           $match: query,
         },
+
         {
           $lookup: {
             from: 'reviewsdatas',
@@ -107,6 +115,7 @@ export class SearchService {
         // { '$limit': itemsToSkip + 10 },
         { '$skip': itemsToSkip },
       ])
+      .sort({ timestamp: -1 })
       .limit(10)
       // .skip(itemsToSkip)
       .exec();
@@ -126,6 +135,7 @@ export class SearchService {
   }
 
   async addRecentSearchTerm(userId: string, searchTerm: string) {
+    const userDoc = await this.userModel.findById(userId);
     const recentSearches = await this.userModel.findByIdAndUpdate(userId, {
       $push: {
         recentSearches: {
@@ -133,6 +143,13 @@ export class SearchService {
         },
       },
     });
+    const newNotification = new this.trackingNotificationModel({
+      userId: userDoc._id,
+      title: `Item Searched by User - ${userDoc.name} (${userDoc.phoneNumber})`,
+      content: `${searchTerm}`,
+      type: 'search-term',
+    });
+    newNotification.save();
     console.log('rs', searchTerm);
   }
 

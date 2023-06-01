@@ -6,6 +6,6 @@ exports.NotificationSchema = new mongoose_1.default.Schema({
     title: { type: String, required: true },
     subtitle: { type: String, required: true },
     content: { type: String, required: true },
-    timestamp: { type: String, default: Date.now().toString() },
+    timestamp: { type: String, default: 'KKK' },
 });
 //# sourceMappingURL=notification.model.js.map

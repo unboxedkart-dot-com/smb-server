@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { use } from 'passport';
 import { Favorite } from 'src/models/favorite.model';
 import { Product } from 'src/models/product.model';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 import { User } from 'src/models/user.model';
 
 @Injectable()
@@ -14,6 +15,8 @@ export class FavoritesService {
     @InjectModel('Favorite') private readonly favoriteModel: Model<Favorite>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('TrackingNotification')
+    private readonly trackingNotificationModel: Model<TrackingNotificationModel>,
   ) {}
 
   async getFavorites(userId: string) {
@@ -67,6 +70,15 @@ export class FavoritesService {
         },
       );
       const userData = await this.userModel.findById(userId);
+      const productData = await this.productModel.findById(productId);
+      const newNotification = new this.trackingNotificationModel({
+        userId: userId,
+        title: `Favorite Added by ${userData.name} - ${userData.phoneNumber}`,
+        subtitle: `${productData.title}`,
+        content: `It was priced at ₹${productData.pricing.sellingPrice} (₹${productData.pricing.price})`,
+        type: 'wishlist-item',
+      });
+      newNotification.save();
       console.log(userData);
     } else {
       return 'already exists';
@@ -84,6 +96,15 @@ export class FavoritesService {
       const user = await this.userModel.findByIdAndUpdate(userId, {
         $pull: { favoriteItemIds: productId },
       });
+      const productData = await this.productModel.findById(productId);
+      const newNotification = new this.trackingNotificationModel({
+        userId: user.id,
+        title: `Favorite Added by ${user.name} - ${user.phoneNumber}`,
+        subtitle: `${productData.title}`,
+        content: `It was priced at ₹${productData.pricing.sellingPrice} (₹${productData.pricing.price})`,
+        type: 'wishlist-item',
+      });
+      newNotification.save();
       return {
         status: 'success',
         message: 'item deleted',

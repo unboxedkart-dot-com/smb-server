@@ -22,10 +22,14 @@ export class SearchController {
     @Query('brand') brand: string,
     @Query('condition') condition: string,
     @Query('productCode') product: string,
-    @Query('seller') seller : string,
+    @Query('seller') seller: string,
     @Query('p') pageNumber: string,
   ) {
-    console.log('query terms', pageNumber);
+    // return {
+    //   "date1" : Date.now(),
+    //   "date2":Date.now
+    // }
+    console.log('query terms', title);
     return await this.searchService.getNewSearch(
       null,
       title,
@@ -45,6 +49,14 @@ export class SearchController {
     //   pageNumber,
     // );
     // return products;
+  }
+
+  @Get('/get-date')
+  handleSendDate() {
+    return {
+      'date1': Date.now(),
+      'date2': Date.now,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

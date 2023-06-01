@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
 export const ProductSchema = new mongoose.Schema({
-  timestamp: { type: String, default: Date.now() },
+  timestamp: { type: String },
   SKU: { type: String, required: true },
   productCode: { type: String, required: true },
   aboutProduct: { type: [String], required: true },
   title: { type: String, required: true },
   modelNumber: { type: String, required: true },
-  seriesCode: { type: String, required: false },///
+  seriesCode: { type: String, required: false }, ///
   brand: { type: String, required: true },
   brandCode: { type: String, required: true },
   category: { type: String, required: true },
@@ -57,6 +57,7 @@ export const ProductSchema = new mongoose.Schema({
   },
   boxContains: { type: String, required: false },
   rating: { type: Number, required: false, default: 0 },
+  hide: { type: Boolean, required: false, default: false },
 });
 
 export interface Product {
@@ -116,4 +117,5 @@ export interface Product {
     sellerId: string;
     sellerName: string;
   };
+  hide: Boolean;
 }

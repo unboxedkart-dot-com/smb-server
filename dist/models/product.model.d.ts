@@ -57,4 +57,5 @@ export interface Product {
         sellerId: string;
         sellerName: string;
     };
+    hide: Boolean;
 }

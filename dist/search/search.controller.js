@@ -22,8 +22,14 @@ let SearchController = class SearchController {
         this.searchService = searchService;
     }
     async handleGetSearchedProducts(title, category, brand, condition, product, seller, pageNumber) {
-        console.log('query terms', pageNumber);
+        console.log('query terms', title);
         return await this.searchService.getNewSearch(null, title, category, brand, condition, product, seller, pageNumber);
+    }
+    handleSendDate() {
+        return {
+            'date1': Date.now(),
+            'date2': Date.now,
+        };
     }
     async handleGetRecentSearches(request) {
         const userId = request.user.userId;
@@ -61,6 +67,12 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], SearchController.prototype, "handleGetSearchedProducts", null);
+__decorate([
+    (0, common_1.Get)('/get-date'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SearchController.prototype, "handleSendDate", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('/recent-searches'),

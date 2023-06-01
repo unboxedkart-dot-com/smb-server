@@ -26,6 +26,11 @@ export class AuthController {
   //   return result;
   // }
 
+  @Get('hello')
+  async handleHello(){
+    return "HelloWorld";
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get()
   async handlePrintHello(@Req() request: any) {

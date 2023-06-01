@@ -25,6 +25,7 @@ const s3_module_1 = require("../s3/s3.module");
 const s3_service_1 = require("../s3/s3.service");
 const order_summary_model_1 = require("../models/order_summary.model");
 const payment_model_1 = require("../models/payment.model");
+const notification_model_1 = require("../models/notification.model");
 let OrdersModule = class OrdersModule {
 };
 OrdersModule = __decorate([
@@ -40,6 +41,7 @@ OrdersModule = __decorate([
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Review', schema: review_model_1.ReviewSchema },
                 { name: 'ReferralOrder', schema: referral_order_1.ReferralOrderSchema },
+                { name: 'Notification', schema: notification_model_1.NotificationSchema },
                 { name: 'ItemPurchasedUsers', schema: item_purchased_user_model_1.ItemPurchasedUsersSchema },
             ]),
             s3_module_1.S3Module,

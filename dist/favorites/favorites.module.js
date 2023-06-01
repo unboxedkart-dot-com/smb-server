@@ -15,6 +15,7 @@ const favorite_model_1 = require("../models/favorite.model");
 const user_model_1 = require("../models/user.model");
 const product_model_1 = require("../models/product.model");
 const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
+const Tracking_notification_model_1 = require("../models/Tracking-notification.model");
 let FavoritesModule = class FavoritesModule {
 };
 FavoritesModule = __decorate([
@@ -24,6 +25,7 @@ FavoritesModule = __decorate([
                 { name: 'Favorite', schema: favorite_model_1.FavoriteSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
+                { name: 'TrackingNotification', schema: Tracking_notification_model_1.TrackingNotificationSchema },
             ]),
         ],
         controllers: [favorites_controller_1.FavoritesController],

@@ -27,6 +27,7 @@ import * as SendGrid from '@sendgrid/mail';
 import { RefreshToken } from 'aws-sdk/clients/ssooidc';
 import { RefreshTokenModel } from 'src/models/refresh-token.model';
 import { ObjectId } from 'aws-sdk/clients/codecommit';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 
 export class AuthService {
   constructor(
@@ -34,6 +35,8 @@ export class AuthService {
     @InjectModel('Coupon') private readonly couponModel: Model<Coupon>,
     @InjectModel('SearchTerm')
     private readonly searchTermModel: Model<SearchTerm>,
+    @InjectModel('TrackingNotification')
+    private readonly trackingNotificationModel: Model<TrackingNotificationModel>,
     @InjectModel('RefreshToken')
     private readonly refreshTokenModel: Model<RefreshTokenModel>,
     private jwtService: JwtService,
@@ -183,6 +186,12 @@ export class AuthService {
         const popularSearches = await this._getPopularSearches();
         console.log('recent searches array');
         console.log(recentSearches);
+        const newNotification = new this.trackingNotificationModel({
+          userId: user.id,
+          title: `User logged In - ${user.name} (${user.phoneNumber})`,
+          type: 'sign-in',
+        });
+        newNotification.save();
         return {
           status: 'success',
           message: 'user logged in',
@@ -239,7 +248,7 @@ export class AuthService {
       };
     }
   }
-  
+
   _createCouponCode(name: string) {
     const randomNumber = Math.floor(1000 + Math.random() * 9000);
     const couponCode = name.substring(0, 6) + randomNumber;
@@ -298,9 +307,15 @@ export class AuthService {
         });
         // save referral coupon
         newCoupon.save();
+
         // this._sendAccountCreatedMessage(userDoc);
         this._sendAccountCreatedMail(userDoc);
-
+        const newNotification = new this.trackingNotificationModel({
+          userId: userDoc._id,
+          title: `New User Created -  ${userDoc.name} (${userDoc.phoneNumber})`,
+          type: 'new-user',
+        });
+        newNotification.save();
         const popularSearches = await this._getPopularSearches();
 
         // add user

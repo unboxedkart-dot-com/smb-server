@@ -57,5 +57,6 @@ exports.ProductSchema = new mongoose_1.default.Schema({
     sellingLeadSource: { type: String },
     sellingLeadSourceInformation: { type: String },
     imageUrls: { type: [String] },
+    hide: { type: Boolean, required: false },
 });
 //# sourceMappingURL=product.model.js.map

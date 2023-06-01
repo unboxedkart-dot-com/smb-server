@@ -24,6 +24,9 @@ import { AppVersionModule } from './app-version/app-version.module';
 import { ServicesModule } from './services/services.module';
 import { ServiceModule } from './service/service.module';
 import { LocalInventoryModule } from './local-inventory/local-inventory.module';
+import { UsageTrackingModule } from './usage-tracking/usage-tracking.module';
+import { StoreTokenModule } from './store-token/store-token.module';
+
 
 @Module({
   imports: [
@@ -31,20 +34,21 @@ import { LocalInventoryModule } from './local-inventory/local-inventory.module';
     ProductsModule,
     SearchModule,
     AuthModule,
-    MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
+    MongooseModule.forRoot(
+      process.env.DB_CONNECTION_URL,
+    ),
     MongooseModule.forRoot(process.env.SERVICE_DB_CONNECTION_URL, {
       connectionName: 'serviceDb',
     }),
-    // MongooseModule.forRoot(process.env.ADMIN_DB_CONNECTION_URL, {
-    //   connectionName: 'adminDb',
-    // }),
+    MongooseModule.forRoot('mongodb+srv://imsunil:HfBs8PPbq1xCZkBR@unboxedkart.wlupx3j.mongodb.net/storeDB?retryWrites=true&w=majority',  {
+      connectionName: 'storeDb',
+    }),
     MongooseModule.forRoot(
       'mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority',
       {
         connectionName: 'inventoryDb',
       },
     ),
-
     OrdersModule,
     FavoritesModule,
     CartModule,
@@ -65,8 +69,8 @@ import { LocalInventoryModule } from './local-inventory/local-inventory.module';
     ServicesModule,
     ServiceModule,
     LocalInventoryModule,
+    UsageTrackingModule,
+    StoreTokenModule,
   ],
-  // controllers: [AppController],
-  // providers: [AppService],
-})
+}) 
 export class AppModule {}

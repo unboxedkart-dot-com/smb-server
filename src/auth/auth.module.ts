@@ -13,6 +13,7 @@ import { SearchTermSchema } from 'src/models/search_term';
 import { JwtRefreshStrategy } from './jwt-strategies/jwt-refresh.strategy';
 import { RefreshTokenSchema } from 'src/models/refresh-token.model';
 import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
+import { TrackingNotificationSchema } from 'src/models/Tracking-notification.model';
 
 @Module({
   imports: [
@@ -21,6 +22,8 @@ import { JwtAuthGuard } from './jwt-strategies/jwt-auth.guard';
       { name: 'Coupon', schema: CouponSchema },
       { name: 'SearchTerm', schema: SearchTermSchema },
       { name: 'RefreshToken', schema: RefreshTokenSchema },
+      // { name: 'RefreshToken', schema: RefreshTokenSchema },
+      { name: 'TrackingNotification', schema: TrackingNotificationSchema },
     ]),
     PassportModule,
     HttpModule,

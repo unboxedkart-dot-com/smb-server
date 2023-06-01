@@ -106,6 +106,7 @@ export class LocalInventoryController {
       serialNumber,
     );
   }
+
   @Get('/sold-inventory')
   async getSoldInventory(
     @Query('startDate') startDate: string,
@@ -172,6 +173,7 @@ export class LocalInventoryController {
 
   @Get('/get-notifications')
   async getNotifications() {
+    console.log("setting");
     return this.localInventoryService.getNotifications();
   }
 }

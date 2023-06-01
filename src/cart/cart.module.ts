@@ -7,6 +7,7 @@ import { ProductSchema } from 'src/models/product.model';
 import { CartItemSchema } from 'src/models/cart-item.model';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SavedToLaterSchema } from 'src/models/save_to_later.model';
+import { TrackingNotificationSchema } from 'src/models/Tracking-notification.model';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SavedToLaterSchema } from 'src/models/save_to_later.model';
       { name: 'SavedToLater', schema: SavedToLaterSchema },
       { name: 'User', schema: UserSchema },
       { name: 'Product', schema: ProductSchema },
+      { name: 'TrackingNotification', schema: TrackingNotificationSchema},
     ]),
   ],
   controllers: [CartController],

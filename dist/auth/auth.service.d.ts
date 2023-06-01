@@ -6,13 +6,15 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { Coupon } from 'src/models/coupon.model';
 import { RefreshTokenModel } from 'src/models/refresh-token.model';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 export declare class AuthService {
     private readonly userModel;
     private readonly couponModel;
     private readonly searchTermModel;
+    private readonly trackingNotificationModel;
     private readonly refreshTokenModel;
     private jwtService;
-    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
+    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, trackingNotificationModel: Model<TrackingNotificationModel>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
     sendOtp(phoneNumber: number): Promise<{
         status: string;
         message: string;

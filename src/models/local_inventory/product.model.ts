@@ -23,6 +23,7 @@ export const ProductSchema = new mongoose.Schema({
     productCode: { type: String, required: true },
     title: { type: String, required: true },
     boxContains: { type: String },
+   
   },
   moreDetails: {
     ram: { type: String },
@@ -56,6 +57,7 @@ export const ProductSchema = new mongoose.Schema({
   sellingLeadSource: { type: String },
   sellingLeadSourceInformation: { type: String },
   imageUrls: { type: [String] },
+  hide : {type : Boolean, required : false},
 });
 
 export interface ProductModel {
@@ -103,8 +105,10 @@ export interface ProductModel {
   buyingLeadSourceInformation: string;
   sellingLeadSource: string;
   sellingLeadSourceInformation: string;
+  hide : boolean;
   imageUrls: string[];
   agentDetails: AgentModel;
   buyerDetails: BuyerModel;
   sellerDetails: VendorModel;
+
 }

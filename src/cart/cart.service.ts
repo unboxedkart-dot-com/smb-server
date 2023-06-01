@@ -7,6 +7,7 @@ import { User } from 'src/models/user.model';
 import mongoose from 'mongoose';
 import { CartItem } from 'src/models/cart-item.model';
 import { SavedToLater } from 'src/models/save_to_later.model';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 
 @Injectable()
 export class CartService {
@@ -16,6 +17,8 @@ export class CartService {
     private readonly savedToLaterModel: Model<SavedToLater>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('TrackingNotification')
+    private readonly trackingNotificationModel: Model<TrackingNotificationModel>,
   ) {}
 
   async getCartItems(userId: string) {
@@ -95,6 +98,16 @@ export class CartService {
         productId: productId,
         userId: userId,
       });
+      const userData = await this.userModel.findById(userId);
+      const newNotification = new this.trackingNotificationModel({
+        userId: userId,
+        title: `Cart Item added by ${userData.name} - ${userData.phoneNumber}`,
+        subtitle: `${product.title}`,
+        content: `It was priced at ₹${product.pricing.sellingPrice} (₹${product.pricing.price})`,
+        type: 'cart-item',
+        userPhoneNumber : userData.phoneNumber
+      });
+      newNotification.save();
       if (!cartItem) {
         this._handleAddCartItem(userId, productId);
       } else {
@@ -154,6 +167,16 @@ export class CartService {
         },
       },
     );
+    const userData = await this.userModel.findById(userId);
+    const product = await this.productModel.findById(productId);
+    const newNotification = new this.trackingNotificationModel({
+      userId: userId,
+      title: `Cart Item removed by ${userData.name} - ${userData.phoneNumber}`,
+      subtitle: `${product.title}`,
+      content: `It was priced at ₹${product.pricing.sellingPrice} (₹${product.pricing.price})`,
+      type: 'cart-item',
+    });
+    newNotification.save();
     // if (mongoose.isValidObjectId(productId)) {
     // } else {
     //   throw new NotFoundException('could not find product');

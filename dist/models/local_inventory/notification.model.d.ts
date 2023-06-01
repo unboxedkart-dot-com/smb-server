@@ -4,4 +4,5 @@ export interface NotificationModel {
     title: string;
     subtitle: string;
     content: string;
+    timestamp: string;
 }

@@ -64,6 +64,9 @@ let LocalInventoryService = class LocalInventoryService {
                 (entireBody.moreDetails.storage != null
                     ? `, ${entireBody.moreDetails.storage}`
                     : ``) +
+                (entireBody.moreDetails.connectivity != null
+                    ? `, ${entireBody.moreDetails.connectivity}`
+                    : ``) +
                 (entireBody.productDetails.ram != null
                     ? `, ${entireBody.productDetails.ram}`
                     : ``) +
@@ -192,8 +195,8 @@ let LocalInventoryService = class LocalInventoryService {
         return vendors;
     }
     async getNotifications() {
-        const vendors = await this.notificationModel.find();
-        return vendors;
+        const notifications = await this.notificationModel.find();
+        return notifications;
     }
 };
 LocalInventoryService = __decorate([

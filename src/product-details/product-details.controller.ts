@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Param, Query
+  Param, Post, Query
 } from '@nestjs/common';
 import { ProductDetailsService } from './product-details.service';
 

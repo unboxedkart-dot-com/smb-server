@@ -33,6 +33,8 @@ const app_version_module_1 = require("./app-version/app-version.module");
 const services_module_1 = require("./services/services.module");
 const service_module_1 = require("./service/service.module");
 const local_inventory_module_1 = require("./local-inventory/local-inventory.module");
+const usage_tracking_module_1 = require("./usage-tracking/usage-tracking.module");
+const store_token_module_1 = require("./store-token/store-token.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -45,6 +47,9 @@ AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot(process.env.DB_CONNECTION_URL),
             mongoose_1.MongooseModule.forRoot(process.env.SERVICE_DB_CONNECTION_URL, {
                 connectionName: 'serviceDb',
+            }),
+            mongoose_1.MongooseModule.forRoot('mongodb+srv://imsunil:HfBs8PPbq1xCZkBR@unboxedkart.wlupx3j.mongodb.net/storeDB?retryWrites=true&w=majority', {
+                connectionName: 'storeDb',
             }),
             mongoose_1.MongooseModule.forRoot('mongodb+srv://sunil:85cJEI8mAAEjMobR@cluster0.eg9rg.mongodb.net/?retryWrites=true&w=majority', {
                 connectionName: 'inventoryDb',
@@ -69,6 +74,8 @@ AppModule = __decorate([
             services_module_1.ServicesModule,
             service_module_1.ServiceModule,
             local_inventory_module_1.LocalInventoryModule,
+            usage_tracking_module_1.UsageTrackingModule,
+            store_token_module_1.StoreTokenModule,
         ],
     })
 ], AppModule);

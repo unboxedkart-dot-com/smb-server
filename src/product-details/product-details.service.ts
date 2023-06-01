@@ -28,6 +28,10 @@ export class ProductDetailsService {
     return variants;
   }
 
+  // async putData(){
+  //   this.productDataModel = 
+  // }
+
   async getProductSpecs(productId: string) {
     console.log('goevb product id', productId);
     if (productId.match(/^[0-9a-fA-F]{24}$/)) {
@@ -77,6 +81,8 @@ export class ProductDetailsService {
     });
     return products;
   }
+
+
 
 
 }

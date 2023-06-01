@@ -16,10 +16,11 @@ exports.SearchService = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let SearchService = class SearchService {
-    constructor(productModel, userModel, searchTermModel) {
+    constructor(productModel, userModel, searchTermModel, trackingNotificationModel) {
         this.productModel = productModel;
         this.userModel = userModel;
         this.searchTermModel = searchTermModel;
+        this.trackingNotificationModel = trackingNotificationModel;
     }
     async getNewSearch(isExact, title, category, brand, condition, product, seller, pageNumber) {
         var itemsToSkip = 0;
@@ -61,6 +62,7 @@ let SearchService = class SearchService {
                     ?
                         { $eq: productExp }
                     : { $exists: true },
+                hide: false,
             };
         }
         console.log('my query', query);
@@ -79,6 +81,7 @@ let SearchService = class SearchService {
             },
             { '$skip': itemsToSkip },
         ])
+            .sort({ timestamp: -1 })
             .limit(10)
             .exec();
         console.log('joined product', products.length);
@@ -95,6 +98,7 @@ let SearchService = class SearchService {
         return recentSearches.recentSearches;
     }
     async addRecentSearchTerm(userId, searchTerm) {
+        const userDoc = await this.userModel.findById(userId);
         const recentSearches = await this.userModel.findByIdAndUpdate(userId, {
             $push: {
                 recentSearches: {
@@ -102,6 +106,13 @@ let SearchService = class SearchService {
                 },
             },
         });
+        const newNotification = new this.trackingNotificationModel({
+            userId: userDoc._id,
+            title: `Item Searched by User - ${userDoc.name} (${userDoc.phoneNumber})`,
+            content: `${searchTerm}`,
+            type: 'search-term',
+        });
+        newNotification.save();
         console.log('rs', searchTerm);
     }
     async addPopularSearchTerm(userId, searchTerm) {
@@ -123,7 +134,9 @@ SearchService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Product')),
     __param(1, (0, mongoose_1.InjectModel)('User')),
     __param(2, (0, mongoose_1.InjectModel)('SearchTerm')),
+    __param(3, (0, mongoose_1.InjectModel)('TrackingNotification')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])
 ], SearchService);

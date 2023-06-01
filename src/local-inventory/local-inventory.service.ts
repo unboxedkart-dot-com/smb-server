@@ -83,6 +83,9 @@ export class LocalInventoryService {
       (entireBody.moreDetails.storage != null
         ? `, ${entireBody.moreDetails.storage}`
         : ``) +
+      (entireBody.moreDetails.connectivity != null
+        ? `, ${entireBody.moreDetails.connectivity}`
+        : ``) +
       (entireBody.productDetails.ram != null
         ? `, ${entireBody.productDetails.ram}`
         : ``) +
@@ -98,6 +101,7 @@ export class LocalInventoryService {
       title: `Product purchased by ${entireBody.buyingAgentDetails.name}`,
       subtitle: entireBody.productDetails.title,
       content: `purchased at ₹${entireBody.pricingDetails.buyingPrice} from ${entireBody.sellerDetails.name}`,
+      // timestamp: Date.now(),
     });
     newNotification.save();
   }
@@ -233,7 +237,17 @@ export class LocalInventoryService {
   }
 
   async getNotifications() {
-    const vendors = await this.notificationModel.find();
-    return vendors;
+    const notifications = await this.notificationModel.find();
+    return notifications;
+
+    // await this.productModel.updateMany({
+    //   $set : {hide : true}
+    // });
+
+    // await this.notificationModel.deleteMany();
+
+    //   this.carouselItemModel.updateMany({
+    //     $set : {routeName : }
+    //   });
   }
 }

@@ -3,12 +3,14 @@
 import { Model } from 'mongoose';
 import { Product } from 'src/models/product.model';
 import { SearchTerm } from 'src/models/search_term';
+import { TrackingNotificationModel } from 'src/models/Tracking-notification.model';
 import { User } from 'src/models/user.model';
 export declare class SearchService {
     private readonly productModel;
     private readonly userModel;
     private readonly searchTermModel;
-    constructor(productModel: Model<Product>, userModel: Model<User>, searchTermModel: Model<SearchTerm>);
+    private readonly trackingNotificationModel;
+    constructor(productModel: Model<Product>, userModel: Model<User>, searchTermModel: Model<SearchTerm>, trackingNotificationModel: Model<TrackingNotificationModel>);
     getNewSearch(isExact: boolean, title: string, category: string, brand: string, condition: string, product: string, seller: string, pageNumber: string): Promise<Product[]>;
     getRecentSearches(userId: any): Promise<[{
         searchTerm: string;

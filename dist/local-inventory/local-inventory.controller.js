@@ -79,6 +79,7 @@ let LocalInventoryController = class LocalInventoryController {
         return response;
     }
     async getNotifications() {
+        console.log("setting");
         return this.localInventoryService.getNotifications();
     }
 };

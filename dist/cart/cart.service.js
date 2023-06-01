@@ -17,11 +17,12 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let CartService = class CartService {
-    constructor(cartItemModel, savedToLaterModel, userModel, productModel) {
+    constructor(cartItemModel, savedToLaterModel, userModel, productModel, trackingNotificationModel) {
         this.cartItemModel = cartItemModel;
         this.savedToLaterModel = savedToLaterModel;
         this.userModel = userModel;
         this.productModel = productModel;
+        this.trackingNotificationModel = trackingNotificationModel;
     }
     async getCartItems(userId) {
         const cartItemsData = [];
@@ -92,6 +93,16 @@ let CartService = class CartService {
                 productId: productId,
                 userId: userId,
             });
+            const userData = await this.userModel.findById(userId);
+            const newNotification = new this.trackingNotificationModel({
+                userId: userId,
+                title: `Cart Item added by ${userData.name} - ${userData.phoneNumber}`,
+                subtitle: `${product.title}`,
+                content: `It was priced at ₹${product.pricing.sellingPrice} (₹${product.pricing.price})`,
+                type: 'cart-item',
+                userPhoneNumber: userData.phoneNumber
+            });
+            newNotification.save();
             if (!cartItem) {
                 this._handleAddCartItem(userId, productId);
             }
@@ -121,6 +132,16 @@ let CartService = class CartService {
                 cartItems: { productId: productId },
             },
         });
+        const userData = await this.userModel.findById(userId);
+        const product = await this.productModel.findById(productId);
+        const newNotification = new this.trackingNotificationModel({
+            userId: userId,
+            title: `Cart Item removed by ${userData.name} - ${userData.phoneNumber}`,
+            subtitle: `${product.title}`,
+            content: `It was priced at ₹${product.pricing.sellingPrice} (₹${product.pricing.price})`,
+            type: 'cart-item',
+        });
+        newNotification.save();
     }
     async removeProductFromSaveLater(userId, productId) {
         await this.savedToLaterModel.findOneAndDelete({
@@ -160,7 +181,9 @@ CartService = __decorate([
     __param(1, (0, mongoose_1.InjectModel)('SavedToLater')),
     __param(2, (0, mongoose_1.InjectModel)('User')),
     __param(3, (0, mongoose_1.InjectModel)('Product')),
+    __param(4, (0, mongoose_1.InjectModel)('TrackingNotification')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model])

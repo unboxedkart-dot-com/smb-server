@@ -23,6 +23,9 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
+    async handleHello() {
+        return "HelloWorld";
+    }
     async handlePrintHello(request) {
         console.log('request', request.user.userId);
         return request.user.userId;
@@ -56,6 +59,12 @@ let AuthController = class AuthController {
         return this.authService.createDummyRT(userId);
     }
 };
+__decorate([
+    (0, common_1.Get)('hello'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "handleHello", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),

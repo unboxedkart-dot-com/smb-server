@@ -22,10 +22,11 @@ const axios_1 = require("axios");
 const coupon_model_1 = require("../models/coupon.model");
 const SendGrid = require("@sendgrid/mail");
 let AuthService = class AuthService {
-    constructor(userModel, couponModel, searchTermModel, refreshTokenModel, jwtService) {
+    constructor(userModel, couponModel, searchTermModel, trackingNotificationModel, refreshTokenModel, jwtService) {
         this.userModel = userModel;
         this.couponModel = couponModel;
         this.searchTermModel = searchTermModel;
+        this.trackingNotificationModel = trackingNotificationModel;
         this.refreshTokenModel = refreshTokenModel;
         this.jwtService = jwtService;
         SendGrid.setApiKey('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');
@@ -128,6 +129,12 @@ let AuthService = class AuthService {
                 const popularSearches = await this._getPopularSearches();
                 console.log('recent searches array');
                 console.log(recentSearches);
+                const newNotification = new this.trackingNotificationModel({
+                    userId: user.id,
+                    title: `User logged In - ${user.name} (${user.phoneNumber})`,
+                    type: 'sign-in',
+                });
+                newNotification.save();
                 return {
                     status: 'success',
                     message: 'user logged in',
@@ -224,6 +231,12 @@ let AuthService = class AuthService {
                 });
                 newCoupon.save();
                 this._sendAccountCreatedMail(userDoc);
+                const newNotification = new this.trackingNotificationModel({
+                    userId: userDoc._id,
+                    title: `New User Created -  ${userDoc.name} (${userDoc.phoneNumber})`,
+                    type: 'new-user',
+                });
+                newNotification.save();
                 const popularSearches = await this._getPopularSearches();
                 const accessToken = await this.createJwt(userDoc.id);
                 return {
@@ -331,8 +344,10 @@ AuthService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('User')),
     __param(1, (0, mongoose_1.InjectModel)('Coupon')),
     __param(2, (0, mongoose_1.InjectModel)('SearchTerm')),
-    __param(3, (0, mongoose_1.InjectModel)('RefreshToken')),
+    __param(3, (0, mongoose_1.InjectModel)('TrackingNotification')),
+    __param(4, (0, mongoose_1.InjectModel)('RefreshToken')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,
         mongoose_2.Model,

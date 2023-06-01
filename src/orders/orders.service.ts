@@ -3,8 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as SendGrid from '@sendgrid/mail';
 import axios from 'axios';
 import { Model } from 'mongoose';
+import { title } from 'process';
 import { Coupon } from 'src/models/coupon.model';
 import { ItemPurchasedUser } from 'src/models/item-purchased-user.model';
+import { NotificationModel } from 'src/models/notification.model';
 import {
   Order,
   OrderStatuses,
@@ -17,6 +19,7 @@ import { Payment } from 'src/models/payment.model';
 import { Product } from 'src/models/product.model';
 import { ReferralOrder } from 'src/models/referral_order';
 import { Review } from 'src/models/review.model';
+import { StoreNotificationModel } from 'src/models/store-app/store-notification.model';
 import { User } from 'src/models/user.model';
 import { CancelOrderDto } from './dto/cancel-order.dto';
 
@@ -36,6 +39,8 @@ export class OrdersService {
     private readonly itemPurchasedUsersModel: Model<ItemPurchasedUser>,
     @InjectModel('ReferralOrder')
     private readonly referralModel: Model<ReferralOrder>,
+    @InjectModel('Notification')
+    private readonly notificationModel: Model<NotificationModel>,
   ) {
     SendGrid.setApiKey(process.env.MAIL_API_KEY);
   }
@@ -189,9 +194,9 @@ export class OrdersService {
     //   },
     // );
 
-    await this._handleSaveIndividualOrders(newOrder);
-    this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
-    this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
+    await this._handleSaveIndividualOrders(userId, userDoc, newOrder);
+    // this._handleSendOrderPlacedMessage(userDoc, orderItemDetails.orderItems);
+    // this._handleSendOrderPlacedMail(userDoc, orderItemDetails.orderItems);
     return orderSummary.orderNumber;
   }
 
@@ -264,10 +269,8 @@ export class OrdersService {
           },
         };
       }
-     
     }
   }
-
 
   async _getCouponDiscount(
     userId: string,
@@ -400,7 +403,11 @@ export class OrdersService {
     return newOrderItem;
   }
 
-  async _handleSaveIndividualOrders(order: Order) {
+  async _handleSaveIndividualOrders(
+    userId: string,
+    userDoc: User,
+    order: Order,
+  ) {
     console.log('executing new individual order');
     // const paymentType = order.paymentDetails.paymentType;
     // const paymentMethod = order.paymentDetails.paymentMethod;
@@ -445,7 +452,7 @@ export class OrdersService {
         pricingDetails: {
           billTotal: orderItem.total,
           payableTotal: payableAmount,
-          couponCode: order.pricingDetails.couponCode,
+          couponCode: order.pricingDetails.couponCode ?? 'NA',
           couponDiscount: order.pricingDetails.couponDiscount,
         },
         productDetails: orderItem.productDetails,
@@ -456,6 +463,36 @@ export class OrdersService {
         },
       });
       newOrderItem.save();
+      const content =
+        `Payable Amount is ₹${
+          orderItem.pricePerItem - newOrderItem.pricingDetails.couponDiscount
+        }` +
+        (couponDiscount != 0 ? ' - ' : '') +
+        (couponDiscount != 0 ? newOrderItem.pricingDetails.couponCode : '') +
+        (couponDiscount != 0
+          ? `(₹${newOrderItem.pricingDetails.couponDiscount})`
+          : '');
+      const newNotification = new this.notificationModel({
+        userId: userId,
+        title: `New Item Ordered by ${userDoc.name} - ${userDoc.phoneNumber}`,
+        subtitle: `${orderItem.productDetails.title}`,
+        content: content,
+        // `Payable Amount is ₹${
+        //   orderItem.pricePerItem - newOrderItem.pricingDetails.couponDiscount
+        // } (₹${newOrderItem.pricingDetails.billTotal}) ${
+        //   couponDiscount > 0 ? '-' : ''
+        // }
+        // ${couponDiscount > 0 ? newOrderItem.pricingDetails.couponCode : ''}
+        // ${couponDiscount > 0 ? newOrderItem.pricingDetails.couponCode : ''}
+        //     (₹${newOrderItem.pricingDetails.couponDiscount})`,
+        type: 'new-order',
+        userPhoneNumber: userDoc.phoneNumber,
+        orderId: newOrderItem.orderNumber,
+        orderItemId: newOrderItem.orderNumber,
+        orderStatus: newOrderItem.orderStatus,
+        productTitle: orderItem.productDetails.title,
+      });
+      newNotification.save();
       // await this.userModel.findByIdAndUpdate(order.userId, {p
       //   $pull: { cartItems: orderItem.productId },
       //   orderSummary: {},
@@ -534,6 +571,22 @@ export class OrdersService {
     console.log('udd', userDoc._id);
     console.log('91' + userDoc.phoneNumber);
     await axios.post(url, postBody);
+    const adminPostBody1 = {
+      flow_id: process.env.ORDER_PLACED_FLOW_ID,
+      sender: process.env.ORDER_SMS_SENDER_ID,
+      mobiles: '919494111131',
+      order: order,
+      authkey: process.env.SMS_AUTH_KEY,
+    };
+    await axios.post(url, adminPostBody1);
+    const adminPostBody2 = {
+      flow_id: process.env.ORDER_PLACED_FLOW_ID,
+      sender: process.env.ORDER_SMS_SENDER_ID,
+      mobiles: '917097070707',
+      order: order,
+      authkey: process.env.SMS_AUTH_KEY,
+    };
+    await axios.post(url, adminPostBody2);
 
     // const orderItemDetails = userDoc.orderSummary;
     // const url = 'https://api.msg91.com/api/v5/flow';

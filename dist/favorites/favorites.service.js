@@ -18,10 +18,11 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const mongoose_3 = require("mongoose");
 let FavoritesService = class FavoritesService {
-    constructor(favoriteModel, userModel, productModel) {
+    constructor(favoriteModel, userModel, productModel, trackingNotificationModel) {
         this.favoriteModel = favoriteModel;
         this.userModel = userModel;
         this.productModel = productModel;
+        this.trackingNotificationModel = trackingNotificationModel;
     }
     async getFavorites(userId) {
         const userDoc = await this.userModel.findOne({ _id: userId }).exec();
@@ -67,6 +68,15 @@ let FavoritesService = class FavoritesService {
                 $push: { favoriteItemIds: productId },
             });
             const userData = await this.userModel.findById(userId);
+            const productData = await this.productModel.findById(productId);
+            const newNotification = new this.trackingNotificationModel({
+                userId: userId,
+                title: `Favorite Added by ${userData.name} - ${userData.phoneNumber}`,
+                subtitle: `${productData.title}`,
+                content: `It was priced at ₹${productData.pricing.sellingPrice} (₹${productData.pricing.price})`,
+                type: 'wishlist-item',
+            });
+            newNotification.save();
             console.log(userData);
         }
         else {
@@ -84,6 +94,15 @@ let FavoritesService = class FavoritesService {
             const user = await this.userModel.findByIdAndUpdate(userId, {
                 $pull: { favoriteItemIds: productId },
             });
+            const productData = await this.productModel.findById(productId);
+            const newNotification = new this.trackingNotificationModel({
+                userId: user.id,
+                title: `Favorite Added by ${user.name} - ${user.phoneNumber}`,
+                subtitle: `${productData.title}`,
+                content: `It was priced at ₹${productData.pricing.sellingPrice} (₹${productData.pricing.price})`,
+                type: 'wishlist-item',
+            });
+            newNotification.save();
             return {
                 status: 'success',
                 message: 'item deleted',
@@ -99,7 +118,9 @@ FavoritesService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)('Favorite')),
     __param(1, (0, mongoose_1.InjectModel)('User')),
     __param(2, (0, mongoose_1.InjectModel)('Product')),
+    __param(3, (0, mongoose_1.InjectModel)('TrackingNotification')),
     __metadata("design:paramtypes", [mongoose_3.Model,
+        mongoose_3.Model,
         mongoose_3.Model,
         mongoose_3.Model])
 ], FavoritesService);

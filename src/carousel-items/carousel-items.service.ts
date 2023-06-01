@@ -112,111 +112,111 @@ export class CarouselItemsService {
     //     index: 6,
     //   },
 
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   isExact: true,
-      //   title: 'iPhone 13 Pro',
-      //   placement: 'mobile/brand/apple',
-      //   index: 1,
-      // },
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
-      //   productCode: 'apple-airpods',
-      //   isExact: true,
-      //   title: 'Apple Airpods',
-      //   placement: '/',
-      //   index: 1,
-      // },
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   isExact: true,
-      //   title: 'iPhone 13 Pro',
-      //   placement: '/',
-      //   index: 1,
-      // },
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   isExact: true,
-      //   title: 'iPhone 13 Pro',
-      //   placement: 'mobile/brand/apple',
-      //   index: 1,
-      // },
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/5.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   isExact: true,
-      //   title: 'iPhone 13 Pro',
-      //   placement: 'mobile/brand/apple',
-      //   index: 5,
-      // },
-      // {
-      //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/6.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   isExact: true,
-      //   title: 'iPhone 13 Pro',
-      //   placement: 'mobile/brand/apple',
-      //   index: 6,
-      // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
+    //   productCode: 'apple-iphone-13-pro',
+    //   isExact: true,
+    //   title: 'iPhone 13 Pro',
+    //   placement: 'mobile/brand/apple',
+    //   index: 1,
+    // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
+    //   productCode: 'apple-airpods',
+    //   isExact: true,
+    //   title: 'Apple Airpods',
+    //   placement: '/',
+    //   index: 1,
+    // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
+    //   productCode: 'apple-iphone-13-pro',
+    //   isExact: true,
+    //   title: 'iPhone 13 Pro',
+    //   placement: '/',
+    //   index: 1,
+    // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
+    //   productCode: 'apple-iphone-13-pro',
+    //   isExact: true,
+    //   title: 'iPhone 13 Pro',
+    //   placement: 'mobile/brand/apple',
+    //   index: 1,
+    // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/5.webp',
+    //   productCode: 'apple-iphone-13-pro',
+    //   isExact: true,
+    //   title: 'iPhone 13 Pro',
+    //   placement: 'mobile/brand/apple',
+    //   index: 5,
+    // },
+    // {
+    //   imageUrl:
+    //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/6.webp',
+    //   productCode: 'apple-iphone-13-pro',
+    //   isExact: true,
+    //   title: 'iPhone 13 Pro',
+    //   placement: 'mobile/brand/apple',
+    //   index: 6,
+    // },
     // ]);
 
     await this.carouselItemModel.insertMany([
-      {
-        imageUrl:
-          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
-        productCode: 'apple-iphone-13-pro',
-        isExact: true,
-        title: 'iPhone 13 Pro',
-        placement: 'mobile/brand/apple',
-        index: 1,
-      },
-      {
-        imageUrl:
-          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/2.webp',
-        productCode: 'apple-airpods-pro',
-        isExact: true,
-        title: 'Apple Airpods Pro',
-        placement: 'mobile/brand/apple',
-        index: 2,
-      },
-      {
-        imageUrl:
-          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/3.webp',
-        categoryCode: 'watch',
-        title: 'Apple Watch',
-        brandCode: 'apple',
-        placement: 'mobile/brand/apple',
-        index: 3,
-      },
-      {
-        imageUrl:
-          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/4.webp',
-        categoryCode: 'laptop',
-        productCode: 'apple-macbook-pro',
-        isExact: true,
-        title: 'MacBook Pro 13 Inch',
-        screenSizeCode: '13-inch',
-        seriesCode: 'macbook-pro',
-        brandCode: 'apple',
-        placement: 'mobile/brand/apple',
-        index: 4,
-      },
-      {
-        imageUrl:
-          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/4.webp',
-        productCode: 'apple-ipad-pro',
-        title: 'iPad Pro',
-        placement: 'mobile/brand/apple',
-        index: 4,
-      },
+      // {
+      //   imageUrl:
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/1.webp',
+      //   productCode: 'apple-iphone-13-pro',
+      //   isExact: true,
+      //   title: 'iPhone 13 Pro',
+      //   placement: 'mobile/brand/apple',
+      //   index: 1,
+      // },
+      // {
+      //   imageUrl:
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/2.webp',
+      //   productCode: 'apple-airpods-pro',
+      //   isExact: true,
+      //   title: 'Apple Airpods Pro',
+      //   placement: 'mobile/brand/apple',
+      //   index: 2,
+      // },
+      // {
+      //   imageUrl:
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/3.webp',
+      //   categoryCode: 'watch',
+      //   title: 'Apple Watch',
+      //   brandCode: 'apple',
+      //   placement: 'mobile/brand/apple',
+      //   index: 3,
+      // },
+      // {
+      //   imageUrl:
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/4.webp',
+      //   categoryCode: 'laptop',
+      //   productCode: 'apple-macbook-pro',
+      //   isExact: true,
+      //   title: 'MacBook Pro 13 Inch',
+      //   screenSizeCode: '13-inch',
+      //   seriesCode: 'macbook-pro',
+      //   brandCode: 'apple',
+      //   placement: 'mobile/brand/apple',
+      //   index: 4,
+      // },
+      // {
+      //   imageUrl:
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/brand/apple/4.webp',
+      //   productCode: 'apple-ipad-pro',
+      //   title: 'iPad Pro',
+      //   placement: 'mobile/brand/apple',
+      //   index: 4,
+      // },
       // samsung
       // {
       //   imageUrl:
@@ -642,16 +642,16 @@ export class CarouselItemsService {
       // //mobile/home
       // {
       //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/1.webp',
-      //   productCode: 'apple-iphone-13-pro',
-      //   title: 'iPhone 13 Pro',
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/7.webp',
+      //   productCode: 'apple-iphone-14-pro-max',
+      //   title: 'iPhone 14 Pro Max',
       //   placement: 'mobile/home',
       //   isExact: true,
       //   index: 1,
       // },
       // {
       //   imageUrl:
-      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/2.webp',
+      //     'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/8.webp',
       //   categoryCode: 'earphones',
       //   brandCode: 'apple',
       //   title: 'Apple Airpods',
@@ -694,6 +694,60 @@ export class CarouselItemsService {
       //   placement: 'mobile/home',
       //   index: 6,
       // },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/7.webp',
+        productCode: 'apple-iphone-14-pro-max',
+        title: 'iPhone 14 Pro Max',
+        placement: 'mobile/home',
+        isExact: true,
+        index: 1,
+      },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/8.webp',
+        categoryCode: 'earphones',
+        brandCode: 'apple',
+        title: 'Apple Airpods',
+        placement: 'mobile/home',
+        index: 2,
+      },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/9.webp',
+        productCode: 'apple-watch-ultra',
+        isExact: true,
+        title: 'Apple Watch Ultra',
+        placement: 'mobile/home',
+        index: 3,
+      },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/10.webp',
+        brandCode: 'apple',
+        categoryCode: 'tablet',
+        productCode: 'apple-ipad-pro-12.9-inch-6th-gen',
+        isExact: true,
+        placement: 'mobile/home',
+        index: 4,
+      },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/11.webp',
+        productCode: 'apple-macbook-air-2022',
+        isExact: true,
+        placement: 'mobile/home',
+        index: 5,
+      },
+      {
+        imageUrl:
+          'https://unboxedkart-india.s3.ap-south-1.amazonaws.com/carousels/mobile/home/12.webp',
+        productCode: 'apple-magsafe-battery-pack',
+        isExact: true,
+        title: 'MagSafe Battery Pack',
+        placement: 'mobile/home',
+        index: 6,
+      },
     ]);
   }
 

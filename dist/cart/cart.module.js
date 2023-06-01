@@ -16,6 +16,7 @@ const product_model_1 = require("../models/product.model");
 const cart_item_model_1 = require("../models/cart-item.model");
 const mongoose_1 = require("@nestjs/mongoose");
 const save_to_later_model_1 = require("../models/save_to_later.model");
+const Tracking_notification_model_1 = require("../models/Tracking-notification.model");
 let CartModule = class CartModule {
 };
 CartModule = __decorate([
@@ -26,6 +27,7 @@ CartModule = __decorate([
                 { name: 'SavedToLater', schema: save_to_later_model_1.SavedToLaterSchema },
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'Product', schema: product_model_1.ProductSchema },
+                { name: 'TrackingNotification', schema: Tracking_notification_model_1.TrackingNotificationSchema },
             ]),
         ],
         controllers: [cart_controller_1.CartController],
