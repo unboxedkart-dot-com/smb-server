@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 
 export enum OrderStatuses {
@@ -55,7 +54,8 @@ export const OrderSchema = new mongoose.Schema({
   shippingDetails: {},
   pickUpDetails: {},
   orderNumber: { type: String, required: true },
-  orderDate: { type: String, required: true, default: Date.now().toString() },
+  orderDate: { type: String, required: true },
+  // orderDate: { type: String, required: true, default: Date.now().toString() },
   // orderDateInString : {type : String , default : `${Date.now().}`}
   updatedDate: { type: String, required: false },
   userId: { type: String, required: true },
@@ -69,6 +69,7 @@ export const OrderSchema = new mongoose.Schema({
     required: true,
     default: OrderStatuses.ORDERED,
   },
+  timestamp: { type: Number, required: true },
   itemsCount: { type: Number, required: true },
   orderItems: [
     {
@@ -119,6 +120,7 @@ export interface Order {
     couponDiscount: number;
   };
   orderStatus: string;
+  timestamp: number;
   orderItems: [
     {
       productId: string;

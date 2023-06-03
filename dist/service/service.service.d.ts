@@ -12,7 +12,7 @@ export declare class ServiceService {
     private readonly faqModel;
     private readonly userModel;
     constructor(serviceOrderModel: Model<ServiceOrderModel>, notificationModel: Model<NotificationModel>, faqModel: Model<Faq>, userModel: Model<User>);
-    diagnosisFee(categoryCode: string): Promise<500 | 300 | 800 | 400>;
+    diagnosisFee(categoryCode: string): Promise<300 | 800 | 500 | 400>;
     createServiceRequest(userId: string, entireBody: CreateServiceDto): Promise<string>;
     orders(userId: string): Promise<(import("mongoose").Document<unknown, any, ServiceOrderModel> & ServiceOrderModel & {
         _id: import("mongoose").Types.ObjectId;
@@ -24,5 +24,5 @@ export declare class ServiceService {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     _generateOrderNumber(): string;
-    _getDiagnosisFee(category: string): 500 | 300 | 800 | 400;
+    _getDiagnosisFee(category: string): 300 | 800 | 500 | 400;
 }

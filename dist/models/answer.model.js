@@ -21,6 +21,6 @@ exports.AnswerSchema = new mongoose_1.default.Schema({
         productTitle: { type: String, required: true },
         timestamp: { type: Date, required: true, default: Date.now() },
     },
-    timestamp: { type: Date, required: true, default: Date.now() },
+    timestamp: { type: String, required: true, default: Date.now().toString() },
 });
 //# sourceMappingURL=answer.model.js.map

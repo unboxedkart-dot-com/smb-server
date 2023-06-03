@@ -39,7 +39,6 @@ export interface OrderItem {
     };
     orderNumber: string;
     orderDate: Date;
-    timestamp: string;
     updatedDate: string;
     orderStatus: string;
     productDetails: {
@@ -56,4 +55,5 @@ export interface OrderItem {
         productCount: number;
     };
     deliveryTimeStamp: Date;
+    timestamp: number;
 }

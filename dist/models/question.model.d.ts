@@ -8,6 +8,10 @@ export interface Question {
     isApproved: boolean;
     question: string;
     timestamp: Date;
+    productCode: string;
+    productCategory: string;
+    productBrand: string;
+    productCondition: string;
     productDetails: {
         id: string;
         imageUrl: string;

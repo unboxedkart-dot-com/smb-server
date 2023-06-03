@@ -62,7 +62,6 @@ let SearchService = class SearchService {
                     ?
                         { $eq: productExp }
                     : { $exists: true },
-                hide: false,
             };
         }
         console.log('my query', query);

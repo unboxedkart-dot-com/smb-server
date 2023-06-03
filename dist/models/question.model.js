@@ -7,6 +7,10 @@ exports.QuestionSchema = new mongoose_1.default.Schema({
     userName: { type: String, required: true },
     userRole: { type: String, required: true },
     productId: { type: String, required: true },
+    productCode: { type: String, required: true },
+    productCategory: { type: String, required: true },
+    productBrand: { type: String, required: true },
+    productCondition: { type: String, required: true },
     isApproved: { type: Boolean, required: true, default: false },
     question: { type: String, required: true },
     productDetails: {
@@ -18,6 +22,6 @@ exports.QuestionSchema = new mongoose_1.default.Schema({
         brand: { type: String, required: true },
         category: { type: String, required: true },
     },
-    timestamp: { type: Date, required: true, default: Date.now() },
+    timestamp: { type: String, required: true, default: Date.now().toString() },
 });
 //# sourceMappingURL=question.model.js.map

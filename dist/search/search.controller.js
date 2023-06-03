@@ -22,8 +22,8 @@ let SearchController = class SearchController {
         this.searchService = searchService;
     }
     async handleGetSearchedProducts(title, category, brand, condition, product, seller, pageNumber) {
-        console.log('query terms', title);
-        return await this.searchService.getNewSearch(null, title, category, brand, condition, product, seller, pageNumber);
+        console.log('query terms', title, category, brand, condition, product, seller, pageNumber);
+        return await this.searchService.getNewSearch(false, title, category, brand, condition, product, seller, pageNumber);
     }
     handleSendDate() {
         return {

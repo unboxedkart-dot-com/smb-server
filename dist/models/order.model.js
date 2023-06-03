@@ -51,7 +51,7 @@ exports.OrderSchema = new mongoose_1.default.Schema({
     shippingDetails: {},
     pickUpDetails: {},
     orderNumber: { type: String, required: true },
-    orderDate: { type: String, required: true, default: Date.now().toString() },
+    orderDate: { type: String, required: true },
     updatedDate: { type: String, required: false },
     userId: { type: String, required: true },
     userDetails: {
@@ -64,6 +64,7 @@ exports.OrderSchema = new mongoose_1.default.Schema({
         required: true,
         default: OrderStatuses.ORDERED,
     },
+    timestamp: { type: Number, required: true },
     itemsCount: { type: Number, required: true },
     orderItems: [
         {

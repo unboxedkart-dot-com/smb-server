@@ -24,7 +24,7 @@ exports.UserSchema = new mongoose_1.default.Schema({
             timestamp: { type: Date, required: true, default: Date.now() },
         },
     ],
-    createdTime: { type: Date, required: true, default: Date.now() },
+    createdTime: { type: String, required: true, default: Date.now().toString() },
     deviceId: { type: String, required: false },
     emailId: { type: String, required: false },
     gender: { type: String, required: false },

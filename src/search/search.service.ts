@@ -91,7 +91,7 @@ export class SearchService {
             ? // ? { $or: [{ $eq: product }, { $eq: productExp }] }
               { $eq: productExp }
             : { $exists: true },
-        hide: false,
+        // hide: false,
       };
     }
     console.log('my query', query);

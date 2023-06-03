@@ -54,6 +54,7 @@ let OrdersService = class OrdersService {
         var couponDiscount = 0;
         let amountPaid = 0;
         let amountDue;
+        const currentTime = Date.now();
         const userDoc = await this.userModel.findById(userId);
         const orderSummary = userDoc.orderSummary;
         const deliveryType = orderSummary.deliveryType;
@@ -107,6 +108,7 @@ let OrdersService = class OrdersService {
         console.log('adding a new order sss', orderSummary);
         console.log('adding a new payment sss', orderSummary.paymentId);
         const newOrder = new this.orderModel({
+            timestamp: currentTime,
             userId: userId,
             userDetails: {
                 name: userDoc.name,
@@ -306,6 +308,7 @@ let OrdersService = class OrdersService {
     async _handleSaveIndividualOrders(userId, userDoc, order) {
         var _a, _b;
         console.log('executing new individual order');
+        const currentTime = Date.now();
         const paymentId = order.paymentDetails.paymentIds[0];
         const itemsCount = order.orderItems.length;
         console.log('items count', itemsCount);
@@ -317,6 +320,7 @@ let OrdersService = class OrdersService {
             let payableAmount = orderItem.total - couponDiscount;
             amountDue = orderItem.total - couponDiscount - amountPaid;
             const newOrderItem = new this.orderItemModel({
+                timestamp: currentTime,
                 userId: order.userId,
                 orderNumber: order.orderNumber,
                 orderDate: order.orderDate,

@@ -29,9 +29,18 @@ export class SearchController {
     //   "date1" : Date.now(),
     //   "date2":Date.now
     // }
-    console.log('query terms', title);
+    console.log(
+      'query terms',
+      title,
+      category,
+      brand,
+      condition,
+      product,
+      seller,
+      pageNumber,
+    );
     return await this.searchService.getNewSearch(
-      null,
+      false,
       title,
       category,
       brand,

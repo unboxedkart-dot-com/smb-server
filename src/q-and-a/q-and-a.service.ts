@@ -28,6 +28,8 @@ export class QAndAService {
   async getProductQuestionAndAnswers(productId: string) {
     if (productId.match(/^[0-9a-fA-F]{24}$/)) {
       const product = await this.productModel.findById(productId);
+      console.log('getting q and A');
+      console.log('product id', productId, product.productCode);
       const qAndA = await this.questionAndAnswerModel
         .find({
           productCode: product.productCode,
@@ -71,7 +73,11 @@ export class QAndAService {
       userName: userDetails.userName,
       userRole: userDetails.userRole,
       productId: entireBody.productId,
+      productBrand: productDetails.brandCode,
+      productCategory: productDetails.categoryCode,
+      productCondition: productDetails.condition,
       question: entireBody.question,
+      productCode: productDetails.productCode,
       productDetails: {
         id: entireBody.productId,
         imageUrl: productDetails.imageUrls.coverImage,
@@ -85,12 +91,16 @@ export class QAndAService {
     });
     newQuestion.save();
     const newQAndA = new this.questionAndAnswerModel({
+      questionId: newQuestion._id,
       userId: newQuestion.userId,
       userName: newQuestion.userName,
       userRole: newQuestion.userRole,
       productId: newQuestion.productId,
+      productCode: productDetails.productCode,
+      productBrand: productDetails.brandCode,
+      productCategory: productDetails.categoryCode,
+      productCondition: productDetails.condition,
       questionDetails: {
-        // productTitle : entireBody.productTitle,
         questionId: newQuestion._id,
         isApproved: newQuestion.isApproved,
         question: newQuestion.question,
@@ -168,7 +178,6 @@ export class QAndAService {
     });
     return questions;
   }
-
 }
 
 // async getQuestionAndAnswers(productId: string) {

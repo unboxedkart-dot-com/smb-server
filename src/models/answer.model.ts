@@ -19,7 +19,8 @@ export const AnswerSchema = new mongoose.Schema({
     productTitle: { type: String, required: true },
     timestamp: { type: Date, required: true, default: Date.now() },
   },
-  timestamp: { type: Date, required: true, default: Date.now() },
+  // timestamp: { type: Date, required: true, default: Date.now() },
+  timestamp: { type: String, required: true, default: Date.now().toString() },
 });
 
 export interface Answer {

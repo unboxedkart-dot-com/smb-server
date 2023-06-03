@@ -67,7 +67,7 @@ export class OrdersService {
     var couponDiscount = 0;
     let amountPaid = 0;
     let amountDue;
-
+    const currentTime = Date.now();
     //get order summary
     const userDoc = await this.userModel.findById(userId);
     const orderSummary = userDoc.orderSummary;
@@ -142,6 +142,7 @@ export class OrdersService {
 
     const newOrder = new this.orderModel(
       {
+        timestamp: currentTime,
         userId: userId,
 
         userDetails: {
@@ -411,6 +412,7 @@ export class OrdersService {
     console.log('executing new individual order');
     // const paymentType = order.paymentDetails.paymentType;
     // const paymentMethod = order.paymentDetails.paymentMethod;
+    const currentTime = Date.now();
     const paymentId = order.paymentDetails.paymentIds[0];
     // const partialPaymentId = order.paymentDetails.partialPaymentId;
     const itemsCount = order.orderItems.length;
@@ -427,6 +429,7 @@ export class OrdersService {
       // console.log('new amount paid', amountPaid);
       amountDue = orderItem.total - couponDiscount - amountPaid;
       const newOrderItem = new this.orderItemModel({
+        timestamp: currentTime,
         userId: order.userId,
         orderNumber: order.orderNumber,
         orderDate: order.orderDate,

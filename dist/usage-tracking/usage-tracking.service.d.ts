@@ -9,7 +9,7 @@ import { RemoveCartItemDto } from './dtos/remove-cart-item.dto';
 import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
 import { AddViewedProductDto } from './dtos/add-viewed-product.dto';
 import { clickedOnNeedMoreDiscountDto } from './dtos/clicked-on-need-more-discount.dto';
-// import { CarouselItem } from 'src/models/carousel_item.model';
+import { CarouselItem } from 'src/models/carousel_item.model';
 export declare class UsageTrackingControllerService {
     private readonly userModel;
     private readonly productModel;

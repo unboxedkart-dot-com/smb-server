@@ -8,6 +8,12 @@ exports.QuestionAndAnswerSchema = new mongoose_1.default.Schema({
     userName: { type: String, required: true },
     userRole: { type: String, required: true },
     productId: { type: String, required: true },
+    productCode: { type: String, required: true },
+    productCategory: { type: String, required: true },
+    productBrand: { type: String, required: true },
+    productCondition: { type: String, required: true },
+    isApproved: { type: Boolean, required: true, default: false },
+    questionId: { type: String, required: true },
     productDetails: {
         id: { type: String, required: true },
         imageUrl: { type: String, required: true },

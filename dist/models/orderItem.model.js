@@ -66,5 +66,6 @@ exports.OrderItemSchema = new mongoose_1.default.Schema({
         pricePerItem: { type: Number, required: true },
         productCount: { type: Number, required: true },
     },
+    timestamp: { type: Number, required: true },
 });
 //# sourceMappingURL=orderItem.model.js.map

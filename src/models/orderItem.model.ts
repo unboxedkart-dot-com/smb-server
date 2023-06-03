@@ -66,6 +66,7 @@ export const OrderItemSchema = new mongoose.Schema({
     productCount: { type: Number, required: true },
     // total: { type: Number, required: true },
   },
+  timestamp: { type: Number, required: true },
 });
 
 export interface OrderItem {
@@ -106,7 +107,7 @@ export interface OrderItem {
   };
   orderNumber: string;
   orderDate: Date;
-  timestamp: string;
+  // timestamp: string;
   updatedDate: string;
   orderStatus: string;
   productDetails: {
@@ -123,4 +124,5 @@ export interface OrderItem {
     productCount: number;
   };
   deliveryTimeStamp: Date;
+  timestamp: number;
 }

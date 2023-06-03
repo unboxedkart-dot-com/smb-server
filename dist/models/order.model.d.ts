@@ -54,6 +54,7 @@ export interface Order {
         couponDiscount: number;
     };
     orderStatus: string;
+    timestamp: number;
     orderItems: [
         {
             productId: string;
