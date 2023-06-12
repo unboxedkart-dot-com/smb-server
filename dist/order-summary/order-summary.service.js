@@ -40,6 +40,11 @@ let OrderSummaryService = class OrderSummaryService {
         const userDoc = await this.userModel.findById(userId);
         const orderTotal = await this._calculateAmount(userDoc.orderSummary.orderItems);
         let payableAmount = orderTotal;
+        let partialPaymentAmount = payableAmount < 50000
+            ? 2000
+            : payableAmount > 50000 && payableAmount < 100000
+                ? 3000
+                : 5000;
         if (userDoc.orderSummary.couponCode != null) {
             const couponCode = userDoc.orderSummary.couponCode;
             const couponResults = await this.couponService.validateCoupon(userId, couponCode);
@@ -52,19 +57,19 @@ let OrderSummaryService = class OrderSummaryService {
         }
         const orderNumber = this._generateOrderNumber();
         const paymentOrderId = await this.createPaymentOrder(payableAmount, orderNumber);
-        const partialPaymentOrderId = await this.createPaymentOrder(2000, orderNumber);
+        const partialPaymentOrderId = await this.createPaymentOrder(1, orderNumber);
         await this.userModel.findByIdAndUpdate(userId, {
             'orderSummary.orderNumber': orderNumber,
             'orderSummary.paymentAmount': payableAmount,
             'orderSummary.paymentOrderId': paymentOrderId['id'],
             'orderSummary.partialPaymentOrderId': partialPaymentOrderId['id'],
-            'orderSummary.partialPaymentAmount': payableAmount,
+            'orderSummary.partialPaymentAmount': partialPaymentAmount,
         });
         return {
             payableAmount: payableAmount,
             paymentOrderId: paymentOrderId['id'],
             partialPaymentOrderId: partialPaymentOrderId['id'],
-            partialPaymentAmount: 2000,
+            partialPaymentAmount: partialPaymentAmount,
             name: userDoc.name,
             email: userDoc.emailId,
             phoneNumber: userDoc.phoneNumber,
@@ -96,11 +101,21 @@ let OrderSummaryService = class OrderSummaryService {
     }
     async addPaymentMethod(userId, paymentMethod) {
         console.log('adding payment method', paymentMethod, userId);
+        let selectedPaymentMethod = paymentMethod == 'pas'
+            ? order_model_1.PaymentMethods.PAY_AT_STORE
+            : paymentMethod == 'pas-d'
+                ? order_model_1.PaymentMethods.PAY_AT_STORE_DUE
+                : paymentMethod == 'prepaid'
+                    ? order_model_1.PaymentMethods.PREPAID
+                    : order_model_1.PaymentMethods.CASH_ON_DELIVERY;
+        let selectedPaymentType = paymentMethod == 'pas-d'
+            ? order_model_1.PaymentMethods.PAY_AT_STORE_DUE
+            : paymentMethod == 'prepaid'
+                ? order_model_1.PaymentTypes.FULL
+                : order_model_1.PaymentTypes.NULL;
         const updatedDoc = await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.paymentMethod': paymentMethod == 'cod'
-                ? order_model_1.PaymentMethods.CASH_ON_DELIVERY
-                : order_model_1.PaymentMethods.PAY_AT_STORE,
-            'orderSummary.paymentType': order_model_1.PaymentTypes.NULL,
+            'orderSummary.paymentMethod': selectedPaymentMethod,
+            'orderSummary.paymentType': selectedPaymentType,
         });
         console.log('updated Doc', updatedDoc);
         const order = await this.ordersService.createOrder(userId);
@@ -109,6 +124,7 @@ let OrderSummaryService = class OrderSummaryService {
             status: 'success',
             message: 'payment is verified',
             orderNumber: updatedDoc.orderSummary.orderNumber,
+            orderData: order,
         };
     }
     async verifyPaymentSignature(userId, entireBody) {

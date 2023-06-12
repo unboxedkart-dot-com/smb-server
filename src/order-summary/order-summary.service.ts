@@ -50,6 +50,12 @@ export class OrderSummaryService {
     );
 
     let payableAmount = orderTotal;
+    let partialPaymentAmount =
+      payableAmount < 50000
+        ? 2000
+        : payableAmount > 50000 && payableAmount < 100000
+        ? 3000
+        : 5000;
     if (userDoc.orderSummary.couponCode != null) {
       const couponCode = userDoc.orderSummary.couponCode;
       const couponResults = await this.couponService.validateCoupon(
@@ -69,7 +75,9 @@ export class OrderSummaryService {
       orderNumber,
     );
     const partialPaymentOrderId = await this.createPaymentOrder(
-      2000,
+      // 2000,
+      // partialPaymentAmount,
+      1,
       orderNumber,
     );
     await this.userModel.findByIdAndUpdate(userId, {
@@ -77,14 +85,14 @@ export class OrderSummaryService {
       'orderSummary.paymentAmount': payableAmount,
       'orderSummary.paymentOrderId': paymentOrderId['id'],
       'orderSummary.partialPaymentOrderId': partialPaymentOrderId['id'],
-      'orderSummary.partialPaymentAmount': payableAmount,
+      'orderSummary.partialPaymentAmount': partialPaymentAmount,
     });
 
     return {
       payableAmount: payableAmount,
       paymentOrderId: paymentOrderId['id'],
       partialPaymentOrderId: partialPaymentOrderId['id'],
-      partialPaymentAmount: 2000,
+      partialPaymentAmount: partialPaymentAmount,
       name: userDoc.name,
       email: userDoc.emailId,
       phoneNumber: userDoc.phoneNumber,
@@ -125,14 +133,25 @@ export class OrderSummaryService {
     console.log('adding payment method', paymentMethod, userId);
     // const userDoc
     // const orderNumber = this._generateOrderNumber();
+    let selectedPaymentMethod =
+      paymentMethod == 'pas'
+        ? PaymentMethods.PAY_AT_STORE
+        : paymentMethod == 'pas-d'
+        ? PaymentMethods.PAY_AT_STORE_DUE
+        : paymentMethod == 'prepaid'
+        ? PaymentMethods.PREPAID
+        : PaymentMethods.CASH_ON_DELIVERY;
+    let selectedPaymentType =
+      paymentMethod == 'pas-d'
+        ? PaymentMethods.PAY_AT_STORE_DUE
+        : paymentMethod == 'prepaid'
+        ? PaymentTypes.FULL
+        : PaymentTypes.NULL;
     const updatedDoc = await this.userModel.findByIdAndUpdate(userId, {
       // 'orderSummary' : {}
       // phoneNumber : 7557575754
-      'orderSummary.paymentMethod':
-        paymentMethod == 'cod'
-          ? PaymentMethods.CASH_ON_DELIVERY
-          : PaymentMethods.PAY_AT_STORE,
-      'orderSummary.paymentType': PaymentTypes.NULL,
+      'orderSummary.paymentMethod': selectedPaymentMethod,
+      'orderSummary.paymentType': selectedPaymentType,
       // 'orderSummary.orderNumber': orderNumber,
     });
     console.log('updated Doc', updatedDoc);
@@ -143,6 +162,7 @@ export class OrderSummaryService {
       status: 'success',
       message: 'payment is verified',
       orderNumber: updatedDoc.orderSummary.orderNumber,
+      orderData: order,
     };
   }
 

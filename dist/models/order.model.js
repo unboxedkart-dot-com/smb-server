@@ -4,6 +4,7 @@ exports.OrderSchema = exports.PaymentMethods = exports.DeliveryTypes = exports.P
 const mongoose_1 = require("mongoose");
 var OrderStatuses;
 (function (OrderStatuses) {
+    OrderStatuses["PREORDERD"] = "PRE ORDERED";
     OrderStatuses["ORDERED"] = "ORDERED";
     OrderStatuses["ACCEPTED"] = "ACCEPTED";
     OrderStatuses["SHIPPED"] = "SHIPPED";

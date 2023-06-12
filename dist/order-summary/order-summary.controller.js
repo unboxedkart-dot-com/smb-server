@@ -58,8 +58,10 @@ let OrderSummaryController = class OrderSummaryController {
         return response;
     }
     async handleGetPayableAmount(request) {
+        console.log('getting payable amount');
         const userId = request.user.userId;
         const response = await this.orderSummaryService.getPayableAmount(userId);
+        console.log(response);
         return response;
     }
     async handleGetPartialPaymentAmount(request) {

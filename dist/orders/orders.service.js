@@ -61,6 +61,8 @@ let OrdersService = class OrdersService {
         const paymentType = orderSummary.paymentType;
         const paymentMethod = orderSummary.paymentMethod;
         const orderItemDetails = await this._generateOrderItemDetails(orderSummary.orderItems);
+        const productId = orderSummary.orderItems[0].productId;
+        const productData = await this.productModel.findById(productId);
         payableAmount = orderItemDetails.orderTotal;
         console.log('payable amount 1', payableAmount);
         if (orderSummary.couponCode != null) {
@@ -108,7 +110,11 @@ let OrdersService = class OrdersService {
         console.log('adding a new order sss', orderSummary);
         console.log('adding a new payment sss', orderSummary.paymentId);
         const newOrder = new this.orderModel({
+            orderStatus: productData.quantity == 0
+                ? order_model_1.OrderStatuses.PREORDERD
+                : order_model_1.OrderStatuses.ORDERED,
             timestamp: currentTime,
+            orderDate: currentTime,
             userId: userId,
             userDetails: {
                 name: userDoc.name,
@@ -157,7 +163,7 @@ let OrdersService = class OrdersService {
             .find({
             userId: userId,
         })
-            .sort({ orderDate: 1 });
+            .sort({ timestamp: -1 });
         console.log('orderrrrr', orderItems);
         return orderItems;
     }
@@ -317,9 +323,13 @@ let OrdersService = class OrdersService {
         let amountDue = order.paymentDetails.amountDue;
         const couponDiscount = order.pricingDetails.couponDiscount / itemsCount;
         for (const orderItem of order.orderItems) {
+            let productData = await this.productModel.findById(orderItem.productId);
             let payableAmount = orderItem.total - couponDiscount;
             amountDue = orderItem.total - couponDiscount - amountPaid;
             const newOrderItem = new this.orderItemModel({
+                orderStatus: productData.quantity == 0
+                    ? order_model_1.OrderStatuses.PREORDERD
+                    : order_model_1.OrderStatuses.ORDERED,
                 timestamp: currentTime,
                 userId: order.userId,
                 orderNumber: order.orderNumber,

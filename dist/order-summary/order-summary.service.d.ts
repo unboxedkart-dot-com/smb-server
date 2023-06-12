@@ -41,6 +41,7 @@ export declare class OrderSummaryService {
         status: string;
         message: string;
         orderNumber: string;
+        orderData: string;
     }>;
     verifyPaymentSignature(userId: string, entireBody: VerifyPaymentDto): Promise<{
         status: string;

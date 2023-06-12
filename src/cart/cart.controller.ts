@@ -22,6 +22,7 @@ export class CartController {
   @Get()
   async handleGetCartItems(@Req() request: any) {
     const userId = request.user.userId;
+    console.log('getting cart items', userId);
     const result = await this.cartService.getCartItems(userId);
     return result;
   }

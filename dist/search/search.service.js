@@ -30,7 +30,26 @@ let SearchService = class SearchService {
         console.log('item to skip', itemsToSkip);
         console.log('new search', isExact, title, category, brand, condition, product, seller, pageNumber);
         let query = {};
-        if (title != undefined && title != null && title != 'null') {
+        if (title != undefined &&
+            title != null &&
+            title != 'null' &&
+            condition != undefined &&
+            condition != null &&
+            condition != 'null') {
+            console.log('title', title);
+            const searchTerm = title.replace(/\s/g, '');
+            const titleExp = new RegExp(`${searchTerm}`);
+            console.log('title expression', searchTerm, titleExp);
+            query = {
+                searchCases: {
+                    $in: [searchTerm, titleExp],
+                },
+                conditionCode: condition != undefined && condition != 'null'
+                    ? { $eq: condition }
+                    : { $exists: true },
+            };
+        }
+        else if (title != undefined && title != null && title != 'null') {
             console.log('title', title);
             const searchTerm = title.replace(/\s/g, '');
             const titleExp = new RegExp(`${searchTerm}`);

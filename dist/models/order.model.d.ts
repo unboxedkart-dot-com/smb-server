@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 export declare enum OrderStatuses {
+    PREORDERD = "PRE ORDERED",
     ORDERED = "ORDERED",
     ACCEPTED = "ACCEPTED",
     SHIPPED = "SHIPPED",

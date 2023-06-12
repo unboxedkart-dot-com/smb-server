@@ -5,7 +5,7 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-strategies/jwt-auth.guard';
 import { AddDeliveryAddressDto } from './dto/add-address.dto';
@@ -106,8 +106,10 @@ export class OrderSummaryController {
 
   @Get('payable-amount')
   async handleGetPayableAmount(@Req() request: any) {
+    console.log('getting payable amount');
     const userId = request.user.userId;
     const response = await this.orderSummaryService.getPayableAmount(userId);
+    console.log(response);
     return response;
   }
   @Get('partial-payment')

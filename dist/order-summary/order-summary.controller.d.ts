@@ -33,6 +33,7 @@ export declare class OrderSummaryController {
         status: string;
         message: string;
         orderNumber: string;
+        orderData: string;
     }>;
     handleVerifyPayment(request: any, entireBody: VerifyPaymentDto): Promise<{
         status: string;
