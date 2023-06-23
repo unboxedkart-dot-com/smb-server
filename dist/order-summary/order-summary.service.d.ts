@@ -27,14 +27,14 @@ export declare class OrderSummaryService {
         partialPaymentAmount: number;
         name: string;
         email: string;
-        phoneNumber: string;
+        phoneNumber: number;
     }>;
     getPartialPaymentAmount(userId: string): Promise<{
         payableAmount: number;
         orderId: any;
         name: string;
         email: string;
-        phoneNumber: string;
+        phoneNumber: number;
     }>;
     createPaymentOrder(payableAmount: number, orderNumber: string): Promise<any>;
     addPaymentMethod(userId: string, paymentMethod: string): Promise<{

@@ -33,7 +33,7 @@ export declare class CouponsService {
     _getUserDetails(userId: string): Promise<{
         userDetails: {
             userId: string;
-            phoneNumber: string;
+            phoneNumber: number;
             userName: string;
             userEmail: string;
         };

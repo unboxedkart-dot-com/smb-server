@@ -15,6 +15,9 @@ export declare class AuthService {
     private readonly refreshTokenModel;
     private jwtService;
     constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, trackingNotificationModel: Model<TrackingNotificationModel>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
+    setStatus(): Promise<void>;
+    deleteAccount(userId: string): Promise<void>;
+    deactivateAccount(userId: string): Promise<void>;
     sendOtp(phoneNumber: number): Promise<{
         status: string;
         message: string;

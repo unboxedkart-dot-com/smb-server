@@ -28,6 +28,7 @@ import { RefreshToken } from 'aws-sdk/clients/ssooidc';
 import { RefreshTokenModel } from 'src/models/refresh-token.model';
 import { ObjectId } from 'aws-sdk/clients/codecommit';
 import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
+import { use } from 'passport';
 
 export class AuthService {
   constructor(
@@ -68,6 +69,50 @@ export class AuthService {
   //     .catch((e) => console.log('email error', e));
   //   return transport;
   // }
+
+  async setStatus() {
+    await this.userModel.updateMany({
+      $set: {
+        isDeactivated: false,
+        isDeleted: false,
+      },
+    });
+  }
+
+  async deleteAccount(userId: string) {
+    console.log('trying to delete account');
+    const user = await this.userModel.findById(userId);
+    console.log('phone number', user.phoneNumber);
+    const newPhoneNumber = '1111' + user.phoneNumber.toString();
+    console.log('new phone number', newPhoneNumber);
+    const newUser = await this.userModel.findByIdAndUpdate(userId, {
+      isDeleted: true,
+      phoneNumber: parseInt(newPhoneNumber),
+    });
+    console.log(
+      'active status',
+      newUser.phoneNumber,
+      newUser.isDeleted,
+      newUser.isDeactivated,
+    );
+  }
+
+  async deactivateAccount(userId: string) {
+    console.log('trying to deactivate account');
+    const user = await this.userModel.findById(userId);
+    const newPhoneNumber = '1111' + user.phoneNumber.toString();
+    console.log('new phone number', newPhoneNumber);
+    const newUser = await this.userModel.findByIdAndUpdate(userId, {
+      isDeactivated: true,
+      phoneNumber: parseInt(newPhoneNumber),
+    });
+    console.log(
+      'active status',
+      newUser.phoneNumber,
+      newUser.isDeleted,
+      newUser.isDeactivated,
+    );
+  }
 
   async sendOtp(phoneNumber: number) {
     const url = `${process.env.SEND_OTP_URL_PREFIX}template_id=${process.env.OTP_TEMPLATE_ID}&mobile=91${phoneNumber}&authkey=${process.env.SMS_AUTH_KEY}&otp_length=6&otp_expiry=${process.env.OTP_EXPIRY_TIME}`;
@@ -171,7 +216,11 @@ export class AuthService {
       (entireBody.otp == 999999 && entireBody.phoneNumber == 9494111131)
     ) {
       const user = await this.userModel
-        .findOne({ phoneNumber: { $eq: entireBody.phoneNumber } })
+        .findOne({
+          phoneNumber: { $eq: entireBody.phoneNumber },
+          isDeactivated: false,
+          isDeleted: false,
+        })
         .exec();
       if (user) {
         await this.userModel.findOneAndUpdate(
@@ -225,7 +274,11 @@ export class AuthService {
     // console.log("validate otp")
     const otpStatus = await this.verifyOtp(phoneNumber, otp);
     if (otpStatus) {
-      const user = await this.userModel.findOne({ phoneNumber: phoneNumber });
+      const user = await this.userModel.findOne({
+        phoneNumber: phoneNumber,
+        isDeactivated: false,
+        isDeleted: false,
+      });
       if (user) {
         return {
           status: 'failed',
@@ -265,7 +318,11 @@ export class AuthService {
     if (otpStatus) {
       // check if user exists
       const userDoc = await this.userModel.findOne({
-        phoneNumber: { $eq: entireBody.phoneNumber },
+        phoneNumber: {
+          $eq: entireBody.phoneNumber,
+        },
+        isDeactivated: false,
+        isDeleted: false,
       });
 
       if (userDoc) {
@@ -278,6 +335,7 @@ export class AuthService {
         // create referral coupon
         const coupon = this._createCouponCode(entireBody.name);
         // create user model
+        console.log('user data', entireBody);
         const newUser = new this.userModel({
           name: entireBody.name,
           phoneNumber: entireBody.phoneNumber,

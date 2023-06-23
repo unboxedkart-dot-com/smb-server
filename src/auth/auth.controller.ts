@@ -25,10 +25,25 @@ export class AuthController {
   //   const result = this.authService.sendMail();
   //   return result;
   // }
+  
 
-  @Get('hello')
-  async handleHello(){
-    return "HelloWorld";
+  @Post('/hello')
+  async handleHello() {
+    await this.authService.setStatus();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/deactivate')
+  async handleDeactivateAccount(@Req() request: any) {
+    console.log('trying to deactibated account');
+    const userId = request.user.userId;
+    return this.authService.deactivateAccount(userId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Patch('/delete')
+  async handleDeleteAccount(@Req() request: any) {
+    const userId = request.user.userId;
+    return this.authService.deleteAccount(userId);
   }
 
   @UseGuards(JwtAuthGuard)

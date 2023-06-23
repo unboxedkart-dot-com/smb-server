@@ -4,7 +4,9 @@ import { SignUpDto } from './dto/sign-up.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    handleHello(): Promise<string>;
+    handleHello(): Promise<void>;
+    handleDeactivateAccount(request: any): Promise<void>;
+    handleDeleteAccount(request: any): Promise<void>;
     handlePrintHello(request: any): Promise<any>;
     handleSendOtp(phoneNumber: string): Promise<{
         status: string;

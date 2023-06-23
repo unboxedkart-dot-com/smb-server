@@ -37,5 +37,7 @@ exports.UserSchema = new mongoose_1.default.Schema({
     personalCouponCode: { type: String, required: false },
     purchasedItemIds: { type: Array, required: false, default: [] },
     answeredQuestionIds: { type: Array, required: false, default: [] },
+    isDeactivated: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
 });
 //# sourceMappingURL=user.model.js.map

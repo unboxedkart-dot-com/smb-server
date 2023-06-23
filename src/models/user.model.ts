@@ -36,13 +36,15 @@ export const UserSchema = new mongoose.Schema({
   personalCouponCode: { type: String, required: false },
   purchasedItemIds: { type: Array, required: false, default: [] },
   answeredQuestionIds: { type: Array, required: false, default: [] },
+  isDeactivated: { type: Boolean, default: false },
+  isDeleted: { type: Boolean, default: false },
 });
 
 export interface User {
   // id: string;
   name: string;
   userRole: string;
-  phoneNumber: string;
+  phoneNumber: number;
   recentSearches: [
     {
       searchTerm: string;
@@ -72,10 +74,11 @@ export interface User {
   ];
 
   orderSummary: OrderSummary;
-  s;
   personalCouponCode: string;
   purchasedItemIds: string[];
   answeredQuestionIds: string[];
+  isDeactivated: boolean;
+  isDeleted: boolean;
 }
 
 // paymentId: { type: String, required: false },

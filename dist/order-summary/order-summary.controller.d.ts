@@ -20,14 +20,14 @@ export declare class OrderSummaryController {
         partialPaymentAmount: number;
         name: string;
         email: string;
-        phoneNumber: string;
+        phoneNumber: number;
     }>;
     handleGetPartialPaymentAmount(request: any): Promise<{
         payableAmount: number;
         orderId: any;
         name: string;
         email: string;
-        phoneNumber: string;
+        phoneNumber: number;
     }>;
     handleUpdatePaymentMethod(request: any, paymentMethod: string): Promise<{
         status: string;

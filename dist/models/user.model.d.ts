@@ -9,7 +9,7 @@ export declare const UserSchema: mongoose.Schema<any, mongoose.Model<any, any, a
 export interface User {
     name: string;
     userRole: string;
-    phoneNumber: string;
+    phoneNumber: number;
     recentSearches: [
         {
             searchTerm: string;
@@ -38,8 +38,9 @@ export interface User {
         }
     ];
     orderSummary: OrderSummary;
-    s: any;
     personalCouponCode: string;
     purchasedItemIds: string[];
     answeredQuestionIds: string[];
+    isDeactivated: boolean;
+    isDeleted: boolean;
 }

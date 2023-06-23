@@ -31,6 +31,37 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         SendGrid.setApiKey('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');
     }
+    async setStatus() {
+        await this.userModel.updateMany({
+            $set: {
+                isDeactivated: false,
+                isDeleted: false,
+            },
+        });
+    }
+    async deleteAccount(userId) {
+        console.log('trying to delete account');
+        const user = await this.userModel.findById(userId);
+        console.log('phone number', user.phoneNumber);
+        const newPhoneNumber = '1111' + user.phoneNumber.toString();
+        console.log('new phone number', newPhoneNumber);
+        const newUser = await this.userModel.findByIdAndUpdate(userId, {
+            isDeleted: true,
+            phoneNumber: parseInt(newPhoneNumber),
+        });
+        console.log('active status', newUser.phoneNumber, newUser.isDeleted, newUser.isDeactivated);
+    }
+    async deactivateAccount(userId) {
+        console.log('trying to deactivate account');
+        const user = await this.userModel.findById(userId);
+        const newPhoneNumber = '1111' + user.phoneNumber.toString();
+        console.log('new phone number', newPhoneNumber);
+        const newUser = await this.userModel.findByIdAndUpdate(userId, {
+            isDeactivated: true,
+            phoneNumber: parseInt(newPhoneNumber),
+        });
+        console.log('active status', newUser.phoneNumber, newUser.isDeleted, newUser.isDeactivated);
+    }
     async sendOtp(phoneNumber) {
         const url = `${process.env.SEND_OTP_URL_PREFIX}template_id=${process.env.OTP_TEMPLATE_ID}&mobile=91${phoneNumber}&authkey=${process.env.SMS_AUTH_KEY}&otp_length=6&otp_expiry=${process.env.OTP_EXPIRY_TIME}`;
         console.log('sms url', url);
@@ -119,7 +150,11 @@ let AuthService = class AuthService {
         if (otpStatus ||
             (entireBody.otp == 999999 && entireBody.phoneNumber == 9494111131)) {
             const user = await this.userModel
-                .findOne({ phoneNumber: { $eq: entireBody.phoneNumber } })
+                .findOne({
+                phoneNumber: { $eq: entireBody.phoneNumber },
+                isDeactivated: false,
+                isDeleted: false,
+            })
                 .exec();
             if (user) {
                 await this.userModel.findOneAndUpdate({ phoneNumber: { $eq: entireBody.phoneNumber } }, { lastLoggedIn: Date.now() });
@@ -160,7 +195,11 @@ let AuthService = class AuthService {
     async validateOtp(phoneNumber, otp) {
         const otpStatus = await this.verifyOtp(phoneNumber, otp);
         if (otpStatus) {
-            const user = await this.userModel.findOne({ phoneNumber: phoneNumber });
+            const user = await this.userModel.findOne({
+                phoneNumber: phoneNumber,
+                isDeactivated: false,
+                isDeleted: false,
+            });
             if (user) {
                 return {
                     status: 'failed',
@@ -192,7 +231,11 @@ let AuthService = class AuthService {
         const otpStatus = await this.verifyOtp(entireBody.phoneNumber, entireBody.otp);
         if (otpStatus) {
             const userDoc = await this.userModel.findOne({
-                phoneNumber: { $eq: entireBody.phoneNumber },
+                phoneNumber: {
+                    $eq: entireBody.phoneNumber,
+                },
+                isDeactivated: false,
+                isDeleted: false,
             });
             if (userDoc) {
                 return {
@@ -202,6 +245,7 @@ let AuthService = class AuthService {
             }
             else {
                 const coupon = this._createCouponCode(entireBody.name);
+                console.log('user data', entireBody);
                 const newUser = new this.userModel({
                     name: entireBody.name,
                     phoneNumber: entireBody.phoneNumber,

@@ -24,7 +24,16 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async handleHello() {
-        return "HelloWorld";
+        await this.authService.setStatus();
+    }
+    async handleDeactivateAccount(request) {
+        console.log('trying to deactibated account');
+        const userId = request.user.userId;
+        return this.authService.deactivateAccount(userId);
+    }
+    async handleDeleteAccount(request) {
+        const userId = request.user.userId;
+        return this.authService.deleteAccount(userId);
     }
     async handlePrintHello(request) {
         console.log('request', request.user.userId);
@@ -60,11 +69,27 @@ let AuthController = class AuthController {
     }
 };
 __decorate([
-    (0, common_1.Get)('hello'),
+    (0, common_1.Post)('/hello'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "handleHello", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('/deactivate'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "handleDeactivateAccount", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('/delete'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "handleDeleteAccount", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
