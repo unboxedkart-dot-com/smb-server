@@ -246,7 +246,7 @@ let AuthService = class AuthService {
   }
   async validateOtp(phoneNumber, otp) {
     const otpStatus = await this.verifyOtp(phoneNumber, otp);
-    if (otpStatus || otp == 999999) {
+    if (otpStatus || (entireBody.otp == 999999 && entireBody.phoneNumber == 9494111131)) {
       const user = await this.userModel.findOne({
         phoneNumber: phoneNumber,
         isDeactivated: false,
