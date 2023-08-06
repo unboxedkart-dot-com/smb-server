@@ -12,8 +12,8 @@ export declare class UserController {
     }>;
     handleUpdateUserDetails(request: any, entireBody: UpdateUserDetailsDto): Promise<void>;
     handleGetUserData(request: any): Promise<{
-        purchasedItemIds: string[];
-        answeredQuestionIds: string[];
+        purchasedItemIds: any;
+        answeredQuestionIds: any;
     }>;
     handleUpdatePaymentDetails(request: any, entireBody: UpdateUserPaymentDetailsDto): Promise<void>;
     handleGetPaymentDetails(request: any): Promise<import("mongoose").Document<unknown, any, import("../models/user_payment_details.model").UserPaymentDetails> & import("../models/user_payment_details.model").UserPaymentDetails & {

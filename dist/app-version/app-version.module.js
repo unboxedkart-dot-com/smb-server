@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const app_version_service_1 = require("./app-version.service");
 const app_version_controller_1 = require("./app-version.controller");
 const mongoose_1 = require("@nestjs/mongoose");
-const app_version_model_1 = require("../models/app_version.model");
+const app_version_model_1 = require("src/models/app_version.model");
 let AppVersionModule = class AppVersionModule {
 };
 AppVersionModule = __decorate([

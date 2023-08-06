@@ -1,20 +1,14 @@
-import { SearchTerm } from 'src/models/search_term';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { User } from 'src/models/user.model';
-import { SignUpDto } from './dto/sign-up.dto';
+import { RefreshTokenModel } from 'src/user/models/refresh-token.model';
+import { User } from 'src/user/models/user.model';
 import { LoginDto } from './dto/login.dto';
-import { Coupon } from 'src/models/coupon.model';
-import { RefreshTokenModel } from 'src/models/refresh-token.model';
-import { TrackingNotificationModel } from 'src/models/tracking-notification.model';
+import { SignUpDto } from './dto/sign-up.dto';
 export declare class AuthService {
     private readonly userModel;
-    private readonly couponModel;
-    private readonly searchTermModel;
-    private readonly trackingNotificationModel;
     private readonly refreshTokenModel;
     private jwtService;
-    constructor(userModel: Model<User>, couponModel: Model<Coupon>, searchTermModel: Model<SearchTerm>, trackingNotificationModel: Model<TrackingNotificationModel>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
+    constructor(userModel: Model<User>, refreshTokenModel: Model<RefreshTokenModel>, jwtService: JwtService);
     setStatus(): Promise<void>;
     deleteAccount(userId: string): Promise<void>;
     deactivateAccount(userId: string): Promise<void>;
@@ -28,18 +22,12 @@ export declare class AuthService {
         message: string;
     }>;
     _getRecentSearches(recentSearches: any): Promise<any[]>;
-    _getPopularSearches(): Promise<any[]>;
     loginUser(entireBody: LoginDto): Promise<{
         status: string;
         message: string;
         data: {
             accessToken: string;
-            wishlist: string[];
-            cart: string[];
             userId: string;
-            recentSearches: any[];
-            popularSearches: any[];
-            purchasedItemIds: string[];
         };
     }>;
     validateOtp(phoneNumber: number, otp: number): Promise<{
@@ -62,7 +50,6 @@ export declare class AuthService {
         data: {
             accessToken: string;
             userId: string;
-            popularSearches: any[];
         };
     }>;
     _sendAccountCreatedMail(userDoc: any): Promise<void>;

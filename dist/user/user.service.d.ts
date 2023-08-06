@@ -13,8 +13,8 @@ export declare class UserService {
         _id: import("mongoose").Types.ObjectId;
     }>;
     getUserData(userId: string): Promise<{
-        purchasedItemIds: string[];
-        answeredQuestionIds: string[];
+        purchasedItemIds: any;
+        answeredQuestionIds: any;
     }>;
     updateUserDetails(userId: string, entireBody: UpdateUserDetailsDto): Promise<void>;
     getPaymentDetails(userId: string): Promise<import("mongoose").Document<unknown, any, UserPaymentDetails> & UserPaymentDetails & {

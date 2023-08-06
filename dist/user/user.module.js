@@ -8,12 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModule = void 0;
 const common_1 = require("@nestjs/common");
-const user_service_1 = require("./user.service");
-const user_controller_1 = require("./user.controller");
-const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const mongoose_1 = require("@nestjs/mongoose");
-const user_model_1 = require("../models/user.model");
-const user_payment_details_model_1 = require("../models/user_payment_details.model");
+const user_model_1 = require("./models/user.model");
+const user_payment_details_model_1 = require("./models/user_payment_details.model");
+const jwt_auth_guard_1 = require("./auth/jwt-strategies/jwt-auth.guard");
+const user_controller_1 = require("./user/user.controller");
+const user_service_1 = require("./user/user.service");
 let UserModule = class UserModule {
 };
 UserModule = __decorate([
@@ -22,7 +22,7 @@ UserModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: 'User', schema: user_model_1.UserSchema },
                 { name: 'UserPaymentDetails', schema: user_payment_details_model_1.UserPaymentDetailsSchema },
-            ]),
+            ], 'userDb'),
         ],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService, jwt_auth_guard_1.JwtAuthGuard],

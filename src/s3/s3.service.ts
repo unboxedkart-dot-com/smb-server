@@ -9,72 +9,24 @@ export class S3Service {
     secretAccessKey: process.env.AWS_S3_KEY_SECRET,
   });
 
-  async uploadFile(file) {
+  async uploadImage(file) {
     const { originalname } = file;
-
     await this.s3_upload(
       file.buffer,
-      // this.AWS_S3_BUCKET,
-      'unboxedkart-india/invoices/sales',
+      'unboxedkart-india/smb/images',
       originalname,
       file.mimetype,
     );
   }
 
-  async uploadOriginalInvoice(file) {
-    const { originalname } = file;
-
-    await this.s3_upload(
-      file.buffer,
-      'unboxedkart-india/inventory/invoices/original-invoices',
-      originalname,
-      file.mimetype,
-    );
-  }
-
-  async uploadPurchaseInvoice(file) {
+  async uploadVideo(file) {
     const { originalname } = file;
     await this.s3_upload(
       file.buffer,
-      'unboxedkart-india/inventory/invoices/purchase-invoices',
+      'unboxedkart-india/smb/video',
       originalname,
       file.mimetype,
     );
-  }
-
-  async uploadSellerIdProof(file) {
-    const { originalname } = file;
-    await this.s3_upload(
-      file.buffer,
-      'unboxedkart-india/inventory/id-proofs/sellers',
-      // this.AWS_S3_BUCKET,
-      originalname,
-      file.mimetype,
-    );
-  }
-
-  async uploadDeviceImages(files, folderName) {
-    // const folderName = this._generateFolderName();
-    console.log('uploading device images', folderName);
-    for (var i = 0; i < files.length; i++) {
-      await this.s3_upload(
-        files[i].buffer,
-        `unboxedkart-india/inventory/device-images/${folderName}`,
-        // this.AWS_S3_BUCKET,
-        // originalname,
-        `${i}.png`,
-        files[i].mimetype,
-      );
-    }
-    return folderName;
-    // const { originalname } = file;
-    // await this.s3_upload(
-    //   file.buffer,
-    //   'unboxedkart-india/inventory/device-images/sellers',
-    //   // this.AWS_S3_BUCKET,
-    //   originalname,
-    //   file.mimetype,
-    // );
   }
 
   _generateFolderName() {
@@ -82,17 +34,6 @@ export class S3Service {
       10000000000000 + Math.random() * 9000000000000000,
     );
     return randomNumber;
-  }
-
-  async handleUploadDeviceImage(file, folderName, index) {
-    const { originalname } = file;
-    await this.s3_upload(
-      file.buffer,
-      `unboxedkart-india/inventory/device-images/${folderName}/${index}`,
-      // this.AWS_S3_BUCKET,
-      originalname,
-      file.mimetype,
-    );
   }
 
   async s3_upload(file, bucket, name, mimetype) {

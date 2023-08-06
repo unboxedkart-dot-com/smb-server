@@ -1,1 +1,0 @@
-{"version":3,"file":"ordered_service.model.js","sourceRoot":"","sources":["../../src/models/ordered_service.model.ts"],"names":[],"mappings":";;;AAAA,uCAAgC;AAEnB,QAAA,oBAAoB,GAAG,IAAI,kBAAQ,CAAC,MAAM,CAAC;IACtD,KAAK,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE;IACvC,KAAK,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE;IACvB,YAAY,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE;CAC/B,CAAC,CAAC"}
