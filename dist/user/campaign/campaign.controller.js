@@ -16,6 +16,7 @@ exports.CampaignController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const s3_service_1 = require("../../s3/s3.service");
+const jwt_auth_guard_1 = require("../auth/jwt-strategies/jwt-auth.guard");
 const campaign_service_1 = require("./campaign.service");
 const new_campaign_dto_1 = require("./dto/new-campaign.dto");
 let CampaignController = class CampaignController {
@@ -33,10 +34,9 @@ let CampaignController = class CampaignController {
         const response = this.s3Service.uploadVideo(file);
         return response;
     }
-    async handleGetPayableAmount(request) {
+    async handleGetPayableAmount(request, amount) {
         console.log('getting payable amount');
-        const userId = request.user.userId;
-        const response = await this.campaignService.getPayableAmount(userId);
+        const response = await this.campaignService.getPayableAmount('123', amount);
         console.log(response);
         return response;
     }
@@ -69,11 +69,13 @@ __decorate([
 __decorate([
     (0, common_1.Get)('payable-amount'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('amount')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], CampaignController.prototype, "handleGetPayableAmount", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('/create-campaign'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),

@@ -8,12 +8,9 @@ export declare class CampaignService {
     constructor(userModel: Model<User>, campaignModel: Model<Campaign>);
     _generateOrderNumber(): string;
     createPaymentOrder(payableAmount: number, orderNumber: string): Promise<void>;
-    getPayableAmount(userId: string): Promise<{
+    getPayableAmount(userId: string, amount: string): Promise<{
         payableAmount: number;
         paymentOrderId: any;
-        name: string;
-        email: string;
-        phoneNumber: number;
     }>;
     addNewCampaign(userId: string, entireBody: NewCampaignDto): Promise<void>;
 }

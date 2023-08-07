@@ -8,12 +8,9 @@ export declare class CampaignController {
     constructor(campaignService: CampaignService, s3Service: S3Service);
     handleUploadInvoice(file: Express.Multer.File, request: any, Body: any): Promise<void>;
     handleUploadVideo(file: Express.Multer.File, request: any, Body: any): Promise<void>;
-    handleGetPayableAmount(request: any): Promise<{
+    handleGetPayableAmount(request: any, amount: string): Promise<{
         payableAmount: number;
         paymentOrderId: any;
-        name: string;
-        email: string;
-        phoneNumber: number;
     }>;
     handleGetUserData(request: any, entireBody: NewCampaignDto): Promise<void>;
 }

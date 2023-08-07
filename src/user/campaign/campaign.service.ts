@@ -2,10 +2,11 @@ import { Body, Injectable, Post, Req } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Campaign } from 'aws-sdk/clients/personalize';
 import { Model } from 'mongoose';
-// import * as Razorpay from 'razorpay';
+// import Razorpay from 'razorpay';
 import { User } from 'src/user/models/user.model';
 import { UserPaymentDetails } from 'src/user/models/user_payment_details.model';
 import { NewCampaignDto } from './dto/new-campaign.dto';
+// import * as Razorpay from 'razorpay';
 
 // var instance = new Razorpay({
 //   key_id: 'rzp_live_Yf6SskMc0yCBdS',
@@ -42,30 +43,30 @@ export class CampaignService {
     // return order;
   }
 
-  async getPayableAmount(userId: string) {
+  async getPayableAmount(userId: string, amount: string) {
     console.log('getting payable amount');
-    const userDoc = await this.userModel.findById(userId);
+    // const userDoc = await this.userModel.findById(userId);
     // const orderTotal = await this._calculateAmount(
     //   userDoc.orderSummary.orderItems,
     // );
 
-    let payableAmount = 2000;
+    let payableAmount = parseInt(amount);
     const orderNumber = this._generateOrderNumber();
     const paymentOrderId = await this.createPaymentOrder(
       payableAmount,
       orderNumber,
     );
-    await this.userModel.findByIdAndUpdate(userId, {
-      'orderSummary.orderNumber': orderNumber,
-      'orderSummary.paymentAmount': payableAmount,
-      'orderSummary.paymentOrderId': paymentOrderId['id'],
-    });
+    // await this.userModel.findByIdAndUpdate(userId, {
+    //   'orderSummary.orderNumber': orderNumber,
+    //   'orderSummary.paymentAmount': payableAmount,
+    //   'orderSummary.paymentOrderId': paymentOrderId['id'],
+    // });
     return {
       payableAmount: payableAmount,
       paymentOrderId: paymentOrderId['id'],
-      name: userDoc.representativeName,
-      email: userDoc.emailId,
-      phoneNumber: userDoc.phoneNumber,
+      // name: userDoc.representativeName,
+      // email: userDoc.emailId,
+      // phoneNumber: userDoc.phoneNumber,
     };
   }
 

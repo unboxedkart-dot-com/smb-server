@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from 'src/s3/s3.service';
@@ -17,7 +18,6 @@ import { JwtAuthGuard } from '../auth/jwt-strategies/jwt-auth.guard';
 import { CampaignService } from './campaign.service';
 import { NewCampaignDto } from './dto/new-campaign.dto';
 
-// @UseGuards(JwtAuthGuard)
 @Controller('user/campaigns')
 export class CampaignController {
   constructor(
@@ -50,15 +50,18 @@ export class CampaignController {
     return response;
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get('payable-amount')
-  async handleGetPayableAmount(@Req() request: any) {
+  async handleGetPayableAmount(
+    @Req() request: any,
+    @Query('amount') amount: string,
+  ) {
     console.log('getting payable amount');
-    const userId = request.user.userId;
-    const response = await this.campaignService.getPayableAmount(userId);
+    // const userId = request.user.userId;
+    const response = await this.campaignService.getPayableAmount('123', amount);
     console.log(response);
     return response;
   }
-
 
   // @Post('verify-payment')
   // async handleVerifyPayment(
@@ -74,6 +77,7 @@ export class CampaignController {
   //   return response;
   // }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/create-campaign')
   async handleGetUserData(
     @Req() request: any,

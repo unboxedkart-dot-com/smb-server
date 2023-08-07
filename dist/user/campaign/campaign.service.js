@@ -29,23 +29,14 @@ let CampaignService = class CampaignService {
     }
     async createPaymentOrder(payableAmount, orderNumber) {
     }
-    async getPayableAmount(userId) {
+    async getPayableAmount(userId, amount) {
         console.log('getting payable amount');
-        const userDoc = await this.userModel.findById(userId);
-        let payableAmount = 2000;
+        let payableAmount = parseInt(amount);
         const orderNumber = this._generateOrderNumber();
         const paymentOrderId = await this.createPaymentOrder(payableAmount, orderNumber);
-        await this.userModel.findByIdAndUpdate(userId, {
-            'orderSummary.orderNumber': orderNumber,
-            'orderSummary.paymentAmount': payableAmount,
-            'orderSummary.paymentOrderId': paymentOrderId['id'],
-        });
         return {
             payableAmount: payableAmount,
             paymentOrderId: paymentOrderId['id'],
-            name: userDoc.representativeName,
-            email: userDoc.emailId,
-            phoneNumber: userDoc.phoneNumber,
         };
     }
     async addNewCampaign(userId, entireBody) {
