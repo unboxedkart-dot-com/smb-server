@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { InfluencerAuthModule } from './influencer/auth/auth.module';
+import { InfluencerModule } from './influencer/user/user.module';
 import { MailModule } from './mail/mail.module';
 import { S3Module } from './s3/s3.module';
 import { AuthModule } from './user/auth/auth.module';
@@ -31,6 +33,8 @@ import { UserModule } from './user/user/user.module';
     UserModule,
     S3Module,
     CampaignModule,
+    InfluencerAuthModule,
+    InfluencerModule
   ],
 })
 export class AppModule {}
